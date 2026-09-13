@@ -125,7 +125,6 @@
       #print-area { position: absolute; left: 0; top: 0; width: 80mm; }
     }
 
-
     /* LOGIN LIMPIO Y RESPONSIVE */
     #login-screen {
       position: fixed; inset: 0; z-index: 9999;
@@ -140,512 +139,137 @@
     #login-screen .login-card > i { font-size: 2.5rem !important; margin-bottom: 1rem !important; }
     #login-screen .login-card .btn-primary { min-height: 48px; border-radius: 10px; font-weight: 700; }
 
-    /* =========================================================
-       RESPONSIVE FINAL - CELULAR, TABLET Y COMPUTADOR
-       ========================================================= */
-    html {
-      width: 100%;
-      min-width: 0;
-      min-height: 100%;
-      -webkit-text-size-adjust: 100%;
-    }
+    /* RESPONSIVE FINAL */
+    html { width: 100%; min-width: 0; min-height: 100%; -webkit-text-size-adjust: 100%; }
+    body { width: 100%; min-width: 0; min-height: 100vh; min-height: 100dvh; }
+    .main-content { min-width: 0; width: 100%; }
+    .content-section { width: 100%; min-width: 0; overflow-x: hidden; }
+    .brand span { font-size: 1.35rem; font-weight: 900; font-style: italic; letter-spacing: .5px; white-space: nowrap; }
+    .brand .brand-cart { font-size: 1rem; font-style: normal; letter-spacing: 0; }
+    .form-control { min-width: 0; max-width: 100%; font-size: 16px; }
+    .table-container { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { min-width: 680px; }
+    .modal-card { max-width: min(500px, calc(100vw - 2rem)); }
+    .mobile-menu-toggle, .sidebar-backdrop { display: none; }
 
-    body {
-      width: 100%;
-      min-width: 0;
-      min-height: 100vh;
-      min-height: 100dvh;
-    }
-
-    .main-content {
-      min-width: 0;
-      width: 100%;
-    }
-
-    .content-section {
-      width: 100%;
-      min-width: 0;
-      overflow-x: hidden;
-    }
-
-    .brand span {
-      font-size: 1.35rem;
-      font-weight: 900;
-      font-style: italic;
-      letter-spacing: .5px;
-      white-space: nowrap;
-    }
-
-    .brand .brand-cart {
-      font-size: 1rem;
-      font-style: normal;
-      letter-spacing: 0;
-    }
-
-    .form-control {
-      min-width: 0;
-      max-width: 100%;
-      font-size: 16px;
-    }
-
-    .table-container {
-      max-width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    table {
-      min-width: 680px;
-    }
-
-    .modal-card {
-      max-width: min(500px, calc(100vw - 2rem));
-    }
-
-    .mobile-menu-toggle,
-    .sidebar-backdrop {
-      display: none;
-    }
-
-    /* Pantallas medianas / tablets */
     @media (max-width: 1100px) {
       :root { --sidebar-width: 220px; }
-
       .content-section { padding: 1.25rem; }
       header { padding: .9rem 1.25rem; }
-
-      .pos-container {
-        grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
-        gap: 1rem;
-      }
-
-      .metrics-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      #sec-configuracion > div {
-        grid-template-columns: 1fr !important;
-      }
+      .pos-container { grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 1rem; }
+      .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #sec-configuracion > div { grid-template-columns: 1fr !important; }
     }
 
-    /* Tablet y teléfonos */
     @media (max-width: 900px) {
-      body {
-        display: block;
-        overflow: hidden;
-      }
-
+      body { display: block; overflow: hidden; }
       .sidebar {
-        position: fixed;
-        z-index: 10001;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: min(82vw, 300px);
-        height: 100dvh;
-        transform: translateX(-105%);
-        transition: transform .25s ease;
+        position: fixed; z-index: 10001; left: 0; top: 0; bottom: 0;
+        width: min(82vw, 300px); height: 100dvh;
+        transform: translateX(-105%); transition: transform .25s ease;
         box-shadow: 8px 0 25px rgba(0,0,0,.22);
       }
-
-      .sidebar.mobile-open {
-        transform: translateX(0);
-      }
-
+      .sidebar.mobile-open { transform: translateX(0); }
       .sidebar-backdrop {
-        position: fixed;
-        inset: 0;
-        z-index: 10000;
-        background: rgba(15,23,42,.48);
-        display: block;
-        opacity: 0;
-        visibility: hidden;
+        position: fixed; inset: 0; z-index: 10000;
+        background: rgba(15,23,42,.48); display: block; opacity: 0; visibility: hidden;
         transition: opacity .2s ease, visibility .2s ease;
       }
-
-      .sidebar-backdrop.active {
-        opacity: 1;
-        visibility: visible;
-      }
-
+      .sidebar-backdrop.active { opacity: 1; visibility: visible; }
       .mobile-menu-toggle {
-        position: fixed;
-        z-index: 10002;
-        top: max(10px, env(safe-area-inset-top));
-        left: max(10px, env(safe-area-inset-left));
-        width: 44px;
-        height: 44px;
-        border: 0;
-        border-radius: 10px;
-        background: var(--primary);
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.15rem;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(0,0,0,.2);
+        position: fixed; z-index: 10002;
+        top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left));
+        width: 44px; height: 44px; border: 0; border-radius: 10px;
+        background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center;
+        font-size: 1.15rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.2);
       }
-
-      .main-content {
-        width: 100%;
-        height: 100dvh;
-        min-height: 100dvh;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      header {
-        min-height: 64px;
-        padding: .75rem 1rem .75rem 4.1rem;
-        gap: .75rem;
-      }
-
-      header h2 {
-        min-width: 0;
-        font-size: 1.1rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .user-info {
-        gap: 8px;
-        flex-shrink: 0;
-      }
-
-      .user-info > div {
-        min-width: 0;
-        max-width: 42vw;
-        overflow: hidden;
-      }
-
-      .user-info b {
-        display: block;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: .82rem;
-      }
-
-      .user-info .badge {
-        font-size: .65rem;
-      }
-
-      .user-info .btn {
-        white-space: nowrap;
-      }
-
-      .content-section {
-        padding: 1rem;
-      }
-
-      .metrics-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: .75rem;
-      }
-
-      .metric-card {
-        min-width: 0;
-        padding: 1rem;
-      }
-
-      .metric-icon {
-        width: 44px;
-        height: 44px;
-        flex: 0 0 44px;
-      }
-
-      .card {
-        min-width: 0;
-        padding: 1rem;
-      }
-
-      .pos-container {
-        grid-template-columns: 1fr;
-        height: auto;
-        min-height: 0;
-      }
-
-      .pos-container > div {
-        min-width: 0;
-      }
-
-      .pos-container .table-container {
-        max-height: 52vh !important;
-      }
-
-      .cart-summary {
-        min-height: 360px;
-      }
-
-      .receipt-modal {
-        width: min(340px, calc(100vw - 2rem));
-        max-width: calc(100vw - 2rem);
-      }
+      .main-content { width: 100%; height: 100dvh; min-height: 100dvh; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+      header { min-height: 64px; padding: .75rem 1rem .75rem 4.1rem; gap: .75rem; }
+      header h2 { min-width: 0; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .user-info { gap: 8px; flex-shrink: 0; }
+      .user-info > div { min-width: 0; max-width: 42vw; overflow: hidden; }
+      .user-info b { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; }
+      .user-info .badge { font-size: .65rem; }
+      .user-info .btn { white-space: nowrap; }
+      .content-section { padding: 1rem; }
+      .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+      .metric-card { min-width: 0; padding: 1rem; }
+      .metric-icon { width: 44px; height: 44px; flex: 0 0 44px; }
+      .card { min-width: 0; padding: 1rem; }
+      .pos-container { grid-template-columns: 1fr; height: auto; min-height: 0; }
+      .pos-container > div { min-width: 0; }
+      .pos-container .table-container { max-height: 52vh !important; }
+      .cart-summary { min-height: 360px; }
+      .receipt-modal { width: min(340px, calc(100vw - 2rem)); max-width: calc(100vw - 2rem); }
     }
 
     @media (max-width: 700px) {
-      header {
-        align-items: center;
-        flex-wrap: nowrap;
-      }
-
-      header h2 {
-        flex: 1;
-      }
-
-      .user-info > div {
-        display: none;
-      }
-
-      .user-info .btn {
-        min-height: 42px;
-        padding: .5rem .7rem;
-      }
-
-      .content-section {
-        padding: .8rem;
-      }
-
-      .metrics-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .metric-card {
-        min-height: 78px;
-      }
-
-      /* Barras de herramientas: una columna */
+      header { align-items: center; flex-wrap: nowrap; }
+      header h2 { flex: 1; }
+      .user-info > div { display: none; }
+      .user-info .btn { min-height: 42px; padding: .5rem .7rem; }
+      .content-section { padding: .8rem; }
+      .metrics-grid { grid-template-columns: 1fr; }
+      .metric-card { min-height: 78px; }
       .content-section > div[style*="justify-content:space-between"],
-      .content-section > div[style*="justify-content: space-between"] {
-        flex-direction: column !important;
-        align-items: stretch !important;
-      }
-
+      .content-section > div[style*="justify-content: space-between"] { flex-direction: column !important; align-items: stretch !important; }
       .content-section > div[style*="justify-content:space-between"] > div,
-      .content-section > div[style*="justify-content: space-between"] > div {
-        width: 100%;
-        flex-wrap: wrap;
-      }
-
-      .content-section input[style*="width:250px"],
-      .content-section input[style*="width: 250px"],
-      .content-section select[style*="width:200px"],
-      .content-section select[style*="width: 200px"] {
-        width: 100% !important;
-      }
-
-      .content-section .btn {
-        min-height: 42px;
-      }
-
-      .content-section > div[style*="display:flex"] .btn {
-        flex: 1 1 100%;
-        justify-content: center;
-      }
-
-      /* POS */
-      .pos-container > div:first-child > div[style*="display:flex"] {
-        flex-direction: column !important;
-      }
-
-      .pos-container .form-control {
-        width: 100% !important;
-        min-height: 44px;
-      }
-
-      .pos-container .table-container {
-        max-height: 45vh !important;
-      }
-
-      .cart-summary {
-        padding: .85rem;
-      }
-
-      .cart-item {
-        gap: .5rem;
-        align-items: flex-start;
-      }
-
-      .cart-item > div:first-child {
-        min-width: 0;
-        flex: 1;
-        overflow-wrap: anywhere;
-      }
-
-      .cart-item > div:last-child {
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        flex-shrink: 0;
-      }
-
-      .cart-summary .form-group {
-        margin-bottom: .8rem;
-      }
-
-      /* Formularios */
-      .form-control,
-      select.form-control,
-      input.form-control {
-        min-height: 44px;
-      }
-
-      /* Modales */
-      .modal-overlay {
-        padding: .75rem;
-        align-items: center;
-      }
-
-      .modal-card {
-        width: 100%;
-        max-width: 100%;
-        max-height: calc(100dvh - 1.5rem);
-        padding: 1rem;
-        border-radius: 12px;
-      }
-
-      .modal-card > div:last-child {
-        flex-wrap: wrap;
-      }
-
-      .modal-card > div:last-child .btn {
-        flex: 1 1 130px;
-        justify-content: center;
-      }
-
-      /* Reportes */
-      #sec-reportes .card > div[style*="gap:2rem"],
-      #sec-reportes .card > div[style*="gap: 2rem"] {
-        flex-direction: column !important;
-        gap: .75rem !important;
-      }
-
-      /* Configuración */
-      #sec-configuracion > div {
-        grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-      }
-
-      /* Tablas cómodas para deslizar */
-      table {
-        min-width: 720px;
-        font-size: .82rem;
-      }
-
-      th, td {
-        padding: .7rem .75rem;
-        white-space: nowrap;
-      }
-
-      /* Gráfica */
-      #chart-sales {
-        width: 100% !important;
-        max-width: 100%;
-      }
+      .content-section > div[style*="justify-content: space-between"] > div { width: 100%; flex-wrap: wrap; }
+      .content-section input[style*="width:250px"], .content-section input[style*="width: 250px"],
+      .content-section select[style*="width:200px"], .content-section select[style*="width: 200px"] { width: 100% !important; }
+      .content-section .btn { min-height: 42px; }
+      .content-section > div[style*="display:flex"] .btn { flex: 1 1 100%; justify-content: center; }
+      .pos-container > div:first-child > div[style*="display:flex"] { flex-direction: column !important; }
+      .pos-container .form-control { width: 100% !important; min-height: 44px; }
+      .pos-container .table-container { max-height: 45vh !important; }
+      .cart-summary { padding: .85rem; }
+      .cart-item { gap: .5rem; align-items: flex-start; }
+      .cart-item > div:first-child { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+      .cart-item > div:last-child { flex-wrap: wrap; justify-content: flex-end; flex-shrink: 0; }
+      .cart-summary .form-group { margin-bottom: .8rem; }
+      .form-control, select.form-control, input.form-control { min-height: 44px; }
+      .modal-overlay { padding: .75rem; align-items: center; }
+      .modal-card { width: 100%; max-width: 100%; max-height: calc(100dvh - 1.5rem); padding: 1rem; border-radius: 12px; }
+      .modal-card > div:last-child { flex-wrap: wrap; }
+      .modal-card > div:last-child .btn { flex: 1 1 130px; justify-content: center; }
+      #sec-reportes .card > div[style*="gap:2rem"], #sec-reportes .card > div[style*="gap: 2rem"] { flex-direction: column !important; gap: .75rem !important; }
+      #sec-configuracion > div { grid-template-columns: 1fr !important; gap: 1rem !important; }
+      table { min-width: 720px; font-size: .82rem; }
+      th, td { padding: .7rem .75rem; white-space: nowrap; }
+      #chart-sales { width: 100% !important; max-width: 100%; }
     }
 
-    /* Teléfonos pequeños */
     @media (max-width: 480px) {
-      #login-screen {
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
-      }
-
-      .content-section {
-        padding: .65rem;
-      }
-
-      .card {
-        padding: .85rem;
-        border-radius: 7px;
-      }
-
-      .brand {
-        padding: 1rem;
-      }
-
-      .brand span {
-        font-size: 1.2rem;
-      }
-
-      .metric-val {
-        font-size: 1.2rem;
-      }
-
-      table {
-        min-width: 650px;
-      }
-
-      .btn {
-        max-width: 100%;
-      }
-
-      .receipt-modal {
-        font-size: 11px;
-      }
+      #login-screen { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+      .content-section { padding: .65rem; }
+      .card { padding: .85rem; border-radius: 7px; }
+      .brand { padding: 1rem; }
+      .brand span { font-size: 1.2rem; }
+      .metric-val { font-size: 1.2rem; }
+      table { min-width: 650px; }
+      .btn { max-width: 100%; }
+      .receipt-modal { font-size: 11px; }
     }
 
     @media (max-width: 360px) {
-      .content-section {
-        padding: .5rem;
-      }
-
-      header {
-        padding-left: 3.8rem;
-      }
-
-      header h2 {
-        font-size: 1rem;
-      }
-
-      .mobile-menu-toggle {
-        width: 42px;
-        height: 42px;
-      }
-
-      .cart-summary {
-        padding: .7rem;
-      }
+      .content-section { padding: .5rem; }
+      header { padding-left: 3.8rem; }
+      header h2 { font-size: 1rem; }
+      .mobile-menu-toggle { width: 42px; height: 42px; }
+      .cart-summary { padding: .7rem; }
     }
 
-    /* Pantallas de celular en horizontal */
     @media (max-width: 900px) and (max-height: 520px) {
-      .sidebar {
-        width: min(300px, 72vw);
-      }
-
-      header {
-        min-height: 56px;
-        padding-top: .5rem;
-        padding-bottom: .5rem;
-      }
-
-      .content-section {
-        padding: .65rem;
-      }
-
-      .pos-container .table-container {
-        max-height: 55vh !important;
-      }
-
-      .modal-card {
-        max-height: calc(100dvh - 1rem);
-      }
+      .sidebar { width: min(300px, 72vw); }
+      header { min-height: 56px; padding-top: .5rem; padding-bottom: .5rem; }
+      .content-section { padding: .65rem; }
+      .pos-container .table-container { max-height: 55vh !important; }
+      .modal-card { max-height: calc(100dvh - 1rem); }
     }
 
-    /* Evita desbordamientos por textos largos */
-    h1, h2, h3, h4, p, label, td, th, span, b {
-      overflow-wrap: anywhere;
-    }
+    h1, h2, h3, h4, p, label, td, th, span, b { overflow-wrap: anywhere; }
+    button, input, select { touch-action: manipulation; }
 
-    button, input, select {
-      touch-action: manipulation;
-    }
-
-    /* Ajustes específicos para tablets vertical/horizontal y PC */
     @media (min-width: 901px) {
       .main-content { overflow-x: hidden; }
       .content-section { max-width: 100%; }
@@ -654,17 +278,13 @@
     @media (max-width: 900px) {
       .header-actions { gap: .5rem; flex-wrap: wrap; }
       .pos-container { grid-template-columns: 1fr !important; }
-      .pos-products, .pos-cart { min-width: 0; width: 100%; }
-      .table-container, .data-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .content-section { padding-bottom: calc(1.25rem + env(safe-area-inset-bottom)); }
     }
 
     @media (max-width: 700px) {
       #login-screen { padding: .75rem; }
       #login-screen .login-card { padding: 1.35rem 1rem; }
-      .form-row, .form-grid, .pos-controls { grid-template-columns: 1fr !important; }
-      .toolbar, .section-toolbar { flex-direction: column; align-items: stretch; }
-      .toolbar > *, .section-toolbar > * { width: 100%; }
       .btn { min-height: 44px; }
     }
 
@@ -689,12 +309,8 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        transition: none !important;
-      }
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
     }
-
   </style>
 </head>
 <body>
@@ -720,8 +336,7 @@
   </div>
 
   <!-- BOTÓN MENÚ MÓVIL -->
-  <button id="mobile-menu-toggle" class="mobile-menu-toggle" type="button"
-          aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()">
+  <button id="mobile-menu-toggle" class="mobile-menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()">
     <i class="fa-solid fa-bars"></i>
   </button>
   <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="closeMobileMenu()"></div>
@@ -822,6 +437,7 @@
     <!-- INVENTARIO -->
     <section id="sec-inventario" class="content-section admin-only">
       <div class="card" style="margin-bottom: 1rem; display:flex; justify-content:space-between; align-items:center;">
+        <h3>Control de Vencimientos (Alerta 20 Días) e Inventarios</h3>
         <button class="btn btn-excel" onclick="exportInventoryExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Inventario</button>
       </div>
       <div class="table-container">
@@ -876,13 +492,13 @@
               <label>Método de Pago:</label>
               <select id="pos-metodo" class="form-control">
                 <option value="Efectivo">Efectivo</option>
-                <option value="Nequi/Daviplata">Nequi / Nequi</option>
-                <option value="Tarjeta">ransferencia 🏦</option>
+                <option value="Nequi/Daviplata">Nequi / Daviplata</option>
+                <option value="Tarjeta">Tarjeta Débito/Crédito</option>
               </select>
             </div>
             <div class="form-group" style="display:flex; align-items:center; gap:8px;">
               <input type="checkbox" id="pos-emitir-alegra" checked>
-              <label for="pos-emitir-alegra" style="margin-bottom:0; font-weight:normal;">Emitir Factura Electrónica DIAN</label>
+              <label for="pos-emitir-alegra" style="margin-bottom:0; font-weight:normal;">Emitir Factura Electrónica Alegra DIAN</label>
             </div>
             <button class="btn btn-success" style="width:100%; justify-content:center; padding:0.75rem;" onclick="processSale()"><i class="fa-solid fa-check"></i> Finalizar Venta</button>
           </div>
@@ -890,16 +506,23 @@
       </div>
     </section>
 
-    <!-- COMPRAS -->
+    <!-- COMPRAS (ACTIVADO Y FUNCIONAL) -->
     <section id="sec-compras" class="content-section admin-only">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <input type="text" id="comp-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar por proveedor..." onkeyup="renderCompras()">
-        <button class="btn btn-primary" onclick="openCompraModal()"><i class="fa-solid fa-plus"></i> Registrar Compra</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:10px;">
+        <input type="text" id="comp-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar compra o proveedor..." onkeyup="renderCompras()">
+        <button class="btn btn-primary" onclick="openCompraModal()"><i class="fa-solid fa-cart-plus"></i> Registrar Nueva Compra</button>
       </div>
       <div class="table-container">
         <table>
           <thead>
-            <tr><th>ID Compra</th><th>Proveedor</th><th>Fecha</th><th>Total COP</th><th>Acciones</th></tr>
+            <tr>
+              <th>ID Compra</th>
+              <th>Proveedor</th>
+              <th>Fecha</th>
+              <th>Items Comprados</th>
+              <th>Total COP</th>
+              <th>Acciones</th>
+            </tr>
           </thead>
           <tbody id="tbl-compras"></tbody>
         </table>
@@ -1069,6 +692,69 @@
     </div>
   </div>
 
+  <!-- MODAL COMPRAS -->
+  <div id="modal-compra" class="modal-overlay">
+    <div class="modal-card" style="max-width: 650px;">
+      <h3>Registrar Nueva Compra a Proveedor</h3>
+      
+      <div class="form-group" style="margin-top: 1rem;">
+        <label>Proveedor:</label>
+        <select id="mcomp-proveedor" class="form-control"></select>
+      </div>
+
+      <div class="form-group">
+        <label>Fecha de Compra:</label>
+        <input type="date" id="mcomp-fecha" class="form-control">
+      </div>
+
+      <div style="border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin-bottom: 1rem; background: #f8fafc;">
+        <h4 style="margin-bottom: 0.5rem;">Agregar Producto a la Compra</h4>
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; align-items: end;">
+          <div>
+            <label style="font-size: 0.75rem;">Producto</label>
+            <select id="mcomp-producto" class="form-control"></select>
+          </div>
+          <div>
+            <label style="font-size: 0.75rem;">Cantidad</label>
+            <input type="number" id="mcomp-cantidad" class="form-control" value="1" min="1">
+          </div>
+          <div>
+            <label style="font-size: 0.75rem;">Costo Unit. COP</label>
+            <input type="number" id="mcomp-costo" class="form-control" placeholder="0">
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" onclick="addItemToCompraCart()"><i class="fa-solid fa-plus"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container" style="max-height: 180px; overflow-y: auto; margin-bottom: 1rem;">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>Costo Unit.</th>
+              <th>Subtotal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="mcomp-items-cart"></tbody>
+        </table>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+        <span style="font-weight: bold; font-size: 1.1rem;">Total Compra:</span>
+        <span id="mcomp-total" style="font-weight: bold; font-size: 1.2rem; color: var(--primary);">$ 0</span>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
+        <button class="btn btn-success" onclick="saveCompra()"><i class="fa-solid fa-floppy-disk"></i> Procesar Compra y Sumar Stock</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-cliente" class="modal-overlay">
     <div class="modal-card">
       <h3>Registrar Cliente</h3>
@@ -1095,29 +781,6 @@
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
         <button class="btn btn-primary" onclick="saveProveedor()">Guardar</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="modal-compra" class="modal-overlay">
-    <div class="modal-card">
-      <h3>Registrar Compra</h3>
-      <input type="hidden" id="mcomp-id">
-      <div class="form-group">
-        <label>Proveedor</label>
-        <select id="mcomp-prov" class="form-control"></select>
-      </div>
-      <div class="form-group">
-        <label>Fecha de Compra</label>
-        <input type="date" id="mcomp-fecha" class="form-control">
-      </div>
-      <div class="form-group">
-        <label>Total Factura (COP)</label>
-        <input type="number" id="mcomp-total" class="form-control" placeholder="Ej: 150000">
-      </div>
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 15px;">
-        <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveCompra()">Guardar Compra</button>
       </div>
     </div>
   </div>
@@ -1189,6 +852,7 @@
 
     let currentUser = null;
     let cart = [];
+    let compraCart = [];
     let salesChart = null;
 
     function saveDB() {
@@ -1297,7 +961,6 @@
       const authHeader = 'Basic ' + btoa(`${DB.alegra.email}:${DB.alegra.token}`);
       const clienteObj = DB.clientes.find(c => c.nombre === venta.cliente) || DB.clientes[0];
 
-      // Formato JSON que requiere Alegra para Facturación
       const alegraPayload = {
         date: venta.fecha,
         dueDate: venta.fecha,
@@ -1310,7 +973,7 @@
           name: i.nombre,
           price: i.precio,
           quantity: i.qty,
-          tax: [{ id: 3 }] // ID impuesto estándar en Alegra IVA 19%
+          tax: [{ id: 3 }]
         }))
       };
 
@@ -1690,6 +1353,158 @@
       document.getElementById('modal-recibo').classList.add('active');
     }
 
+    // ==========================================
+    // SECCIÓN COMPRAS (LÓGICA Y FUNCIONES)
+    // ==========================================
+    function renderCompras() {
+      const search = document.getElementById('comp-search')?.value.toLowerCase() || '';
+      const tbody = document.getElementById('tbl-compras');
+      
+      const filtered = DB.compras.filter(c => 
+        c.id.toLowerCase().includes(search) || 
+        c.proveedor.toLowerCase().includes(search)
+      );
+
+      tbody.innerHTML = filtered.map(c => {
+        const cantItems = c.items ? c.items.reduce((acc, i) => acc + i.qty, 0) : 0;
+        return `
+        <tr>
+          <td><b>${c.id}</b></td>
+          <td>${c.proveedor}</td>
+          <td>${c.fecha}</td>
+          <td>${cantItems} unids. (${c.items ? c.items.length : 0} prod.)</td>
+          <td><b>${formatCOP(c.total)}</b></td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="viewCompraDetail('${c.id}')"><i class="fa-solid fa-eye"></i> Detalle</button>
+          </td>
+        </tr>
+      `}).join('');
+    }
+
+    function openCompraModal() {
+      if (DB.proveedores.length === 0) {
+        alert('Debes registrar al menos un Proveedor antes de realizar compras.');
+        showSection('proveedores', document.querySelectorAll('.nav-item')[5]);
+        return;
+      }
+      if (DB.productos.length === 0) {
+        alert('Debes registrar al menos un Producto en el inventario.');
+        showSection('productos', document.querySelectorAll('.nav-item')[1]);
+        return;
+      }
+
+      compraCart = [];
+      updateCompraCartUI();
+
+      const provSelect = document.getElementById('mcomp-proveedor');
+      provSelect.innerHTML = DB.proveedores.map(p => `<option value="${p.empresa || p.nombre}">${p.empresa ? p.empresa + ' - ' + p.nombre : p.nombre}</option>`).join('');
+
+      const prodSelect = document.getElementById('mcomp-producto');
+      prodSelect.innerHTML = DB.productos.map(p => `<option value="${p.id}">${p.nombre} (Stock: ${p.stock})</option>`).join('');
+
+      document.getElementById('mcomp-fecha').value = new Date().toISOString().split('T')[0];
+
+      if (DB.productos[0]) {
+        document.getElementById('mcomp-costo').value = DB.productos[0].costo || 0;
+      }
+
+      document.getElementById('modal-compra').classList.add('active');
+    }
+
+    document.getElementById('mcomp-producto')?.addEventListener('change', function(e) {
+      const prod = DB.productos.find(p => p.id === e.target.value);
+      if (prod) {
+        document.getElementById('mcomp-costo').value = prod.costo || 0;
+      }
+    });
+
+    function addItemToCompraCart() {
+      const prodId = document.getElementById('mcomp-producto').value;
+      const cant = parseInt(document.getElementById('mcomp-cantidad').value) || 0;
+      const costo = parseFloat(document.getElementById('mcomp-costo').value) || 0;
+
+      if (cant <= 0) return alert('La cantidad debe ser mayor a 0');
+      
+      const prod = DB.productos.find(p => p.id === prodId);
+      if (!prod) return;
+
+      const existing = compraCart.find(i => i.id === prodId);
+      if (existing) {
+        existing.qty += cant;
+        existing.costo = costo;
+      } else {
+        compraCart.push({
+          id: prod.id,
+          nombre: prod.nombre,
+          qty: cant,
+          costo: costo
+        });
+      }
+
+      document.getElementById('mcomp-cantidad').value = 1;
+      updateCompraCartUI();
+    }
+
+    function removeCompraItem(index) {
+      compraCart.splice(index, 1);
+      updateCompraCartUI();
+    }
+
+    function updateCompraCartUI() {
+      const tbody = document.getElementById('mcomp-items-cart');
+      const totalSpan = document.getElementById('mcomp-total');
+
+      tbody.innerHTML = compraCart.map((item, idx) => `
+        <tr>
+          <td>${item.nombre}</td>
+          <td>${item.qty}</td>
+          <td>${formatCOP(item.costo)}</td>
+          <td>${formatCOP(item.qty * item.costo)}</td>
+          <td><button class="btn btn-sm btn-danger" onclick="removeCompraItem(${idx})"><i class="fa-solid fa-trash"></i></button></td>
+        </tr>
+      `).join('');
+
+      const total = compraCart.reduce((acc, i) => acc + (i.qty * i.costo), 0);
+      totalSpan.textContent = formatCOP(total);
+    }
+
+    function saveCompra() {
+      if (compraCart.length === 0) return alert('Debes agregar al menos un producto a la compra.');
+
+      const proveedor = document.getElementById('mcomp-proveedor').value;
+      const fecha = document.getElementById('mcomp-fecha').value;
+      const total = compraCart.reduce((acc, i) => acc + (i.qty * i.costo), 0);
+
+      const nuevaCompra = {
+        id: 'COM-' + Date.now().toString().slice(-5),
+        proveedor: proveedor,
+        fecha: fecha,
+        items: [...compraCart],
+        total: total
+      };
+
+      compraCart.forEach(item => {
+        const prod = DB.productos.find(p => p.id === item.id);
+        if (prod) {
+          prod.stock += item.qty;
+          prod.costo = item.costo;
+        }
+      });
+
+      DB.compras.push(nuevaCompra);
+      closeModals();
+      saveDB();
+      alert('¡Compra registrada correctamente! Se sumó el nuevo stock a los productos seleccionados.');
+    }
+
+    function viewCompraDetail(compraId) {
+      const c = DB.compras.find(x => x.id === compraId);
+      if (!c) return;
+
+      let listaItems = c.items ? c.items.map(i => `• ${i.nombre} - Cant: ${i.qty} x ${formatCOP(i.costo)} = ${formatCOP(i.qty * i.costo)}`).join('\n') : 'Sin detalle de items';
+      alert(`Detalle de Compra (${c.id})\nProveedor: ${c.proveedor}\nFecha: ${c.fecha}\nTotal: ${formatCOP(c.total)}\n\nProductos:\n${listaItems}`);
+    }
+
     // USUARIOS
     function renderUsuarios() {
       const tbody = document.getElementById('tbl-usuarios');
@@ -1854,73 +1669,7 @@
       if(confirm('¿Eliminar cliente?')) { DB.clientes = DB.clientes.filter(c=>c.id!==id); saveDB(); }
     }
 
-    // COMPRAS
-    function renderCompras() {
-      const search = document.getElementById('comp-search')?.value.toLowerCase() || '';
-      const tbody = document.getElementById('tbl-compras');
-      const filtered = DB.compras.filter(c => c.proveedor.toLowerCase().includes(search) || c.id.toLowerCase().includes(search));
-      
-      tbody.innerHTML = filtered.map(c => `
-        <tr>
-          <td>${c.id}</td><td><b>${c.proveedor}</b></td><td>${c.fecha}</td><td>${formatCOP(c.total)}</td>
-          <td>
-            <button class="btn btn-sm btn-danger" onclick="deleteCompra('${c.id}')" title="Eliminar Compra"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function openCompraModal() {
-      document.getElementById('mcomp-id').value = '';
-      
-      // Cargar lista de proveedores al select
-      const provSelect = document.getElementById('mcomp-prov');
-      if (DB.proveedores.length === 0) {
-        provSelect.innerHTML = '<option value="">⚠️ Registre un proveedor primero</option>';
-      } else {
-        provSelect.innerHTML = DB.proveedores.map(p => `<option value="${p.nombre}">${p.nombre} (${p.empresa})</option>`).join('');
-      }
-
-      document.getElementById('mcomp-fecha').value = new Date().toISOString().split('T')[0];
-      document.getElementById('mcomp-total').value = '';
-      document.getElementById('modal-compra').classList.add('active');
-    }
-
-    function saveCompra() {
-      const id = document.getElementById('mcomp-id').value;
-      const prov = document.getElementById('mcomp-prov').value;
-      const fecha = document.getElementById('mcomp-fecha').value;
-      const total = parseFloat(document.getElementById('mcomp-total').value);
-
-      if (!prov || !fecha || isNaN(total)) {
-        return alert('Por favor, complete todos los campos y asegúrese de registrar un proveedor primero.');
-      }
-
-      const data = {
-        id: id || 'COMP-' + Date.now().toString().slice(-4),
-        proveedor: prov,
-        fecha: fecha,
-        total: total
-      };
-
-      if (id) {
-        const idx = DB.compras.findIndex(c => c.id === id);
-        DB.compras[idx] = data;
-      } else {
-        DB.compras.push(data);
-      }
-      
-      closeModals(); 
-      saveDB(); 
-    }
-
-    function deleteCompra(id) {
-      if(confirm('¿Eliminar esta compra del historial? Esto afectará los cálculos de ganancias en Reportes.')) { 
-        DB.compras = DB.compras.filter(c => c.id !== id); 
-        saveDB(); 
-      }
-    }
-
+    // REPORTES
     function renderReportes() {
       const totVentas = DB.ventas.reduce((acc, v) => acc + v.total, 0);
       const totCompras = DB.compras.reduce((acc, c) => acc + c.total, 0);
@@ -2013,7 +1762,6 @@
     window.addEventListener('resize', () => {
       if (window.innerWidth > 900) closeMobileMenu();
     });
-
   </script>
 </body>
 </html>
