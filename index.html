@@ -822,6 +822,7 @@
     <!-- INVENTARIO -->
     <section id="sec-inventario" class="content-section admin-only">
       <div class="card" style="margin-bottom: 1rem; display:flex; justify-content:space-between; align-items:center;">
+        <h3>Control de Vencimientos (Alerta 20 Días) e Inventarios</h3>
         <button class="btn btn-excel" onclick="exportInventoryExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Inventario</button>
       </div>
       <div class="table-container">
@@ -892,10 +893,14 @@
 
     <!-- COMPRAS -->
     <section id="sec-compras" class="content-section admin-only">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <input type="text" id="comp-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar por proveedor..." onkeyup="renderCompras()">
+        <button class="btn btn-primary" onclick="openCompraModal()"><i class="fa-solid fa-plus"></i> Registrar Compra</button>
+      </div>
       <div class="table-container">
         <table>
           <thead>
-            <tr><th>ID Compra</th><th>Proveedor</th><th>Fecha</th><th>Total COP</th></tr>
+            <tr><th>ID Compra</th><th>Proveedor</th><th>Fecha</th><th>Total COP</th><th>Acciones</th></tr>
           </thead>
           <tbody id="tbl-compras"></tbody>
         </table>
@@ -1091,6 +1096,29 @@
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
         <button class="btn btn-primary" onclick="saveProveedor()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-compra" class="modal-overlay">
+    <div class="modal-card">
+      <h3>Registrar Compra</h3>
+      <input type="hidden" id="mcomp-id">
+      <div class="form-group">
+        <label>Proveedor</label>
+        <select id="mcomp-prov" class="form-control"></select>
+      </div>
+      <div class="form-group">
+        <label>Fecha de Compra</label>
+        <input type="date" id="mcomp-fecha" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Total Factura (COP)</label>
+        <input type="number" id="mcomp-total" class="form-control" placeholder="Ej: 150000">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 15px;">
+        <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveCompra()">Guardar Compra</button>
       </div>
     </div>
   </div>
@@ -1827,12 +1855,71 @@
       if(confirm('¿Eliminar cliente?')) { DB.clientes = DB.clientes.filter(c=>c.id!==id); saveDB(); }
     }
 
-    // REPORTES Y COMPRAS
+    // COMPRAS
     function renderCompras() {
+      const search = document.getElementById('comp-search')?.value.toLowerCase() || '';
       const tbody = document.getElementById('tbl-compras');
-      tbody.innerHTML = DB.compras.map(c => `
-        <tr><td>${c.id}</td><td>${c.proveedor}</td><td>${c.fecha}</td><td>${formatCOP(c.total)}</td></tr>
+      const filtered = DB.compras.filter(c => c.proveedor.toLowerCase().includes(search) || c.id.toLowerCase().includes(search));
+      
+      tbody.innerHTML = filtered.map(c => `
+        <tr>
+          <td>${c.id}</td><td><b>${c.proveedor}</b></td><td>${c.fecha}</td><td>${formatCOP(c.total)}</td>
+          <td>
+            <button class="btn btn-sm btn-danger" onclick="deleteCompra('${c.id}')" title="Eliminar Compra"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
       `).join('');
+    }
+
+    function openCompraModal() {
+      document.getElementById('mcomp-id').value = '';
+      
+      // Cargar lista de proveedores al select
+      const provSelect = document.getElementById('mcomp-prov');
+      if (DB.proveedores.length === 0) {
+        provSelect.innerHTML = '<option value="">⚠️ Registre un proveedor primero</option>';
+      } else {
+        provSelect.innerHTML = DB.proveedores.map(p => `<option value="${p.nombre}">${p.nombre} (${p.empresa})</option>`).join('');
+      }
+
+      document.getElementById('mcomp-fecha').value = new Date().toISOString().split('T')[0];
+      document.getElementById('mcomp-total').value = '';
+      document.getElementById('modal-compra').classList.add('active');
+    }
+
+    function saveCompra() {
+      const id = document.getElementById('mcomp-id').value;
+      const prov = document.getElementById('mcomp-prov').value;
+      const fecha = document.getElementById('mcomp-fecha').value;
+      const total = parseFloat(document.getElementById('mcomp-total').value);
+
+      if (!prov || !fecha || isNaN(total)) {
+        return alert('Por favor, complete todos los campos y asegúrese de registrar un proveedor primero.');
+      }
+
+      const data = {
+        id: id || 'COMP-' + Date.now().toString().slice(-4),
+        proveedor: prov,
+        fecha: fecha,
+        total: total
+      };
+
+      if (id) {
+        const idx = DB.compras.findIndex(c => c.id === id);
+        DB.compras[idx] = data;
+      } else {
+        DB.compras.push(data);
+      }
+      
+      closeModals(); 
+      saveDB(); 
+    }
+
+    function deleteCompra(id) {
+      if(confirm('¿Eliminar esta compra del historial? Esto afectará los cálculos de ganancias en Reportes.')) { 
+        DB.compras = DB.compras.filter(c => c.id !== id); 
+        saveDB(); 
+      }
     }
 
     function renderReportes() {
