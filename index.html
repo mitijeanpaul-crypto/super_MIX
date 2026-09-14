@@ -1,307 +1,651 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🛍️super MIX</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛍️ super MIX</title>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SheetJS para Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --alegra: #00b0ff;
+      --bg-dark: #0f172a;
+      --bg-main: #f8fafc;
+      --text-main: #334155;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --sidebar-width: 260px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+    /* LOGIN SCREEN */
+    #login-screen {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      overflow: auto; padding: 1rem; background: var(--bg-dark);
+    }
+    #login-screen .login-card {
+      width: min(100%, 400px); max-width: 400px;
+      background: #fff; border-radius: 14px; padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,.25); text-align: center;
+    }
+    #login-screen .login-card > i { font-size: 2.5rem !important; margin-bottom: 1rem !important; }
+    #login-screen .login-card .btn-primary { min-height: 48px; border-radius: 10px; font-weight: 700; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-width); background-color: var(--bg-dark); color: white;
+      display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .brand {
+      padding: 1.25rem; font-size: 1.1rem; font-weight: bold; display: flex;
+      align-items: center; gap: 10px; background-color: rgba(255, 255, 255, 0.05); color: #60a5fa;
+    }
+    .nav-list { list-style: none; overflow-y: auto; flex: 1; padding: 0.5rem 0; }
+    .nav-item {
+      padding: 0.8rem 1.25rem; display: flex; align-items: center; gap: 12px;
+      cursor: pointer; color: #94a3b8; transition: all 0.2s; font-size: 0.95rem;
+    }
+    .nav-item:hover, .nav-item.active { background-color: var(--primary); color: white; }
+    .nav-item.disabled { display: none !important; }
+
+    /* MAIN CONTENT */
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+    header {
+      background: white; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .user-info { display: flex; align-items: center; gap: 15px; }
+
+    .content-section { padding: 1.5rem; display: none; }
+    .content-section.active { display: block; }
+
+    /* CARDS & METRICS */
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+    .card { background: white; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .metric-card { display: flex; align-items: center; gap: 1rem; }
+    .metric-icon { width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .metric-val { font-size: 1.4rem; font-weight: bold; margin-top: 4px; }
+
+    /* TABLES */
+    .table-container { background: white; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+    th, td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); }
+    th { background-color: #f8fafc; color: var(--text-muted); font-weight: 600; }
+    tr:hover { background-color: #f1f5f9; }
+
+    /* POS CONTAINER */
+    .pos-container { display: grid; grid-template-columns: 2fr 1.2fr; gap: 1.5rem; height: calc(100vh - 120px); }
+    .cart-summary { background: white; border-radius: 8px; border: 1px solid var(--border); display: flex; flex-direction: column; padding: 1rem; }
+    .cart-items { flex: 1; overflow-y: auto; margin: 1rem 0; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+
+    /* BUTTONS & BADGES */
+    .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-secondary { background: var(--secondary); color: white; }
+    .btn-excel { background: #107c41; color: white; }
+    .btn-excel:hover { background: #0b592e; }
+    .btn-alegra { background: #0077ff; color: white; }
+    .btn-alegra:hover { background: #0055cc; }
+    .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+
+    .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .badge-success { background: #dcfce7; color: #15803d; }
+    .badge-warning { background: #fef3c7; color: #b45309; }
+    .badge-danger { background: #fee2e2; color: #b91c1c; }
+    .badge-secondary { background: #f1f5f9; color: #475569; }
+
+    /* MODALS */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay.active { display: flex; }
+    .modal-card { background: white; border-radius: 8px; width: 100%; max-width: 500px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.3rem; font-size: 0.85rem; font-weight: 600; }
+    .form-control { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+
+    .mobile-menu-toggle, .sidebar-backdrop { display: none; }
+
+    /* RESPONSIVE DESIGNS */
+    @media (max-width: 900px) {
+      body { display: block; overflow: hidden; }
+      .sidebar { position: fixed; z-index: 10001; left: 0; top: 0; bottom: 0; width: min(82vw, 300px); height: 100dvh; transform: translateX(-105%); transition: transform .25s ease; }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .sidebar-backdrop { position: fixed; inset: 0; z-index: 10000; background: rgba(15,23,42,.48); display: block; opacity: 0; visibility: hidden; transition: opacity .2s ease; }
+      .sidebar-backdrop.active { opacity: 1; visibility: visible; }
+      .mobile-menu-toggle { position: fixed; z-index: 10002; top: 10px; left: 10px; width: 44px; height: 44px; border: 0; border-radius: 10px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+      header { padding-left: 4.1rem; }
+      .pos-container { grid-template-columns: 1fr; height: auto; }
+    }
+  </style>
 </head>
-<body class="bg-light">
+<body>
 
-<div class="container py-4">
-    <h2 class="mb-4"><i class="bi bi-cart-check"></i> Módulo de Compras y Abonos a Crédito</h2>
-
-    <!-- Formulario Nueva Compra -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0">Registrar Nueva Compra</h5>
+  <!-- LOGIN -->
+  <div id="login-screen">
+    <div class="login-card">
+      <i class="fa-solid fa-cart-shopping" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+      <h2 style="margin-bottom: 0.5rem;">Iniciar Sesión</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Ingresa tus credenciales para acceder</p>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group" style="text-align: left;">
+          <label>Usuario</label>
+          <input type="text" id="login-user" class="form-control" placeholder="Ej: admin o cajero1" required autofocus>
         </div>
-        <div class="card-body">
-            <form id="formCompra" onsubmit="guardarCompra(event)">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Proveedor</label>
-                        <input type="text" id="compraProveedor" class="form-control" required placeholder="Nombre del proveedor">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Monto Total ($)</label>
-                        <input type="number" id="compraTotal" class="form-control" step="0.01" min="1" required placeholder="0.00">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Condición de Pago</label>
-                        <select id="compraCondicionPago" class="form-select" onchange="toggleCreditoCompra(this.value)">
-                            <option value="CONTADO">Contado</option>
-                            <option value="CREDITO">Crédito</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4 id-credito-group" style="display: none;">
-                        <label class="form-label">Abono Inicial ($)</label>
-                        <input type="number" id="compraAbonoInicial" class="form-control" value="0" min="0" step="0.01">
-                    </div>
-                    <div class="col-md-8 id-credito-group" style="display: none;">
-                        <label class="form-label">Nota / Referencia de Pago</label>
-                        <input type="text" id="compraNotaInicial" class="form-control" placeholder="Ej: Pago inicial en efectivo">
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-success mt-3"><i class="bi bi-save"></i> Guardar Compra</button>
-            </form>
+        <div class="form-group" style="text-align: left;">
+          <label>Contraseña</label>
+          <input type="password" id="login-pass" class="form-control" placeholder="••••••••" required>
         </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">Acceder</button>
+      </form>
     </div>
+  </div>
 
-    <!-- Tabla Cuentas por Pagar (Compras a Crédito) -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white">
-            <h5 class="card-title mb-0">Cuentas por Pagar (Compras a Crédito)</h5>
+  <button id="mobile-menu-toggle" class="mobile-menu-toggle" type="button" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+  <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="closeMobileMenu()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><i class="fa-solid fa-cart-shopping"></i><span>super MIX</span><span class="brand-cart">🛒</span></div>
+    <ul class="nav-list">
+      <li class="nav-item active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> 1. Dashboard</li>
+      <li class="nav-item" onclick="showSection('productos', this)"><i class="fa-solid fa-box"></i> 2. Productos</li>
+      <li class="nav-item" onclick="showSection('inventario', this)"><i class="fa-solid fa-warehouse"></i> 3. Inventario</li>
+      <li class="nav-item" onclick="showSection('ventas', this)"><i class="fa-solid fa-cash-register"></i> 4. Ventas / POS</li>
+      <li class="nav-item" onclick="showSection('creditos', this)"><i class="fa-solid fa-hand-holding-dollar"></i> 5. Créditos y Abonos</li>
+      <li class="nav-item" onclick="showSection('clientes', this)"><i class="fa-solid fa-users"></i> 6. Clientes</li>
+      <li class="nav-item" onclick="showSection('reportes', this)"><i class="fa-solid fa-file-invoice-dollar"></i> 7. Reportes</li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <header>
+      <h2 id="section-title">1. Dashboard</h2>
+      <div class="user-info">
+        <div>
+          <b id="active-user-name">Administrador</b> 
+          <span class="badge badge-success" id="active-user-role">Admin</span>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Proveedor</th>
-                            <th>Total Compra</th>
-                            <th>Saldo Pendiente</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaComprasCredito">
-                        <!-- Carga dinámica -->
-                    </tbody>
-                </table>
-            </div>
+        <button class="btn btn-sm btn-secondary" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section id="sec-dashboard" class="content-section active">
+      <div class="metrics-grid">
+        <div class="card metric-card">
+          <div class="metric-icon" style="background:#dbeafe; color:#2563eb"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+          <div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">Ventas del día</div>
+            <div class="metric-val" id="dash-ventas">$ 0</div>
+          </div>
         </div>
-    </div>
-</div>
-
-<!-- Modal Registrar Abono -->
-<div class="modal fade" id="modalAbonoCompra" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Registrar Abono a Proveedor</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formAbonoCompra" onsubmit="guardarAbonoCompra(event)">
-                    <input type="hidden" id="abonoCompraId">
-                    <div class="mb-3">
-                        <label class="form-label">Saldo Actual Pendiente</label>
-                        <input type="text" id="abonoSaldoPendiente" class="form-control" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Monto del Abono ($)</label>
-                        <input type="number" id="abonoMonto" class="form-control" step="0.01" min="0.01" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Método de Pago</label>
-                        <select id="abonoMetodoPago" class="form-select" required>
-                            <option value="Efectivo">Efectivo</option>
-                            <option value="Transferencia">Transferencia</option>
-                            <option value="Banco">Banco / Tarjeta</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nota / Referencia</label>
-                        <input type="text" id="abonoNota" class="form-control" placeholder="Ej: Comprobante #1234">
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Guardar Abono</button>
-                </form>
-            </div>
+        <div class="card metric-card">
+          <div class="metric-icon" style="background:#fef3c7; color:#d97706"><i class="fa-solid fa-clock-rotate-left"></i></div>
+          <div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">Cartera en Crédito</div>
+            <div class="metric-val" id="dash-credito">$ 0</div>
+          </div>
         </div>
-    </div>
-</div>
+      </div>
+    </section>
 
-<!-- Modal Historial de Abonos -->
-<div class="modal fade" id="modalHistorialAbonos" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">Historial de Abonos</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Monto</th>
-                            <th>Método</th>
-                            <th>Nota</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaHistorialBody">
-                        <!-- Carga dinámica -->
-                    </tbody>
-                </table>
-            </div>
+    <!-- PRODUCTOS -->
+    <section id="sec-productos" class="content-section">
+      <h3>Módulo de Productos</h3>
+      <p style="color: var(--text-muted); margin-top: 0.5rem;">Gestión general del catálogo.</p>
+    </section>
+
+    <!-- INVENTARIO -->
+    <section id="sec-inventario" class="content-section">
+      <h3>Módulo de Inventario</h3>
+    </section>
+
+    <!-- VENTAS / POS -->
+    <section id="sec-ventas" class="content-section">
+      <div class="pos-container">
+        <div>
+          <div style="display:flex; gap:10px; margin-bottom:1rem;">
+            <input type="text" id="pos-barcode" class="form-control" placeholder="📷 Escanear o ingresar código..." autofocus>
+            <input type="text" id="pos-search" class="form-control" placeholder="🔍 Buscar producto..." onkeyup="renderPOS()">
+          </div>
+          <div class="table-container" style="max-height: calc(100vh - 220px); overflow-y: auto;">
+            <table>
+              <thead>
+                <tr><th>Código</th><th>Producto</th><th>Precio</th><th>Stock</th><th>Acción</th></tr>
+              </thead>
+              <tbody id="tbl-pos-products"></tbody>
+            </table>
+          </div>
         </div>
-    </div>
-</div>
+        <div class="cart-summary">
+          <h3>Carrito de Compra</h3>
+          <div class="cart-items" id="cart-list"></div>
+          <div style="border-top:1px solid var(--border); padding-top:1rem;">
+            <div style="display:flex; justify-content:space-between; font-size:1.2rem; margin-bottom:1rem; color:var(--primary);">
+              <span>Total:</span><b id="pos-total">$ 0</b>
+            </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Inicialización de la Base de Datos
-    let DB = JSON.parse(localStorage.getItem('DB_COMPRAS')) || { compras: [] };
+            <!-- BÚSQUEDA Y SELECCIÓN DE CLIENTE -->
+            <div class="form-group">
+              <label><i class="fa-solid fa-magnifying-glass"></i> Buscar Cliente (Nombre / ID):</label>
+              <input type="text" id="pos-client-search" class="form-control" placeholder="Escribe cédula o nombre..." onkeyup="filterPOSClients()">
+            </div>
+            <div class="form-group">
+              <label>Cliente Seleccionado:</label>
+              <select id="pos-cliente" class="form-control"></select>
+            </div>
 
-    function guardarDB() {
-        localStorage.setItem('DB_COMPRAS', JSON.stringify(DB));
-        renderTablaComprasCredito();
-    }
+            <!-- MÉTODO DE PAGO INCLUYENDO CRÉDITO -->
+            <div class="form-group">
+              <label>Método de Pago:</label>
+              <select id="pos-metodo" class="form-control">
+                <option value="Efectivo">Efectivo</option>
+                <option value="Nequi/Daviplata">Nequi / Daviplata</option>
+                <option value="Tarjeta">Tarjeta Débito/Crédito</option>
+                <option value="Credito" style="font-weight: bold; color: var(--danger);">💳 Venta a Crédito (Fiar)</option>
+              </select>
+            </div>
 
-    function toggleCreditoCompra(tipo) {
-        const groups = document.querySelectorAll('.id-credito-group');
-        groups.forEach(g => g.style.display = (tipo === 'CREDITO') ? 'block' : 'none');
-    }
+            <button class="btn btn-success" style="width:100%; justify-content:center; padding:0.75rem;" onclick="processSale()">
+              <i class="fa-solid fa-check"></i> Finalizar Venta
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    function guardarCompra(e) {
-        e.preventDefault();
-        const proveedor = document.getElementById('compraProveedor').value;
-        const total = parseFloat(document.getElementById('compraTotal').value);
-        const condicionPago = document.getElementById('compraCondicionPago').value;
-        const abonoInicial = parseFloat(document.getElementById('compraAbonoInicial').value) || 0;
-        const notaInicial = document.getElementById('compraNotaInicial').value;
-
-        const nuevaCompra = {
-            id: Date.now(),
-            fecha: new Date().toISOString().split('T')[0],
-            proveedor,
-            total,
-            condicionPago,
-            saldoPendiente: condicionPago === 'CREDITO' ? Math.max(0, total - abonoInicial) : 0,
-            estadoPago: condicionPago === 'CONTADO' ? 'PAGADO' : (abonoInicial >= total ? 'PAGADO' : 'PENDIENTE'),
-            abonos: []
-        };
-
-        if (condicionPago === 'CREDITO' && abonoInicial > 0) {
-            nuevaCompra.abonos.push({
-                id: Date.now() + 1,
-                fecha: nuevaCompra.fecha,
-                monto: Math.min(abonoInicial, total),
-                metodoPago: 'Efectivo',
-                nota: notaInicial || 'Abono Inicial'
-            });
-            if (nuevaCompra.saldoPendiente > 0) nuevaCompra.estadoPago = 'PARCIAL';
-        }
-
-        DB.compras.push(nuevaCompra);
-        guardarDB();
-
-        document.getElementById('formCompra').reset();
-        toggleCreditoCompra('CONTADO');
-    }
-
-    function renderTablaComprasCredito() {
-        const contenedor = document.getElementById('tablaComprasCredito');
-        if (!contenedor) return;
-
-        const comprasCredito = DB.compras.filter(c => c.condicionPago === 'CREDITO');
-
-        if (comprasCredito.length === 0) {
-            contenedor.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">No hay compras a crédito registradas.</td></tr>`;
-            return;
-        }
-
-        contenedor.innerHTML = comprasCredito.map(c => `
+    <!-- MÓDULO CRÉDITOS Y ABONOS -->
+    <section id="sec-creditos" class="content-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3>Gestión de Créditos y Abonos</h3>
+        <input type="text" id="credit-search" class="form-control" style="width: 280px;" placeholder="🔍 Buscar por nombre o ID..." onkeyup="renderCredits()">
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
             <tr>
-                <td>${c.fecha}</td>
-                <td>${c.proveedor}</td>
-                <td>$${c.total.toLocaleString()}</td>
-                <td>$${(c.saldoPendiente || 0).toLocaleString()}</td>
-                <td>
-                    <span class="badge ${c.estadoPago === 'PAGADO' ? 'bg-success' : c.estadoPago === 'PARCIAL' ? 'bg-warning text-dark' : 'bg-danger'}">
-                        ${c.estadoPago}
-                    </span>
-                </td>
-                <td>
-                    ${c.saldoPendiente > 0 ? `
-                        <button class="btn btn-sm btn-outline-primary" onclick="abrirModalAbono(${c.id}, ${c.saldoPendiente})">
-                            + Abono
-                        </button>
-                    ` : '<span class="text-success"><i class="bi bi-check-circle-fill"></i> Paz y Salvo</span>'}
-                    <button class="btn btn-sm btn-outline-info" onclick="verHistorialAbonos(${c.id})">
-                        Historial
-                    </button>
-                </td>
+              <th>Cliente</th>
+              <th>Identificación</th>
+              <th>Total Crédito</th>
+              <th>Total Abonado</th>
+              <th>Saldo Pendiente</th>
+              <th>Acciones</th>
             </tr>
-        `).join('');
+          </thead>
+          <tbody id="tbl-creditos"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CLIENTES -->
+    <section id="sec-clientes" class="content-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <input type="text" id="cli-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar cliente..." onkeyup="renderClientes()">
+        <button class="btn btn-primary" onclick="openClienteModal()"><i class="fa-solid fa-plus"></i> Registrar Cliente</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr><th>Cédula/NIT</th><th>Nombre</th><th>Teléfono</th><th>Acciones</th></tr>
+          </thead>
+          <tbody id="tbl-clientes"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- REPORTES -->
+    <section id="sec-reportes" class="content-section">
+      <h3>Historial de Ventas</h3>
+      <div class="table-container" style="margin-top: 1rem;">
+        <table>
+          <thead>
+            <tr><th>ID Venta</th><th>Cliente</th><th>Método</th><th>Total</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="tbl-historial-ventas"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL REALIZAR ABONO -->
+  <div id="modal-abono" class="modal-overlay">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-hand-holding-dollar"></i> Registrar Abono</h3>
+      <p id="abono-cliente-info" style="margin-bottom: 0.5rem; font-weight: bold;"></p>
+      <p id="abono-saldo-info" style="margin-bottom: 1rem; color: var(--danger); font-weight: bold;"></p>
+      <form onsubmit="saveAbono(event)">
+        <input type="hidden" id="abono-client-id">
+        <div class="form-group">
+          <label>Monto a Abonar (COP):</label>
+          <input type="number" id="abono-monto" class="form-control" min="1" required placeholder="Ingrese la cantidad">
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-abono')">Cancelar</button>
+          <button type="submit" class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i> Guardar Abono</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ESTADO GENERAL Y DATOS BASE
+    let products = [
+      { id: '101', name: 'Arroz Roa 1kg', price: 4500, stock: 25 },
+      { id: '102', name: 'Aceite Gourmet 1L', price: 12500, stock: 12 },
+      { id: '103', name: 'Leche Alquería 1L', price: 4200, stock: 30 }
+    ];
+
+    let clients = [
+      { id: '1001', doc: '1061555123', name: 'Carlos Mendoza', phone: '3110001122' },
+      { id: '1002', doc: '1022334455', name: 'María Gómez', phone: '3159998877' },
+      { id: '1003', doc: '2233445566', name: 'Juan Pérez', phone: '3001234567' }
+    ];
+
+    let cart = [];
+    let sales = [];
+    let credits = {}; // { clientId: { totalCredit: 0, totalPaid: 0 } }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      document.getElementById('login-screen').style.display = 'none';
+      initApp();
     }
 
-    function abrirModalAbono(id, saldo) {
-        document.getElementById('abonoCompraId').value = id;
-        document.getElementById('abonoSaldoPendiente').value = `$${saldo.toLocaleString()}`;
-        document.getElementById('abonoMonto').value = '';
-        document.getElementById('abonoMonto').max = saldo;
-        const modal = new bootstrap.Modal(document.getElementById('modalAbonoCompra'));
-        modal.show();
+    function initApp() {
+      renderPOS();
+      filterPOSClients();
+      renderCredits();
+      renderClientes();
+      updateDashboard();
     }
 
-    function guardarAbonoCompra(e) {
-        e.preventDefault();
-        const id = parseInt(document.getElementById('abonoCompraId').value);
-        const monto = parseFloat(document.getElementById('abonoMonto').value);
-        const metodoPago = document.getElementById('abonoMetodoPago').value;
-        const nota = document.getElementById('abonoNota').value;
+    function logout() {
+      document.getElementById('login-screen').style.display = 'flex';
+    }
 
-        const compra = DB.compras.find(c => c.id === id);
-        if (!compra) return;
+    function toggleMobileMenu() {
+      document.getElementById('sidebar').classList.toggle('mobile-open');
+      document.getElementById('sidebar-backdrop').classList.toggle('active');
+    }
 
-        if (monto > compra.saldoPendiente) {
-            alert('El abono no puede superar el saldo pendiente.');
-            return;
+    function closeMobileMenu() {
+      document.getElementById('sidebar').classList.remove('mobile-open');
+      document.getElementById('sidebar-backdrop').classList.remove('active');
+    }
+
+    function showSection(sectionId, element) {
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('sec-' + sectionId).classList.add('active');
+      if (element) element.classList.add('active');
+      closeMobileMenu();
+
+      if(sectionId === 'creditos') renderCredits();
+      if(sectionId === 'reportes') renderSalesHistory();
+    }
+
+    /* BUSCADOR Y FILTRADO DE CLIENTES */
+    function filterPOSClients() {
+      const search = document.getElementById('pos-client-search').value.toLowerCase();
+      const select = document.getElementById('pos-cliente');
+      select.innerHTML = '';
+
+      const filtered = clients.filter(c => 
+        c.name.toLowerCase().includes(search) || c.doc.includes(search)
+      );
+
+      if (filtered.length === 0) {
+        select.innerHTML = '<option value="">Sin resultados</option>';
+        return;
+      }
+
+      filtered.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.id;
+        option.textContent = `${c.name} (ID: ${c.doc})`;
+        select.appendChild(option);
+      });
+    }
+
+    /* POS Y CARRITO */
+    function renderPOS() {
+      const search = document.getElementById('pos-search').value.toLowerCase();
+      const tbody = document.getElementById('tbl-pos-products');
+      tbody.innerHTML = '';
+
+      products.filter(p => p.name.toLowerCase().includes(search)).forEach(p => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${p.id}</td>
+            <td>${p.name}</td>
+            <td>$ ${p.price.toLocaleString()}</td>
+            <td>${p.stock}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="addToCart('${p.id}')">
+                <i class="fa-solid fa-cart-plus"></i> Agregar
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function addToCart(id) {
+      const prod = products.find(p => p.id === id);
+      const inCart = cart.find(c => c.id === id);
+      if (inCart) {
+        if(inCart.qty < prod.stock) inCart.qty++;
+      } else {
+        cart.push({ ...prod, qty: 1 });
+      }
+      renderCart();
+    }
+
+    function renderCart() {
+      const list = document.getElementById('cart-list');
+      list.innerHTML = '';
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const itemTotal = item.price * item.qty;
+        total += itemTotal;
+        list.innerHTML += `
+          <div class="cart-item">
+            <div>
+              <b>${item.name}</b><br>
+              <small>$ ${item.price.toLocaleString()} x ${item.qty}</small>
+            </div>
+            <div>
+              <b>$ ${itemTotal.toLocaleString()}</b>
+              <button class="btn btn-sm btn-danger" onclick="removeFromCart(${index})" style="margin-left: 5px;">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      document.getElementById('pos-total').textContent = `$ ${total.toLocaleString()}`;
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      renderCart();
+    }
+
+    /* FINALIZAR VENTA & LOGICA DE CREDITO */
+    function processSale() {
+      if (cart.length === 0) return alert("El carrito está vacío.");
+
+      const clientId = document.getElementById('pos-cliente').value;
+      if (!clientId) return alert("Seleccione un cliente válido.");
+
+      const client = clients.find(c => c.id === clientId);
+      const method = document.getElementById('pos-metodo').value;
+      const total = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+
+      // Descontar inventario
+      cart.forEach(item => {
+        const p = products.find(prod => prod.id === item.id);
+        if(p) p.stock -= item.qty;
+      });
+
+      // Procesar Método Crédito
+      if (method === 'Credito') {
+        if (!credits[clientId]) {
+          credits[clientId] = { totalCredit: 0, totalPaid: 0 };
         }
+        credits[clientId].totalCredit += total;
+      }
 
-        compra.abonos.push({
-            id: Date.now(),
-            fecha: new Date().toISOString().split('T')[0],
-            monto,
-            metodoPago,
-            nota
-        });
+      // Guardar Venta
+      sales.push({
+        id: 'VENT-' + (sales.length + 101),
+        client: client.name,
+        method: method,
+        total: total,
+        date: new Date().toLocaleDateString()
+      });
 
-        const totalAbonado = compra.abonos.reduce((sum, a) => sum + a.monto, 0);
-        compra.saldoPendiente = compra.total - totalAbonado;
+      alert(method === 'Credito' 
+        ? `Venta a crédito procesada con éxito a ${client.name}. Saldo agregado.` 
+        : `Venta finalizada exitosamente por $ ${total.toLocaleString()}`
+      );
 
-        if (compra.saldoPendiente <= 0) {
-            compra.saldoPendiente = 0;
-            compra.estadoPago = 'PAGADO';
-        } else {
-            compra.estadoPago = 'PARCIAL';
-        }
-
-        guardarDB();
-
-        const modalElement = document.getElementById('modalAbonoCompra');
-        const modal = bootstrap.Modal.getInstance(modalElement);
-        modal.hide();
+      cart = [];
+      renderCart();
+      renderPOS();
+      updateDashboard();
     }
 
-    function verHistorialAbonos(id) {
-        const compra = DB.compras.find(c => c.id === id);
-        if (!compra) return;
+    /* CRÉDITOS Y ABONOS */
+    function renderCredits() {
+      const search = document.getElementById('credit-search').value.toLowerCase();
+      const tbody = document.getElementById('tbl-creditos');
+      tbody.innerHTML = '';
 
-        const tbody = document.getElementById('tablaHistorialBody');
-        if (!compra.abonos || compra.abonos.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Sin abonos registrados.</td></tr>`;
-        } else {
-            tbody.innerHTML = compra.abonos.map(a => `
-                <tr>
-                    <td>${a.fecha}</td>
-                    <td>$${a.monto.toLocaleString()}</td>
-                    <td>${a.metodoPago}</td>
-                    <td>${a.nota || '-'}</td>
-                </tr>
-            `).join('');
+      clients.forEach(c => {
+        const creditInfo = credits[c.id] || { totalCredit: 0, totalPaid: 0 };
+        const pending = creditInfo.totalCredit - creditInfo.totalPaid;
+
+        if (c.name.toLowerCase().includes(search) || c.doc.includes(search)) {
+          tbody.innerHTML += `
+            <tr>
+              <td><b>${c.name}</b></td>
+              <td>${c.doc}</td>
+              <td>$ ${creditInfo.totalCredit.toLocaleString()}</td>
+              <td style="color: var(--success); font-weight: bold;">$ ${creditInfo.totalPaid.toLocaleString()}</td>
+              <td style="color: var(--danger); font-weight: bold;">$ ${pending.toLocaleString()}</td>
+              <td>
+                ${pending > 0 
+                  ? `<button class="btn btn-sm btn-warning" onclick="openAbonoModal('${c.id}', '${c.name}', ${pending})">
+                      <i class="fa-solid fa-coins"></i> Abonar
+                     </button>`
+                  : `<span class="badge badge-success">Al Día</span>`}
+              </td>
+            </tr>
+          `;
         }
-
-        const modal = new bootstrap.Modal(document.getElementById('modalHistorialAbonos'));
-        modal.show();
+      });
     }
 
-    // Carga inicial
-    document.addEventListener('DOMContentLoaded', renderTablaComprasCredito);
-</script>
+    function openAbonoModal(clientId, clientName, pending) {
+      document.getElementById('abono-client-id').value = clientId;
+      document.getElementById('abono-cliente-info').textContent = `Cliente: ${clientName}`;
+      document.getElementById('abono-saldo-info').textContent = `Saldo Pendiente: $ ${pending.toLocaleString()}`;
+      document.getElementById('modal-abono').classList.add('active');
+    }
+
+    function saveAbono(e) {
+      e.preventDefault();
+      const clientId = document.getElementById('abono-client-id').value;
+      const amount = parseFloat(document.getElementById('abono-monto').value);
+
+      if (!credits[clientId]) return;
+
+      const pending = credits[clientId].totalCredit - credits[clientId].totalPaid;
+
+      if (amount > pending) {
+        return alert("El monto del abono no puede ser superior al saldo pendiente.");
+      }
+
+      credits[clientId].totalPaid += amount;
+
+      alert("Abono registrado con éxito.");
+      closeModal('modal-abono');
+      renderCredits();
+      updateDashboard();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    /* CLIENTES */
+    function renderClientes() {
+      const search = document.getElementById('cli-search').value.toLowerCase();
+      const tbody = document.getElementById('tbl-clientes');
+      tbody.innerHTML = '';
+
+      clients.filter(c => c.name.toLowerCase().includes(search) || c.doc.includes(search)).forEach(c => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${c.doc}</td>
+            <td>${c.name}</td>
+            <td>${c.phone}</td>
+            <td>
+              <button class="btn btn-sm btn-secondary"><i class="fa-solid fa-pen"></i></button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function renderSalesHistory() {
+      const tbody = document.getElementById('tbl-historial-ventas');
+      tbody.innerHTML = '';
+      sales.forEach(s => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${s.id}</td>
+            <td>${s.client}</td>
+            <td><span class="badge ${s.method === 'Credito' ? 'badge-danger' : 'badge-success'}">${s.method}</span></td>
+            <td>$ ${s.total.toLocaleString()}</td>
+            <td>Completado</td>
+          </tr>
+        `;
+      });
+    }
+
+    function updateDashboard() {
+      const totalSales = sales.reduce((acc, s) => acc + s.total, 0);
+      document.getElementById('dash-ventas').textContent = `$ ${totalSales.toLocaleString()}`;
+
+      let totalCreditPortfolio = 0;
+      Object.keys(credits).forEach(id => {
+        totalCreditPortfolio += (credits[id].totalCredit - credits[id].totalPaid);
+      });
+
+      document.getElementById('dash-credito').textContent = `$ ${totalCreditPortfolio.toLocaleString()}`;
+    }
+  </script>
 </body>
 </html>
