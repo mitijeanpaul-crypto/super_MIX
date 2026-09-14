@@ -878,6 +878,7 @@
     };
 
     let currentUser = null;
+    const SESSION_KEY = 'super_mix_session_user';
     let cart = [];
     let salesChart = null;
     let supabaseReady = false;
@@ -921,6 +922,38 @@
       }
     }
 
+    let sincronizacionEnCurso = false;
+
+    async function sincronizarMovimientosSupabase() {
+      if (sincronizacionEnCurso || document.hidden) return;
+      sincronizacionEnCurso = true;
+      try {
+        const { data, error } = await supabaseClient
+          .from('app_state')
+          .select('data, updated_at')
+          .eq('id', SUPABASE_ROW_ID)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data && data.data) {
+          const datosRemotos = data.data;
+          const remotoActualizado = data.updated_at ? new Date(data.updated_at).getTime() : 0;
+
+          // Solo reemplazamos el estado local cuando existe una versión remota.
+          DB = { ...DB, ...datosRemotos };
+          localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
+          renderAll();
+          updateCartUI();
+          supabaseReady = true;
+        }
+      } catch (error) {
+        console.error('Error en sincronización automática:', error);
+      } finally {
+        sincronizacionEnCurso = false;
+      }
+    }
+
     async function cargarDBSupabase() {
       try {
         const { data, error } = await supabaseClient
@@ -950,6 +983,7 @@
 
       renderAll();
       updateCartUI();
+      restaurarSesion();
     }
 
     async function guardarDBSupabase() {
@@ -998,33 +1032,48 @@
     }
 
     // INICIO Y LOGOUT
+    function iniciarSesionUI(user, guardarSesion = true) {
+      currentUser = user;
+      if (guardarSesion) {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ user: user.user }));
+      }
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('active-user-name').textContent = currentUser.nombre;
+      document.getElementById('active-user-role').textContent = currentUser.rol;
+      applyRolePermissions();
+      renderAll();
+      if (currentUser.rol !== 'Administrador') {
+        showSection('ventas', document.getElementById('nav-pos'));
+      } else {
+        showSection('dashboard', document.querySelector('.nav-item.admin-only'));
+      }
+    }
+
+    function restaurarSesion() {
+      try {
+        const sesion = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+        if (!sesion?.user) return;
+        const found = DB.usuarios.find(u => u.user === sesion.user);
+        if (found) iniciarSesionUI(found, false);
+        else localStorage.removeItem(SESSION_KEY);
+      } catch (error) {
+        console.error('No se pudo restaurar la sesión:', error);
+        localStorage.removeItem(SESSION_KEY);
+      }
+    }
+
     function handleLogin(e) {
       e.preventDefault();
       const uInput = document.getElementById('login-user').value.trim();
       const pInput = document.getElementById('login-pass').value.trim();
-
       const found = DB.usuarios.find(u => u.user === uInput && u.pass === pInput);
-      if (found) {
-        currentUser = found;
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('active-user-name').textContent = currentUser.nombre;
-        document.getElementById('active-user-role').textContent = currentUser.rol;
-        
-        applyRolePermissions();
-        renderAll();
-
-        if (currentUser.rol !== 'Administrador') {
-          showSection('ventas', document.getElementById('nav-pos'));
-        } else {
-          showSection('dashboard', document.querySelector('.nav-item.admin-only'));
-        }
-      } else {
-        alert('Usuario o contraseña incorrectos.');
-      }
+      if (found) iniciarSesionUI(found, true);
+      else alert('Usuario o contraseña incorrectos.');
     }
 
     function logout() {
       currentUser = null;
+      localStorage.removeItem(SESSION_KEY);
       document.getElementById('login-user').value = '';
       document.getElementById('login-pass').value = '';
       document.getElementById('login-screen').style.display = 'flex';
@@ -2038,6 +2087,15 @@
 
     // Cargar datos desde Supabase al abrir el sistema.
     cargarDBSupabase();
+
+    // Sincronización automática: no es necesario cerrar sesión.
+    // Se consulta Supabase cada 5 segundos mientras la pestaña está visible.
+    setInterval(sincronizarMovimientosSupabase, 5000);
+
+    // Al volver a la pestaña, actualizar inmediatamente.
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) sincronizarMovimientosSupabase();
+    });
 
     // Comprobación visible de conexión al terminar de cargar la página.
     setTimeout(probarConexionSupabase, 1200);
