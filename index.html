@@ -257,6 +257,104 @@
       .cart-summary { padding: .7rem; }
     }
 
+    /* ===== ADAPTACIÓN TOTAL A CELULARES ===== */
+    @media (max-width: 600px) {
+      html, body { width:100%; max-width:100%; overflow:hidden; }
+      body { font-size:14px; }
+      .main-content { width:100%; max-width:100%; overflow-x:hidden; }
+      header { width:100%; min-width:0; padding:.65rem .7rem .65rem 3.75rem; }
+      header h2 { font-size:1rem; min-width:0; }
+      .content-section { width:100%; max-width:100%; padding:.65rem; overflow-x:hidden; }
+
+      /* Todas las rejillas pasan a una sola columna */
+      .metrics-grid,
+      .pos-container,
+      #sec-configuracion > div,
+      #sec-reportes .card,
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns:1fr !important;
+      }
+
+      /* Formularios y barras de acciones */
+      .form-group { width:100%; min-width:0; }
+      .form-control, input, select, textarea {
+        width:100% !important;
+        max-width:100% !important;
+        min-width:0 !important;
+        font-size:16px !important;
+      }
+      .btn { min-height:44px; max-width:100%; }
+      .content-section button,
+      .content-section .btn { white-space:normal; }
+
+      /* Tarjetas y contenido */
+      .card { width:100%; max-width:100%; overflow:hidden; }
+      .metric-card { width:100%; }
+      .metric-card > div { min-width:0; }
+      .metric-val, .metric-label { overflow-wrap:anywhere; }
+
+      /* Tablas: nunca rompen el ancho de la pantalla; se deslizan dentro de su contenedor */
+      .table-container {
+        width:100% !important;
+        max-width:100% !important;
+        overflow-x:auto !important;
+        overflow-y:visible;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:thin;
+      }
+      .table-container table { min-width:620px; width:max-content; }
+
+      /* POS */
+      .pos-container { width:100%; }
+      .pos-container > div { width:100%; max-width:100%; }
+      .cart-summary { width:100%; max-width:100%; min-height:0; }
+      .cart-item { width:100%; max-width:100%; }
+      .cart-item > div { min-width:0; }
+
+      /* Modales */
+      .modal-overlay { padding:.5rem; }
+      .modal-card {
+        width:100% !important;
+        max-width:100% !important;
+        max-height:calc(100dvh - 1rem);
+        overflow-y:auto;
+        overflow-x:hidden;
+        padding:.85rem;
+      }
+      .modal-card form,
+      .modal-card .form-group { width:100%; min-width:0; }
+      .modal-card > div:last-child { width:100%; gap:.5rem; }
+      .modal-card > div:last-child .btn { flex:1 1 100%; width:100%; }
+
+      /* Login */
+      #login-screen { padding:.75rem; overflow:auto; }
+      .login-card { width:100%; max-width:380px; padding:1.15rem; }
+
+      /* Menú lateral cómodo para tocar con el dedo */
+      .sidebar { width:min(88vw,320px); }
+      .nav-item { min-height:48px; padding:.75rem 1rem; }
+      .nav-item .nav-icon { width:24px; min-width:24px; }
+
+      /* Evita que elementos con estilos inline provoquen scroll lateral */
+      [style*="width:250px"], [style*="width: 250px"],
+      [style*="width:200px"], [style*="width: 200px"],
+      [style*="width:300px"], [style*="width: 300px"] {
+        width:100% !important;
+        max-width:100% !important;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .content-section { padding:.5rem; }
+      header { padding-left:3.6rem; }
+      header h2 { font-size:.92rem; }
+      .mobile-menu-toggle { width:40px; height:40px; }
+      .card { padding:.7rem; }
+      .metric-card { padding:.75rem; gap:.65rem; }
+      .metric-icon { width:40px; height:40px; flex-basis:40px; font-size:1.15rem; }
+      .btn { padding:.65rem .7rem; }
+    }
+
     /* Evita desbordamientos por textos largos */
     h1, h2, h3, h4, p, label, td, th, span, b { overflow-wrap: anywhere; }
     button, input, select { touch-action: manipulation; }
