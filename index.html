@@ -443,8 +443,9 @@
               <label>Método de Pago:</label>
               <select id="pos-metodo" class="form-control">
                 <option value="Efectivo">Efectivo</option>
-                <option value="Nequi/Daviplata">Nequi</option>
-                <option value="Tarjeta">trasferencia Bancolombia</option>
+                <option value="Nequi/Daviplata">Nequi / Daviplata</option>
+                <option value="Tarjeta">Tarjeta Débito/Crédito</option>
+                <!-- NEW: Credit option added -->
                 <option value="Crédito">Crédito</option> 
               </select>
             </div>
@@ -1622,40 +1623,71 @@
 
     // COMPRAS
     let compraItems = [];
-
     function renderCompras() {
       const tbody = document.getElementById('tbl-compras');
       if (!tbody) return;
 
-      const compras = DB.compras || [];
-      tbody.innerHTML = compras.length ? compras.slice().reverse().map(c => `
-        <tr>
-          <td><b>${c.id}</b></td>
-          <td>${c.proveedor}</td>
-          <td>${c.fecha}</td>
-          <td>${(c.items || []).reduce((acc, i) => acc + Number(i.qty || 0), 0)}</td>
-          <td><b>${formatCOP(c.total)}</b></td>
-          <td>
-            <button class="btn btn-sm btn-secondary" onclick="verCompra('${c.id}')">
-              <i class="fa-solid fa-eye"></i> Ver
-            </button>
-          </td>
-        </tr>
-      `).join('') : `
-        <tr>
-          <td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">
-            No hay compras registradas. Haz clic en "Registrar Compra" para comenzar.
-          </td>
-        </tr>
-      `;
+      tbody.innerHTML = DB.compras.map(c => {
+        const cantidadProductos = (c.items || []).reduce((acc, item) => acc + (Number(item.qty) || 0), 0);
 
-      const cantidad = compras.length;
-      const total = compras.reduce((acc, c) => acc + Number(c.total || 0), 0);
-      const cantidadEl = document.getElementById('compras-cantidad');
-      const totalEl = document.getElementById('compras-total');
-      if (cantidadEl) cantidadEl.textContent = cantidad;
-      if (totalEl) totalEl.textContent = formatCOP(total);
+        return `
+          <tr>
+            <td>${c.id}</td>
+            <td>${c.proveedor}</td>
+            <td>${c.fecha}</td>
+            <td>${cantidadProductos}</td>
+            <td>${formatCOP(c.total)}</td>
+            <td style="white-space:nowrap;">
+              <button class="btn btn-sm btn-secondary" onclick="verCompra('${c.id}')">
+                <i class="fa-solid fa-eye"></i> Ver
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="eliminarCompra('${c.id}')">
+                <i class="fa-solid fa-trash"></i> Eliminar
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const totalCompras = DB.compras.reduce((acc, c) => acc + (Number(c.total) || 0), 0);
+      const metricCantidad = document.getElementById('compras-cantidad');
+      const metricTotal = document.getElementById('compras-total');
+
+      if (metricCantidad) metricCantidad.textContent = DB.compras.length;
+      if (metricTotal) metricTotal.textContent = formatCOP(totalCompras);
     }
+
+    function eliminarCompra(id) {
+      const compra = DB.compras.find(c => c.id === id);
+      if (!compra) return alert('La compra no fue encontrada.');
+
+      const confirmar = confirm(
+        '¿Desea eliminar la compra ' + compra.id + '?\n\n' +
+        'Proveedor: ' + compra.proveedor + '\n' +
+        'Total: ' + formatCOP(compra.total) + '\n\n' +
+        'También se descontará del inventario la mercancía que esta compra había agregado.'
+      );
+
+      if (!confirmar) return;
+
+      // Revertir el stock de los productos incluidos en la compra.
+      (compra.items || []).forEach(item => {
+        const producto = DB.productos.find(p => p.id === item.id);
+        if (producto) {
+          producto.stock = Math.max(0, (Number(producto.stock) || 0) - (Number(item.qty) || 0));
+        }
+      });
+
+      // Eliminar la compra del historial.
+      DB.compras = DB.compras.filter(c => c.id !== id);
+
+      saveDB();
+      renderCompras();
+      renderInventario();
+
+      alert('Compra eliminada correctamente y el inventario fue actualizado.');
+    }
+
 
     function openCompraModal() {
       if (!DB.proveedores.length) {
