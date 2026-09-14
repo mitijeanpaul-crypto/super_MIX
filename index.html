@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🛍️ super MIX POS (Supabase Realtime)</title>
-  <!-- FontAwesome -->
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -121,7 +121,7 @@
       <form onsubmit="handleLogin(event)">
         <div class="form-group" style="text-align: left;">
           <label>Usuario</label>
-          <input type="text" id="login-user" class="form-control" placeholder="admin" required autofocus>
+          <input type="text" id="login-user" class="form-control" value="admin" placeholder="Ingresa tu usuario" autofocus>
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">Acceder</button>
       </form>
@@ -270,7 +270,7 @@
       </div>
     </section>
 
-    <!-- COMPRAS (ENTRADA DE STOCK) -->
+    <!-- COMPRAS -->
     <section id="sec-compras" class="content-section">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <h3>Ingresar Compra de Mercadería</h3>
@@ -403,16 +403,21 @@
     </div>
   </div>
 
-  <!-- SCRIPT SUPABASE -->
+  <!-- SCRIPT SUPABASE LIBRARY -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <script>
-    // ⚠️ REEMPLAZA ESTAS DOS LÍNEAS CON LOS DATOS DE TU PROYECTO SUPABASE
-    const supabaseUrl = 'https://gxzuiaavzkmbmndokhgk.supabase.co';
-    const supabaseKey = 'sb_publishable_YcmFpKrpsZqCQBSLbfqSPA_9AavRXcX';
+    // ⚠️ CONFIGURACIÓN DE SUPABASE - REEMPLAZA ESTAS DOS LÍNEAS CON TUS DATOS
+    const supabaseUrl = 'TU_SUPABASE_URL';
+    const supabaseKey = 'TU_SUPABASE_ANON_KEY';
+    
+    // Inicialización Única de Supabase
+    let supabaseClient = null;
+    if (window.supabase && supabaseUrl !== 'TU_SUPABASE_URL') {
+      supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+    }
 
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
+    // Estado local de la aplicación
     window.products = [];
     window.clients = [];
     window.credits = [];
@@ -420,57 +425,73 @@
     window.purchases = [];
     window.cart = [];
 
-    // INICIO DE SESIÓN Y CARGA DE DATOS
+    // MANEJO DE INICIO DE SESIÓN
     window.handleLogin = function(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      
+      const userInput = document.getElementById('login-user');
+      const username = (userInput && userInput.value.trim()) ? userInput.value.trim() : 'Administrador';
+      
+      document.getElementById('active-user-name').textContent = username;
       document.getElementById('login-screen').style.display = 'none';
+      
+      if (!supabaseClient) {
+        alert("⚠️ Recuerda colocar tu URL y ANON_KEY reales de Supabase en el código HTML para sincronizar datos.");
+      }
+      
       initApp();
     };
 
     async function initApp() {
-      // 1. Cargar datos iniciales
       await fetchData();
       
-      // 2. Suscribirse a cambios en tiempo real
-      supabase.channel('pos-realtime')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => { fetchData('products'); })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, payload => { fetchData('clients'); })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'credits' }, payload => { fetchData('credits'); })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'sales' }, payload => { fetchData('sales'); })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'purchases' }, payload => { fetchData('purchases'); })
-        .subscribe();
+      if (supabaseClient) {
+        supabaseClient.channel('pos-realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => fetchData('products'))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => fetchData('clients'))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'credits' }, () => fetchData('credits'))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'sales' }, () => fetchData('sales'))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'purchases' }, () => fetchData('purchases'))
+          .subscribe();
+      }
     }
 
-    // Función para obtener y actualizar el estado local
+    // CONSULTAR DATOS A SUPABASE
     async function fetchData(table = 'all') {
-      if (table === 'all' || table === 'products') {
-        const { data } = await supabase.from('products').select('*');
-        window.products = data || [];
-        renderPOS(); renderProductsManage(); populateCompraProductsSelect();
-      }
-      if (table === 'all' || table === 'clients') {
-        const { data } = await supabase.from('clients').select('*');
-        window.clients = data || [];
-        filterPOSClients(); renderClientes(); renderCredits();
-      }
-      if (table === 'all' || table === 'credits') {
-        const { data } = await supabase.from('credits').select('*');
-        window.credits = data || [];
-        renderCredits(); updateDashboard();
-      }
-      if (table === 'all' || table === 'sales') {
-        const { data } = await supabase.from('sales').select('*');
-        window.sales = data || [];
-        renderSalesHistory(); updateDashboard();
-      }
-      if (table === 'all' || table === 'purchases') {
-        const { data } = await supabase.from('purchases').select('*');
-        window.purchases = data || [];
-        renderComprasHistory(); updateDashboard();
+      if (!supabaseClient) return;
+
+      try {
+        if (table === 'all' || table === 'products') {
+          const { data } = await supabaseClient.from('products').select('*');
+          window.products = data || [];
+          renderPOS(); renderProductsManage(); populateCompraProductsSelect();
+        }
+        if (table === 'all' || table === 'clients') {
+          const { data } = await supabaseClient.from('clients').select('*');
+          window.clients = data || [];
+          filterPOSClients(); renderClientes(); renderCredits();
+        }
+        if (table === 'all' || table === 'credits') {
+          const { data } = await supabaseClient.from('credits').select('*');
+          window.credits = data || [];
+          renderCredits(); updateDashboard();
+        }
+        if (table === 'all' || table === 'sales') {
+          const { data } = await supabaseClient.from('sales').select('*');
+          window.sales = data || [];
+          renderSalesHistory(); updateDashboard();
+        }
+        if (table === 'all' || table === 'purchases') {
+          const { data } = await supabaseClient.from('purchases').select('*');
+          window.purchases = data || [];
+          renderComprasHistory(); updateDashboard();
+        }
+      } catch (err) {
+        console.error("Error al consultar datos:", err);
       }
     }
 
-    // BASE DE DATOS: CRUD SUPABASE
+    // OPERACIONES CRUD
     window.saveProduct = async function(e) {
       e.preventDefault();
       const id = document.getElementById('prod-id').value;
@@ -478,7 +499,9 @@
       const price = parseFloat(document.getElementById('prod-price').value);
       const stock = parseInt(document.getElementById('prod-stock').value);
 
-      await supabase.from('products').upsert({ id, name, price, stock });
+      if (supabaseClient) {
+        await supabaseClient.from('products').upsert({ id, name, price, stock });
+      }
       closeModal('modal-producto');
       e.target.reset();
     };
@@ -490,7 +513,9 @@
       const phone = document.getElementById('cli-phone').value;
       const id = 'CLI-' + Date.now();
 
-      await supabase.from('clients').insert({ id, doc: docNum, name, phone });
+      if (supabaseClient) {
+        await supabaseClient.from('clients').insert({ id, doc: docNum, name, phone });
+      }
       closeModal('modal-cliente');
       e.target.reset();
     };
@@ -505,16 +530,17 @@
       const prod = window.products.find(p => p.id === prodId);
       if (!prod) return alert("Producto no válido");
 
-      await supabase.from('products').update({ stock: Number(prod.stock) + qty }).eq('id', prodId);
-
-      const id = 'COMP-' + Date.now();
-      await supabase.from('purchases').insert({
-        id, provider, productId: prodId, productName: prod.name, qty, total, date: new Date().toLocaleDateString()
-      });
+      if (supabaseClient) {
+        await supabaseClient.from('products').update({ stock: Number(prod.stock) + qty }).eq('id', prodId);
+        const id = 'COMP-' + Date.now();
+        await supabaseClient.from('purchases').insert({
+          id, provider, productId: prodId, productName: prod.name, qty, total, date: new Date().toLocaleDateString()
+        });
+      }
 
       closeModal('modal-compra');
       e.target.reset();
-      alert("Compra registrada y stock actualizado.");
+      alert("Compra registrada correctamente.");
     };
 
     window.processSale = async function() {
@@ -526,24 +552,26 @@
       const method = document.getElementById('pos-metodo').value;
       const total = window.cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
 
-      for (let item of window.cart) {
-        const p = window.products.find(prod => prod.id === item.id);
-        if(p) {
-          await supabase.from('products').update({ stock: p.stock - item.qty }).eq('id', item.id);
+      if (supabaseClient) {
+        for (let item of window.cart) {
+          const p = window.products.find(prod => prod.id === item.id);
+          if (p) {
+            await supabaseClient.from('products').update({ stock: p.stock - item.qty }).eq('id', item.id);
+          }
         }
-      }
 
-      if (method === 'Credito') {
-        const existingCredit = window.credits.find(c => c.id === clientId);
-        if (existingCredit) {
-          await supabase.from('credits').update({ total_credit: Number(existingCredit.total_credit) + total }).eq('id', clientId);
-        } else {
-          await supabase.from('credits').insert({ id: clientId, total_credit: total, total_paid: 0 });
+        if (method === 'Credito') {
+          const existingCredit = window.credits.find(c => c.id === clientId);
+          if (existingCredit) {
+            await supabaseClient.from('credits').update({ total_credit: Number(existingCredit.total_credit) + total }).eq('id', clientId);
+          } else {
+            await supabaseClient.from('credits').insert({ id: clientId, total_credit: total, total_paid: 0 });
+          }
         }
-      }
 
-      const id = 'VENT-' + Date.now();
-      await supabase.from('sales').insert({ id, client: client.name, method, total, date: new Date().toLocaleDateString() });
+        const id = 'VENT-' + Date.now();
+        await supabaseClient.from('sales').insert({ id, client: client.name, method, total, date: new Date().toLocaleDateString() });
+      }
 
       window.cart = [];
       renderCart();
@@ -558,14 +586,16 @@
       const credit = window.credits.find(c => c.id === clientId);
       if (!credit) return;
 
-      const newPaid = Number(credit.total_paid) + amount;
-      await supabase.from('credits').update({ total_paid: newPaid }).eq('id', clientId);
+      if (supabaseClient) {
+        const newPaid = Number(credit.total_paid) + amount;
+        await supabaseClient.from('credits').update({ total_paid: newPaid }).eq('id', clientId);
+      }
 
       closeModal('modal-abono');
       e.target.reset();
     };
 
-    // INTERFAZ GRÁFICA Y FUNCIONES RENDER
+    // FUNCIONES DE INTERFAZ Y RENDERIZADO
     function showSection(sectionId, element) {
       document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -584,7 +614,6 @@
     function openCompraModal() { document.getElementById('modal-compra').classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-    // Actualizar tarjetas del Dashboard
     function updateDashboard() {
       const totalVentas = window.sales.reduce((acc, sale) => acc + Number(sale.total), 0);
       const totalCompras = window.purchases.reduce((acc, comp) => acc + Number(comp.total), 0);
