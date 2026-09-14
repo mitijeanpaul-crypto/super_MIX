@@ -566,8 +566,9 @@
               <label>Método de Pago:</label>
               <select id="pos-metodo" class="form-control">
                 <option value="Efectivo">Efectivo</option>
-                <option value="Nequi/Daviplata">Nequi</option>
-                <option value="Tarjeta">Transferencia Bancolombia</option>
+                <option value="Nequi/Daviplata">Nequi / Daviplata</option>
+                <option value="Tarjeta">Tarjeta Débito/Crédito</option>
+                <!-- NEW: Credit option added -->
                 <option value="Crédito">Crédito</option> 
               </select>
             </div>
@@ -956,8 +957,7 @@
         <div style="display:flex; justify-content:space-between;"><span>IVA (<span id="rec-iva-rate">19</span>%):</span><span id="rec-iva"></span></div>
         <div style="display:flex; justify-content:space-between; font-weight:bold; font-size: 14px;"><span>TOTAL:</span><span id="rec-total"></span></div>
         <hr style="margin: 8px 0; border: dashed 1px #000;">
-        <div style="text-align:center; margin-top:10px;">¡¡Gracias por su compra!
-¡Vuelva pronto!!</div>
+        <div style="text-align:center; margin-top:10px;">¡Gracias por su compra!</div>
       </div>
       <div style="margin-top: 10px; display:flex; gap:10px;">
         <button class="btn btn-primary" style="flex:1;" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Recibo</button>
@@ -967,17 +967,19 @@
   </div>
 
   <script>
-    // BASE DE DATOS: Supabase + respaldo local
+    // BASE DE DATOS: Supabase normalizado + respaldo local
     const SUPABASE_URL = 'https://ryasfyjicjjptwyrxqfk.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_b89wGBYJ68J1bys1uAgY9Q_M8qmFath';
-    const SUPABASE_ROW_ID = 'super_mix';
 
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY
     );
 
-    let DB = JSON.parse(localStorage.getItem('super_db_zero_v3')) || {
+    const LOCAL_DB_KEY = 'super_db_zero_v3';
+    const SESSION_KEY = 'super_mix_session_user';
+
+    let DB = JSON.parse(localStorage.getItem(LOCAL_DB_KEY)) || {
       categorias: ['Lácteos', 'Abarrotes', 'Bebidas', 'Aseo'],
       productos: [],
       clientes: [{ id: '1', cedula: '2222222222', nombre: 'Cliente General', correo: 'cliente@general.com', telefono: '3000000000', puntos: 0, deuda: 0 }],
@@ -992,10 +994,10 @@
     };
 
     let currentUser = null;
-    const SESSION_KEY = 'super_mix_session_user';
     let cart = [];
     let salesChart = null;
     let supabaseReady = false;
+    let sincronizacionEnCurso = false;
 
     function setSupabaseStatus(message, ok = false) {
       const el = document.getElementById('supabase-status');
@@ -1011,119 +1013,523 @@
     async function probarConexionSupabase() {
       setSupabaseStatus('Probando conexión...', false);
       try {
-        if (!window.supabase || !window.supabase.createClient) {
-          throw new Error('No se cargó la librería de Supabase. Revisa tu conexión a Internet.');
-        }
-
-        const { data, error } = await supabaseClient
-          .from('app_state')
-          .select('id, updated_at')
-          .eq('id', SUPABASE_ROW_ID)
-          .maybeSingle();
+        const { error } = await supabaseClient
+          .from('productos')
+          .select('id')
+          .limit(1);
 
         if (error) throw error;
 
         supabaseReady = true;
-        const detalle = data?.updated_at
-          ? ' Conectado · última actualización: ' + new Date(data.updated_at).toLocaleString('es-CO')
-          : ' Conectado · tabla disponible, sin datos todavía.';
-        setSupabaseStatus('Supabase conectado.' + detalle, true);
-        console.log('Supabase OK:', data);
+        setSupabaseStatus('Supabase conectado · base de datos normalizada activa.', true);
       } catch (error) {
         supabaseReady = false;
         console.error('Error de conexión Supabase:', error);
-        setSupabaseStatus('Sin conexión: ' + (error?.message || 'error desconocido'), false);
+        setSupabaseStatus('Sin conexión a tablas nuevas: ' + (error?.message || 'error desconocido'), false);
       }
     }
 
-    let sincronizacionEnCurso = false;
+    function numero(v) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function fechaISO(valor) {
+      if (!valor) return new Date().toISOString();
+      const d = new Date(valor);
+      return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+    }
+
+    async function cargarDBNormalizada() {
+      const [
+        configRes, catRes, usersRes, provRes, cliRes, prodRes,
+        ventasRes, detallesVentasRes, comprasRes, detallesComprasRes,
+        creditosRes, abonosRes
+      ] = await Promise.all([
+        supabaseClient.from('configuracion').select('*').limit(1).maybeSingle(),
+        supabaseClient.from('categorias').select('*').eq('activo', true).order('nombre'),
+        supabaseClient.from('usuarios').select('*').eq('activo', true).order('nombre'),
+        supabaseClient.from('proveedores').select('*').eq('activo', true).order('nombre'),
+        supabaseClient.from('clientes').select('*').eq('activo', true).order('nombre'),
+        supabaseClient.from('productos').select('*').eq('activo', true).order('nombre'),
+        supabaseClient.from('ventas').select('*').order('fecha', { ascending: true }),
+        supabaseClient.from('detalle_ventas').select('*'),
+        supabaseClient.from('compras').select('*').order('fecha', { ascending: true }),
+        supabaseClient.from('detalle_compras').select('*'),
+        supabaseClient.from('creditos').select('*'),
+        supabaseClient.from('abonos').select('*')
+      ]);
+
+      const respuestas = [
+        configRes, catRes, usersRes, provRes, cliRes, prodRes,
+        ventasRes, detallesVentasRes, comprasRes, detallesComprasRes,
+        creditosRes, abonosRes
+      ];
+      const fallo = respuestas.find(r => r.error);
+      if (fallo) throw fallo.error;
+
+      const config = configRes.data || {};
+      const categorias = (catRes.data || []).map(c => c.nombre);
+
+      const usuarios = (usersRes.data || []).map(u => ({
+        id: u.legacy_id || u.id,
+        nombre: u.nombre,
+        user: u.username,
+        pass: u.password_legacy || '',
+        rol: u.rol
+      }));
+
+      const proveedores = (provRes.data || []).map(p => ({
+        id: p.legacy_id || p.id,
+        nit: p.nit || '',
+        nombre: p.nombre || '',
+        empresa: p.empresa || '',
+        telefono: p.telefono || '',
+        correo: p.correo || '',
+        direccion: p.direccion || ''
+      }));
+
+      const clientesBase = cliRes.data || [];
+      const creditos = creditosRes.data || [];
+      const abonos = abonosRes.data || [];
+
+      const clientes = clientesBase.map(c => {
+        const deudaCreditos = creditos
+          .filter(cr => cr.cliente_id === c.id && cr.estado !== 'Anulado')
+          .reduce((sum, cr) => sum + numero(cr.saldo), 0);
+
+        const deudaAbonos = abonos
+          .filter(ab => ab.cliente_id === c.id)
+          .reduce((sum, ab) => sum + numero(ab.monto), 0);
+
+        return {
+          id: c.legacy_id || c.id,
+          cedula: c.cedula_nit || '',
+          nombre: c.nombre || '',
+          correo: c.correo || '',
+          telefono: c.telefono || '',
+          direccion: c.direccion || '',
+          puntos: numero(c.puntos),
+          deuda: Math.max(0, deudaCreditos - deudaAbonos)
+        };
+      });
+
+      const proveedoresDB = provRes.data || [];
+      const productos = (prodRes.data || []).map(p => {
+        const cat = (catRes.data || []).find(c => c.id === p.categoria_id);
+        const prov = proveedoresDB.find(x => x.id === p.proveedor_id);
+        return {
+          id: p.legacy_id || p.id,
+          codigo: p.codigo || '',
+          nombre: p.nombre || '',
+          categoria: cat?.nombre || 'General',
+          proveedorId: prov?.legacy_id || prov?.id || '',
+          vencimiento: p.vencimiento || '',
+          precio: numero(p.precio_venta),
+          costo: numero(p.precio_compra),
+          stock: numero(p.stock),
+          minStock: numero(p.stock_minimo)
+        };
+      });
+
+      const detallesVentas = detallesVentasRes.data || [];
+      const ventas = (ventasRes.data || []).map(v => {
+        const u = (usersRes.data || []).find(x => x.id === v.usuario_id);
+        const c = clientesBase.find(x => x.id === v.cliente_id);
+        const items = detallesVentas
+          .filter(d => d.venta_id === v.id)
+          .map(d => ({
+            id: d.producto_id ? ((prodRes.data || []).find(p => p.id === d.producto_id)?.legacy_id || d.producto_id) : '',
+            qty: numero(d.cantidad),
+            costo: numero(d.costo_unitario),
+            codigo: d.codigo_producto || '',
+            nombre: d.producto_nombre,
+            precio: numero(d.precio_unitario)
+          }));
+
+        return {
+          id: v.legacy_id || ('VEN-' + v.numero),
+          iva: numero(v.iva),
+          fecha: new Date(v.fecha).toISOString().split('T')[0],
+          items,
+          total: numero(v.total),
+          cajero: u?.nombre || 'Cajero',
+          metodo: v.metodo_pago,
+          cliente: c?.nombre || v.cliente_nombre || 'Consumidor final',
+          ivaRate: items.length ? numero((detallesVentas.find(d => d.venta_id === v.id) || {}).iva_porcentaje) : 0,
+          subtotal: numero(v.subtotal),
+          alegraStatus: v.alegra_status || 'Sin Emitir'
+        };
+      });
+
+      const detallesCompras = detallesComprasRes.data || [];
+      const compras = (comprasRes.data || []).map(c => {
+        const prov = proveedoresDB.find(p => p.id === c.proveedor_id);
+        const items = detallesCompras
+          .filter(d => d.compra_id === c.id)
+          .map(d => ({
+            productoId: ((prodRes.data || []).find(p => p.id === d.producto_id)?.legacy_id || d.producto_id || ''),
+            codigo: ((prodRes.data || []).find(p => p.id === d.producto_id)?.codigo || ''),
+            nombre: d.producto_nombre,
+            qty: numero(d.cantidad),
+            costo: numero(d.costo_unitario)
+          }));
+        return {
+          id: c.legacy_id || ('COM-' + c.numero),
+          proveedor: prov?.empresa || prov?.nombre || c.proveedor_nombre || '',
+          proveedorId: prov?.legacy_id || prov?.id || '',
+          fecha: new Date(c.fecha).toISOString().split('T')[0],
+          items,
+          total: numero(c.total)
+        };
+      });
+
+      DB = {
+        ...DB,
+        categorias,
+        productos,
+        clientes,
+        proveedores,
+        usuarios,
+        ventas,
+        compras,
+        config: {
+          ...DB.config,
+          nombre: config.nombre_negocio || DB.config.nombre,
+          nit: config.nit || '',
+          iva: numero(config.iva)
+        },
+        alegra: {
+          email: config.alegra_email || DB.alegra?.email || '',
+          token: config.alegra_token || DB.alegra?.token || '',
+          active: Boolean(config.alegra_active)
+        }
+      };
+
+      localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(DB));
+      supabaseReady = true;
+      setSupabaseStatus('Supabase conectado · datos normalizados sincronizados.', true);
+    }
 
     async function sincronizarMovimientosSupabase() {
       if (sincronizacionEnCurso || document.hidden) return;
       sincronizacionEnCurso = true;
+      const seccionAntes = seccionActual;
+
       try {
-        const { data, error } = await supabaseClient
-          .from('app_state')
-          .select('data, updated_at')
-          .eq('id', SUPABASE_ROW_ID)
-          .maybeSingle();
+        await cargarDBNormalizada();
+        renderAll();
+        updateCartUI();
 
-        if (error) throw error;
-
-        if (data && data.data) {
-          const datosRemotos = data.data;
-          const remotoActualizado = data.updated_at ? new Date(data.updated_at).getTime() : 0;
-
-          // Solo reemplazamos el estado local cuando existe una versión remota.
-          DB = { ...DB, ...datosRemotos };
-          localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
-          renderAll();
-          updateCartUI();
-          supabaseReady = true;
+        if (currentUser && document.getElementById(`sec-${seccionAntes}`)) {
+          showSection(seccionAntes, document.querySelector(`.nav-item[onclick*="showSection('${seccionAntes}'"]`));
         }
       } catch (error) {
-        console.error('Error en sincronización automática:', error);
+        console.error('Error en sincronización normalizada:', error);
       } finally {
         sincronizacionEnCurso = false;
       }
     }
 
+    async function guardarDBNormalizada() {
+      // Configuración
+      const configPayload = {
+        nombre_negocio: DB.config?.nombre || 'super MIX',
+        nit: DB.config?.nit || '',
+        iva: numero(DB.config?.iva),
+        moneda: 'COP'
+      };
+
+      const { data: configExistente, error: configError } =
+        await supabaseClient.from('configuracion').select('id').limit(1).maybeSingle();
+      if (configError) throw configError;
+
+      if (configExistente?.id) {
+        const { error } = await supabaseClient
+          .from('configuracion').update(configPayload).eq('id', configExistente.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabaseClient.from('configuracion').insert(configPayload);
+        if (error) throw error;
+      }
+
+      // Categorías
+      for (const nombre of (DB.categorias || [])) {
+        if (!nombre) continue;
+        const { error } = await supabaseClient.from('categorias')
+          .upsert({ nombre, activo: true }, { onConflict: 'nombre' });
+        if (error) throw error;
+      }
+
+      // Usuarios
+      for (const u of (DB.usuarios || [])) {
+        const payload = {
+          legacy_id: String(u.id),
+          nombre: u.nombre || 'Usuario',
+          username: u.user,
+          password_legacy: u.pass || '',
+          rol: u.rol === 'Administrador' ? 'Administrador' : 'Cajero',
+          activo: true
+        };
+        const { error } = await supabaseClient.from('usuarios')
+          .upsert(payload, { onConflict: 'legacy_id' });
+        if (error) throw error;
+      }
+
+      // Proveedores
+      for (const p of (DB.proveedores || [])) {
+        const payload = {
+          legacy_id: String(p.id),
+          nit: p.nit || null,
+          nombre: p.nombre || 'Proveedor',
+          empresa: p.empresa || null,
+          telefono: p.telefono || null,
+          correo: p.correo || null,
+          direccion: p.direccion || null,
+          activo: true
+        };
+        const { error } = await supabaseClient.from('proveedores')
+          .upsert(payload, { onConflict: 'legacy_id' });
+        if (error) throw error;
+      }
+
+      // Clientes
+      for (const c of (DB.clientes || [])) {
+        const payload = {
+          legacy_id: String(c.id),
+          cedula_nit: c.cedula || null,
+          nombre: c.nombre || 'Cliente',
+          correo: c.correo || null,
+          telefono: c.telefono || null,
+          direccion: c.direccion || null,
+          puntos: numero(c.puntos),
+          activo: true
+        };
+        const { error } = await supabaseClient.from('clientes')
+          .upsert(payload, { onConflict: 'legacy_id' });
+        if (error) throw error;
+      }
+
+      // Productos
+      const { data: cats, error: catsError } = await supabaseClient
+        .from('categorias').select('id,nombre');
+      if (catsError) throw catsError;
+
+      const { data: provs, error: provsError } = await supabaseClient
+        .from('proveedores').select('id,legacy_id');
+      if (provsError) throw provsError;
+
+      for (const p of (DB.productos || [])) {
+        const cat = (cats || []).find(c => c.nombre === p.categoria);
+        const prov = (provs || []).find(x => x.legacy_id === String(p.proveedorId || ''));
+        const payload = {
+          legacy_id: String(p.id),
+          codigo: p.codigo || null,
+          nombre: p.nombre || 'Producto',
+          categoria_id: cat?.id || null,
+          proveedor_id: prov?.id || null,
+          unidad: 'unidad',
+          precio_compra: numero(p.costo),
+          precio_venta: numero(p.precio),
+          iva: numero(DB.config?.iva),
+          stock: numero(p.stock),
+          stock_minimo: numero(p.minStock),
+          vencimiento: p.vencimiento || null,
+          activo: true
+        };
+        const { error } = await supabaseClient.from('productos')
+          .upsert(payload, { onConflict: 'legacy_id' });
+        if (error) throw error;
+      }
+
+      // Ventas y detalles
+      const { data: dbUsers, error: dbUsersError } = await supabaseClient
+        .from('usuarios').select('id,legacy_id,nombre');
+      if (dbUsersError) throw dbUsersError;
+      const { data: dbClients, error: dbClientsError } = await supabaseClient
+        .from('clientes').select('id,legacy_id,nombre,cedula_nit');
+      if (dbClientsError) throw dbClientsError;
+      const { data: dbProducts, error: dbProductsError } = await supabaseClient
+        .from('productos').select('id,legacy_id,codigo');
+      if (dbProductsError) throw dbProductsError;
+
+      for (const v of (DB.ventas || [])) {
+        const user = (dbUsers || []).find(u => u.legacy_id === String(currentUser?.id || '') || u.nombre === v.cajero);
+        const client = (dbClients || []).find(c => c.nombre === v.cliente || c.legacy_id === String(v.clienteId || ''));
+        const salePayload = {
+          legacy_id: String(v.id),
+          fecha: fechaISO(v.fecha),
+          usuario_id: user?.id || null,
+          cliente_id: v.cliente === 'Consumidor final' ? null : (client?.id || null),
+          cliente_nombre: v.cliente || 'Consumidor final',
+          subtotal: numero(v.subtotal),
+          descuento: 0,
+          iva: numero(v.iva),
+          total: numero(v.total),
+          metodo_pago: ['Efectivo','Tarjeta','Transferencia','Mixto','Crédito'].includes(v.metodo) ? v.metodo : 'Efectivo',
+          estado: 'Completada',
+          alegra_status: v.alegraStatus || 'Sin Emitir'
+        };
+        const { data: saleRow, error: saleError } = await supabaseClient
+          .from('ventas').upsert(salePayload, { onConflict: 'legacy_id' })
+          .select('id')
+          .single();
+        if (saleError) throw saleError;
+
+        await supabaseClient.from('detalle_ventas').delete().eq('venta_id', saleRow.id);
+
+        const detalles = (v.items || []).map(item => {
+          const prod = (dbProducts || []).find(p => p.legacy_id === String(item.id) || p.codigo === item.codigo);
+          const qty = numero(item.qty || item.cantidad);
+          const precio = numero(item.precio);
+          const ivaRate = numero(v.ivaRate);
+          const subtotal = qty * precio;
+          return {
+            venta_id: saleRow.id,
+            producto_id: prod?.id || null,
+            producto_nombre: item.nombre || 'Producto',
+            codigo_producto: item.codigo || prod?.codigo || null,
+            cantidad: qty,
+            precio_unitario: precio,
+            costo_unitario: numero(item.costo),
+            iva_porcentaje: ivaRate,
+            subtotal,
+            iva: subtotal * ivaRate / 100,
+            total: subtotal
+          };
+        }).filter(x => x.cantidad > 0);
+
+        if (detalles.length) {
+          const { error } = await supabaseClient.from('detalle_ventas').insert(detalles);
+          if (error) throw error;
+        }
+      }
+
+      // Compras y detalles
+      const { data: dbProviders, error: dbProvidersError } = await supabaseClient
+        .from('proveedores').select('id,legacy_id,nombre,empresa');
+      if (dbProvidersError) throw dbProvidersError;
+
+      for (const c of (DB.compras || [])) {
+        const prov = (dbProviders || []).find(p => p.legacy_id === String(c.proveedorId || '') || p.nombre === c.proveedor);
+        const purchasePayload = {
+          legacy_id: String(c.id),
+          fecha: fechaISO(c.fecha),
+          usuario_id: null,
+          proveedor_id: prov?.id || null,
+          proveedor_nombre: c.proveedor || '',
+          subtotal: numero(c.total),
+          iva: 0,
+          total: numero(c.total),
+          estado: 'Registrada'
+        };
+
+        const { data: purchaseRow, error: purchaseError } = await supabaseClient
+          .from('compras').upsert(purchasePayload, { onConflict: 'legacy_id' })
+          .select('id')
+          .single();
+        if (purchaseError) throw purchaseError;
+
+        await supabaseClient.from('detalle_compras').delete().eq('compra_id', purchaseRow.id);
+
+        const detalles = (c.items || []).map(item => ({
+          compra_id: purchaseRow.id,
+          producto_id: (dbProducts || []).find(p => p.legacy_id === String(item.productoId))?.id || null,
+          producto_nombre: item.nombre || 'Producto',
+          cantidad: numero(item.qty),
+          costo_unitario: numero(item.costo),
+          subtotal: numero(item.qty) * numero(item.costo),
+          iva: 0,
+          total: numero(item.qty) * numero(item.costo)
+        })).filter(x => x.cantidad > 0);
+
+        if (detalles.length) {
+          const { error } = await supabaseClient.from('detalle_compras').insert(detalles);
+          if (error) throw error;
+        }
+      }
+
+      localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(DB));
+    }
+
+    async function guardarDBSupabaseLegacy() {
+      // Respaldo de compatibilidad: app_state queda disponible mientras terminamos
+      // la transición. No se usa como fuente principal de datos.
+      const { error } = await supabaseClient.from('app_state').upsert({
+        id: 'super_mix',
+        data: DB,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+      if (error) throw error;
+    }
+
+    async function saveDB() {
+      localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(DB));
+      renderAll();
+
+      try {
+        await guardarDBNormalizada();
+        supabaseReady = true;
+        setSupabaseStatus('Guardado en la base normalizada de Supabase.', true);
+      } catch (error) {
+        console.error('Error guardando base normalizada:', error);
+        try {
+          await guardarDBSupabaseLegacy();
+          setSupabaseStatus('Guardado en respaldo app_state. Revisa las políticas de las tablas nuevas.', false);
+        } catch (legacyError) {
+          console.error('Error en respaldo app_state:', legacyError);
+          setSupabaseStatus('Guardado localmente. Supabase no pudo actualizarse.', false);
+        }
+      }
+    }
+
     async function cargarDBSupabase() {
       try {
-        const { data, error } = await supabaseClient
-          .from('app_state')
-          .select('data')
-          .eq('id', SUPABASE_ROW_ID)
-          .maybeSingle();
-
-        if (error) throw error;
-
-        if (data && data.data) {
-          DB = { ...DB, ...data.data };
-          localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
-          supabaseReady = true;
-          setSupabaseStatus('Conectado a Supabase. Datos sincronizados.', true);
-        } else {
-          // Primera ejecución: subir el estado local inicial.
-          await guardarDBSupabase();
-          supabaseReady = true;
-          setSupabaseStatus('Conectado a Supabase. Se creó el registro inicial.', true);
-        }
+        await cargarDBNormalizada();
       } catch (error) {
-        console.error('Supabase:', error);
-        supabaseReady = false;
-        setSupabaseStatus('Supabase no disponible. Se usará el respaldo local.', false);
+        console.error('Error cargando base normalizada:', error);
+
+        // Fallback temporal al estado antiguo para no dejar el POS sin datos.
+        try {
+          const { data, error: legacyError } = await supabaseClient
+            .from('app_state')
+            .select('data')
+            .eq('id', 'super_mix')
+            .maybeSingle();
+
+          if (legacyError) throw legacyError;
+          if (data?.data) {
+            DB = { ...DB, ...data.data };
+            localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(DB));
+            setSupabaseStatus('Conectado mediante respaldo temporal app_state.', true);
+          }
+        } catch (fallbackError) {
+          console.error('Fallback Supabase:', fallbackError);
+          setSupabaseStatus('Supabase no disponible. Se usará el respaldo local.', false);
+        }
       }
 
       renderAll();
       updateCartUI();
       restaurarSesion();
-    }
 
-    async function guardarDBSupabase() {
-      const { error } = await supabaseClient
-        .from('app_state')
-        .upsert({
-          id: SUPABASE_ROW_ID,
-          data: DB,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'id' });
+      // Refrescar campos de configuración después de cargar Supabase.
+      const cfgNombre = document.getElementById('cfg-nombre');
+      const cfgNit = document.getElementById('cfg-nit');
+      const cfgIva = document.getElementById('cfg-iva');
+      const posIva = document.getElementById('pos-iva-percent');
+      if (cfgNombre) cfgNombre.value = DB.config?.nombre || '';
+      if (cfgNit) cfgNit.value = DB.config?.nit || '';
+      if (cfgIva) cfgIva.value = getConfiguredIva();
+      if (posIva) posIva.value = getConfiguredIva();
 
-      if (error) throw error;
-    }
-
-    async function saveDB() {
-      localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
-      renderAll();
-
-      try {
-        await guardarDBSupabase();
-        supabaseReady = true;
-        setSupabaseStatus('Guardado en Supabase correctamente.', true);
-      } catch (error) {
-        console.error('Error guardando en Supabase:', error);
-        supabaseReady = false;
-        setSupabaseStatus('Guardado localmente. No se pudo sincronizar con Supabase.', false);
+      if (DB.alegra) {
+        const email = document.getElementById('cfg-alegra-email');
+        const token = document.getElementById('cfg-alegra-token');
+        const active = document.getElementById('cfg-alegra-active');
+        if (email) email.value = DB.alegra.email || '';
+        if (token) token.value = DB.alegra.token || '';
+        if (active) active.value = DB.alegra.active ? 'true' : 'false';
       }
     }
 
@@ -1384,6 +1790,15 @@
       }
       renderPOS();
       renderPOSClientes();
+
+      // Mantener la sección actual aunque se refresquen los datos desde Supabase.
+      if (currentUser && document.getElementById(`sec-${seccionActual}`)) {
+        const navActual = document.querySelector(`.nav-item[onclick*="showSection('${seccionActual}'"]`);
+        document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById(`sec-${seccionActual}`).classList.add('active');
+        if (navActual) navActual.classList.add('active');
+      }
     }
 
     function renderCategoryDropdowns() {
@@ -1711,10 +2126,160 @@
       });
 
       DB.ventas.push(venta);
-      cart = [];
-      updateCartUI();
-      saveDB();
-      openReceiptModal(venta);
+
+      // Guardar primero en Supabase y esperar a que termine.
+      // Esto evita que la sincronización automática de 5 segundos
+      // vuelva a traer el stock anterior antes de terminar la venta.
+      try {
+        await guardarVentaYActualizarStockSupabase(venta);
+        cart = [];
+        updateCartUI();
+        renderAll();
+        openReceiptModal(venta);
+      } catch (error) {
+        console.error('Error guardando la venta en Supabase:', error);
+        alert('La venta se creó en pantalla, pero no se pudo guardar correctamente en Supabase: ' + (error?.message || error));
+        // Mantener respaldo local para no perder la operación.
+        localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(DB));
+      }
+    }
+
+    async function guardarVentaYActualizarStockSupabase(venta) {
+      // 1. Guardar/actualizar la venta y obtener su UUID real.
+      const { data: dbUsers, error: usersError } = await supabaseClient
+        .from('usuarios').select('id,legacy_id,nombre');
+      if (usersError) throw usersError;
+
+      const { data: dbClients, error: clientsError } = await supabaseClient
+        .from('clientes').select('id,legacy_id,nombre,cedula_nit');
+      if (clientsError) throw clientsError;
+
+      const { data: dbProducts, error: productsError } = await supabaseClient
+        .from('productos').select('id,legacy_id,codigo,nombre,stock');
+      if (productsError) throw productsError;
+
+      const user = (dbUsers || []).find(u =>
+        u.nombre === venta.cajero || u.legacy_id === String(currentUser?.id || '')
+      );
+      const client = (dbClients || []).find(c => c.nombre === venta.cliente);
+
+      const salePayload = {
+        legacy_id: String(venta.id),
+        fecha: fechaISO(venta.fecha),
+        usuario_id: user?.id || null,
+        cliente_id: venta.cliente === 'Consumidor final' ? null : (client?.id || null),
+        cliente_nombre: venta.cliente || 'Consumidor final',
+        subtotal: numero(venta.subtotal),
+        descuento: 0,
+        iva: numero(venta.iva),
+        total: numero(venta.total),
+        metodo_pago: ['Efectivo','Tarjeta','Transferencia','Mixto','Crédito'].includes(venta.metodo)
+          ? venta.metodo : 'Efectivo',
+        estado: 'Completada',
+        alegra_status: venta.alegraStatus || 'Sin Emitir'
+      };
+
+      const { data: saleRow, error: saleError } = await supabaseClient
+        .from('ventas')
+        .upsert(salePayload, { onConflict: 'legacy_id' })
+        .select('id')
+        .single();
+      if (saleError) throw saleError;
+
+      // 2. Insertar los detalles.
+      await supabaseClient.from('detalle_ventas').delete().eq('venta_id', saleRow.id);
+
+      const detalles = (venta.items || []).map(item => {
+        const prod = (dbProducts || []).find(p =>
+          p.legacy_id === String(item.id) || p.codigo === item.codigo
+        );
+        const qty = numero(item.qty || item.cantidad);
+        const precio = numero(item.precio);
+        const ivaRate = numero(venta.ivaRate);
+        const subtotal = qty * precio;
+        return {
+          venta_id: saleRow.id,
+          producto_id: prod?.id || null,
+          producto_nombre: item.nombre || prod?.nombre || 'Producto',
+          codigo_producto: item.codigo || prod?.codigo || null,
+          cantidad: qty,
+          precio_unitario: precio,
+          costo_unitario: numero(item.costo),
+          iva_porcentaje: ivaRate,
+          subtotal,
+          iva: subtotal * ivaRate / 100,
+          total: subtotal
+        };
+      }).filter(x => x.cantidad > 0);
+
+      if (detalles.length) {
+        const { error: detailError } = await supabaseClient
+          .from('detalle_ventas').insert(detalles);
+        if (detailError) throw detailError;
+      }
+
+      // 3. Actualizar el stock REAL de cada producto en Supabase.
+      for (const item of (venta.items || [])) {
+        const prod = (dbProducts || []).find(p =>
+          p.legacy_id === String(item.id) || p.codigo === item.codigo
+        );
+        const qty = numero(item.qty || item.cantidad);
+        if (!prod || qty <= 0) continue;
+
+        const stockAnterior = numero(prod.stock);
+        const stockNuevo = stockAnterior - qty;
+
+        const { error: stockError } = await supabaseClient
+          .from('productos')
+          .update({ stock: stockNuevo })
+          .eq('id', prod.id);
+        if (stockError) throw stockError;
+
+        const { error: movementError } = await supabaseClient
+          .from('movimientos_inventario')
+          .insert({
+            fecha: new Date().toISOString(),
+            producto_id: prod.id,
+            usuario_id: user?.id || null,
+            tipo: 'Venta',
+            cantidad: -qty,
+            stock_anterior: stockAnterior,
+            stock_nuevo: stockNuevo,
+            referencia_id: saleRow.id,
+            referencia_numero: String(venta.id),
+            motivo: 'Venta POS'
+          });
+        if (movementError) throw movementError;
+      }
+
+      // 4. Actualizar el estado local con el stock confirmado por Supabase.
+      for (const item of (venta.items || [])) {
+        const p = DB.productos.find(x => x.id === item.id || x.codigo === item.codigo);
+        const prod = (dbProducts || []).find(x =>
+          x.legacy_id === String(item.id) || x.codigo === item.codigo
+        );
+        if (p && prod) p.stock = numero(prod.stock) - numero(item.qty || item.cantidad);
+      }
+
+      // 5. Crédito: reflejar deuda local y dejar el registro para la tabla créditos.
+      if (venta.metodo === 'Crédito' && client) {
+        const { error: creditError } = await supabaseClient
+          .from('creditos')
+          .insert({
+            cliente_id: client.id,
+            venta_id: saleRow.id,
+            fecha: fechaISO(venta.fecha),
+            monto: numero(venta.total),
+            saldo: numero(venta.total),
+            estado: 'Pendiente',
+            observacion: 'Crédito generado desde POS'
+          });
+        if (creditError) throw creditError;
+      }
+
+      localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(DB));
+      supabaseReady = true;
+      setSupabaseStatus('Venta y stock guardados directamente en Supabase.', true);
     }
 
     function openReceiptModal(venta) {
@@ -1978,9 +2543,12 @@
           <td>${c.fecha}</td>
           <td>${(c.items || []).reduce((acc, i) => acc + Number(i.qty || 0), 0)}</td>
           <td><b>${formatCOP(c.total)}</b></td>
-          <td>
+          <td style="white-space:nowrap;">
             <button class="btn btn-sm btn-secondary" onclick="verCompra('${c.id}')">
               <i class="fa-solid fa-eye"></i> Ver
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="eliminarCompra('${c.id}')">
+              <i class="fa-solid fa-trash"></i> Eliminar
             </button>
           </td>
         </tr>
@@ -2094,7 +2662,7 @@
       totalEl.textContent = formatCOP(total);
     }
 
-    function saveCompra() {
+    async function saveCompra() {
       if (!compraItems.length) return alert('Agregue al menos un producto a la compra.');
 
       const proveedorId = document.getElementById('mcop-proveedor').value;
@@ -2102,15 +2670,6 @@
       if (!proveedorObj) return alert('Seleccione un proveedor.');
 
       const total = compraItems.reduce((acc, i) => acc + (i.qty * i.costo), 0);
-
-      // Actualizar stock y costo de los productos.
-      compraItems.forEach(item => {
-        const producto = DB.productos.find(p => p.id === item.productoId);
-        if (producto) {
-          producto.stock = (Number(producto.stock) || 0) + item.qty;
-          producto.costo = item.costo;
-        }
-      });
 
       const compra = {
         id: 'COM-' + Date.now().toString().slice(-6),
@@ -2121,11 +2680,314 @@
         total: total
       };
 
+      // Actualizar primero el estado que ve el usuario.
+      compra.items.forEach(item => {
+        const producto = DB.productos.find(p => p.id === item.productoId);
+        if (producto) {
+          producto.stock = (Number(producto.stock) || 0) + item.qty;
+          producto.costo = item.costo;
+        }
+      });
+
       DB.compras.push(compra);
-      compraItems = [];
-      closeModals();
-      saveDB();
-      alert('Compra registrada correctamente. El inventario fue actualizado.');
+
+      try {
+        await guardarCompraYActualizarStockSupabase(compra);
+
+        compraItems = [];
+        closeModals();
+        renderAll();
+        alert('Compra registrada correctamente. El inventario fue actualizado en Supabase.');
+      } catch (error) {
+        console.error('Error guardando la compra en Supabase:', error);
+        localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(DB));
+        alert('La compra se creó en pantalla, pero no se pudo guardar correctamente en Supabase: ' + (error?.message || error));
+      }
+    }
+
+    async function guardarCompraYActualizarStockSupabase(compra) {
+      // 1. Obtener proveedor, usuario y productos reales de Supabase.
+      const { data: dbProviders, error: providersError } = await supabaseClient
+        .from('proveedores')
+        .select('id,legacy_id,nombre,empresa');
+
+      if (providersError) throw providersError;
+
+      const { data: dbUsers, error: usersError } = await supabaseClient
+        .from('usuarios')
+        .select('id,legacy_id,nombre');
+
+      if (usersError) throw usersError;
+
+      const { data: dbProducts, error: productsError } = await supabaseClient
+        .from('productos')
+        .select('id,legacy_id,codigo,nombre,stock,precio_compra');
+
+      if (productsError) throw productsError;
+
+      const proveedor = (dbProviders || []).find(p =>
+        p.legacy_id === String(compra.proveedorId) ||
+        p.nombre === compra.proveedor ||
+        p.empresa === compra.proveedor
+      );
+
+      // 2. Registrar la compra principal.
+      const usuario = (dbUsers || []).find(u =>
+        u.nombre === currentUser?.nombre ||
+        u.legacy_id === String(currentUser?.id || '')
+      );
+
+      const compraPayload = {
+        legacy_id: String(compra.id),
+        fecha: fechaISO(compra.fecha),
+        usuario_id: usuario?.id || null,
+        proveedor_id: proveedor?.id || null,
+        proveedor_nombre: compra.proveedor || '',
+        subtotal: numero(compra.total),
+        iva: 0,
+        total: numero(compra.total),
+        estado: 'Registrada'
+      };
+
+      const { data: compraRow, error: compraError } = await supabaseClient
+        .from('compras')
+        .upsert(compraPayload, { onConflict: 'legacy_id' })
+        .select('id')
+        .single();
+
+      if (compraError) throw compraError;
+
+      // 3. Evitar detalles duplicados si se reintenta la operación.
+      const { error: deleteDetailsError } = await supabaseClient
+        .from('detalle_compras')
+        .delete()
+        .eq('compra_id', compraRow.id);
+
+      if (deleteDetailsError) throw deleteDetailsError;
+
+      // 4. Insertar detalles y actualizar stock/costo real.
+      for (const item of (compra.items || [])) {
+        const prod = (dbProducts || []).find(p =>
+          p.legacy_id === String(item.productoId) ||
+          p.codigo === item.codigo
+        );
+
+        if (!prod) {
+          throw new Error('No se encontró en Supabase el producto: ' + (item.nombre || item.codigo || item.productoId));
+        }
+
+        const qty = numero(item.qty);
+        const costo = numero(item.costo);
+        if (qty <= 0) continue;
+
+        const subtotal = qty * costo;
+
+        const { error: detailError } = await supabaseClient
+          .from('detalle_compras')
+          .insert({
+            compra_id: compraRow.id,
+            producto_id: prod.id,
+            producto_nombre: item.nombre || prod.nombre || 'Producto',
+            cantidad: qty,
+            costo_unitario: costo,
+            subtotal: subtotal,
+            iva: 0,
+            total: subtotal
+          });
+
+        if (detailError) throw detailError;
+
+        const stockAnterior = numero(prod.stock);
+        const stockNuevo = stockAnterior + qty;
+
+        const { error: stockError } = await supabaseClient
+          .from('productos')
+          .update({
+            stock: stockNuevo,
+            precio_compra: costo
+          })
+          .eq('id', prod.id);
+
+        if (stockError) throw stockError;
+
+        const { error: movementError } = await supabaseClient
+          .from('movimientos_inventario')
+          .insert({
+            fecha: new Date().toISOString(),
+            producto_id: prod.id,
+            usuario_id: usuario?.id || null,
+            tipo: 'Compra',
+            cantidad: qty,
+            stock_anterior: stockAnterior,
+            stock_nuevo: stockNuevo,
+            referencia_id: compraRow.id,
+            referencia_numero: String(compra.id),
+            motivo: 'Compra de mercancía'
+          });
+
+        if (movementError) throw movementError;
+      }
+
+      // 5. Confirmar en el estado local los valores escritos en Supabase.
+      for (const item of (compra.items || [])) {
+        const p = DB.productos.find(x =>
+          x.id === item.productoId || x.codigo === item.codigo
+        );
+        const prod = (dbProducts || []).find(x =>
+          x.legacy_id === String(item.productoId) || x.codigo === item.codigo
+        );
+
+        if (p && prod) {
+          p.stock = numero(prod.stock) + numero(item.qty);
+          p.costo = numero(item.costo);
+        }
+      }
+
+      localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(DB));
+      supabaseReady = true;
+      setSupabaseStatus('Compra, stock y movimiento guardados directamente en Supabase.', true);
+    }
+
+    async function eliminarCompra(id) {
+      const compra = DB.compras.find(c => c.id === id);
+      if (!compra) return alert('La compra no fue encontrada.');
+
+      const confirmar = confirm(
+        `¿Desea eliminar la compra ${compra.id}?\n\n` +
+        `Proveedor: ${compra.proveedor}\n` +
+        `Total: ${formatCOP(compra.total)}\n\n` +
+        `Esta acción eliminará la compra de Supabase y descontará del inventario ` +
+        `las cantidades que esta compra había agregado.`
+      );
+
+      if (!confirmar) return;
+
+      const btn = document.querySelector(`button[onclick="eliminarCompra('${id}')"]`);
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+      }
+
+      try {
+        // Buscar la compra real en Supabase.
+        const { data: compraRow, error: compraFindError } = await supabaseClient
+          .from('compras')
+          .select('id')
+          .eq('legacy_id', String(compra.id))
+          .maybeSingle();
+
+        if (compraFindError) throw compraFindError;
+
+        if (!compraRow) {
+          // Si ya no existe en Supabase, quitarla también del estado local.
+          DB.compras = DB.compras.filter(c => c.id !== id);
+          await cargarDBNormalizada();
+          renderAll();
+          return alert('La compra ya no existía en Supabase y fue retirada del historial local.');
+        }
+
+        // Obtener los productos actuales antes de descontar el stock.
+        const { data: dbProducts, error: productsError } = await supabaseClient
+          .from('productos')
+          .select('id,legacy_id,codigo,nombre,stock');
+
+        if (productsError) throw productsError;
+
+        // Primero descontamos el stock y registramos el movimiento de reversión.
+        for (const item of (compra.items || [])) {
+          const prod = (dbProducts || []).find(p =>
+            p.legacy_id === String(item.productoId) ||
+            p.codigo === item.codigo
+          );
+
+          if (!prod) {
+            throw new Error(
+              'No se encontró en Supabase el producto de la compra: ' +
+              (item.nombre || item.codigo || item.productoId)
+            );
+          }
+
+          const cantidad = numero(item.qty);
+          const stockAnterior = numero(prod.stock);
+          const stockNuevo = Math.max(0, stockAnterior - cantidad);
+
+          const { data: updatedProduct, error: stockError } = await supabaseClient
+            .from('productos')
+            .update({ stock: stockNuevo })
+            .eq('id', prod.id)
+            .select('id,stock')
+            .single();
+
+          if (stockError) throw stockError;
+
+          if (numero(updatedProduct?.stock) !== stockNuevo) {
+            throw new Error(
+              `No se pudo confirmar el nuevo stock de ${item.nombre || item.codigo}.`
+            );
+          }
+
+          const { error: movementError } = await supabaseClient
+            .from('movimientos_inventario')
+            .insert({
+              fecha: new Date().toISOString(),
+              producto_id: prod.id,
+              usuario_id: null,
+              tipo: 'Ajuste',
+              cantidad: -cantidad,
+              stock_anterior: stockAnterior,
+              stock_nuevo: stockNuevo,
+              referencia_id: compraRow.id,
+              referencia_numero: String(compra.id),
+              motivo: 'Anulación/eliminación de compra'
+            });
+
+          if (movementError) throw movementError;
+        }
+
+        // Eliminar detalles de la compra.
+        const { error: detailsError } = await supabaseClient
+          .from('detalle_compras')
+          .delete()
+          .eq('compra_id', compraRow.id);
+
+        if (detailsError) throw detailsError;
+
+        // Eliminar la compra principal.
+        const { error: deleteCompraError } = await supabaseClient
+          .from('compras')
+          .delete()
+          .eq('id', compraRow.id);
+
+        if (deleteCompraError) throw deleteCompraError;
+
+        // Confirmar el estado final leyendo nuevamente Supabase.
+        DB.compras = DB.compras.filter(c => c.id !== id);
+        await cargarDBNormalizada();
+        renderAll();
+
+        alert(
+          `Compra ${compra.id} eliminada correctamente.\n\n` +
+          `La compra fue retirada de Supabase y el inventario fue descontado.`
+        );
+      } catch (error) {
+        console.error('Error eliminando compra:', error);
+
+        // No dejamos un estado local falso si Supabase rechazó la operación.
+        try {
+          await cargarDBNormalizada();
+          renderAll();
+        } catch (_) {}
+
+        alert(
+          'No se pudo eliminar la compra correctamente en Supabase:\\n\\n' +
+          (error?.message || error)
+        );
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-trash"></i> Eliminar';
+        }
+      }
     }
 
     function verCompra(id) {
