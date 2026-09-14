@@ -139,73 +139,561 @@
     #login-screen .login-card > i { font-size: 2.5rem !important; margin-bottom: 1rem !important; }
     #login-screen .login-card .btn-primary { min-height: 48px; border-radius: 10px; font-weight: 700; }
 
-    /* RESPONSIVE FINAL - CELULAR, TABLET Y COMPUTADOR */
-    html { width: 100%; min-width: 0; min-height: 100%; -webkit-text-size-adjust: 100%; }
-    body { width: 100%; min-width: 0; min-height: 100vh; min-height: 100dvh; }
-    .main-content { min-width: 0; width: 100%; }
-    .content-section { width: 100%; min-width: 0; overflow-x: hidden; }
-    .brand span { font-size: 1.35rem; font-weight: 900; font-style: italic; letter-spacing: .5px; white-space: nowrap; }
-    .brand .brand-cart { font-size: 1rem; font-style: normal; letter-spacing: 0; }
-    .form-control { min-width: 0; max-width: 100%; font-size: 16px; }
-    .table-container { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { min-width: 680px; }
-    .modal-card { max-width: min(500px, calc(100vw - 2rem)); }
-    .mobile-menu-toggle, .sidebar-backdrop { display: none; }
-
-    @media (max-width: 1100px) {
-      :root { --sidebar-width: 220px; }
-      .content-section { padding: 1.25rem; }
-      header { padding: .9rem 1.25rem; }
-      .pos-container { grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 1rem; }
-      .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      #sec-configuracion > div { grid-template-columns: 1fr !important; }
+    /* =========================================================
+       RESPONSIVE FINAL - CELULAR, TABLET Y COMPUTADOR
+       ========================================================= */
+    html {
+      width: 100%;
+      min-width: 0;
+      min-height: 100%;
+      -webkit-text-size-adjust: 100%;
     }
 
+    body {
+      width: 100%;
+      min-width: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    .main-content {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .content-section {
+      width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    .brand span {
+      font-size: 1.35rem;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: .5px;
+      white-space: nowrap;
+    }
+
+    .brand .brand-cart {
+      font-size: 1rem;
+      font-style: normal;
+      letter-spacing: 0;
+    }
+
+    .form-control {
+      min-width: 0;
+      max-width: 100%;
+      font-size: 16px;
+    }
+
+    .table-container {
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      min-width: 680px;
+    }
+
+    .modal-card {
+      max-width: min(500px, calc(100vw - 2rem));
+    }
+
+    .mobile-menu-toggle,
+    .sidebar-backdrop {
+      display: none;
+    }
+
+    /* Pantallas medianas / tablets */
+    @media (max-width: 1100px) {
+      :root { --sidebar-width: 220px; }
+
+      .content-section { padding: 1.25rem; }
+      header { padding: .9rem 1.25rem; }
+
+      .pos-container {
+        grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+        gap: 1rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #sec-configuracion > div {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    /* Tablet y teléfonos */
     @media (max-width: 900px) {
-      body { display: block; overflow: hidden; }
-      .sidebar { position: fixed; z-index: 10001; left: 0; top: 0; bottom: 0; width: min(82vw, 300px); height: 100dvh; transform: translateX(-105%); transition: transform .25s ease; box-shadow: 8px 0 25px rgba(0,0,0,.22); }
-      .sidebar.mobile-open { transform: translateX(0); }
-      .sidebar-backdrop { position: fixed; inset: 0; z-index: 10000; background: rgba(15,23,42,.48); display: block; opacity: 0; visibility: hidden; transition: opacity .2s ease, visibility .2s ease; }
-      .sidebar-backdrop.active { opacity: 1; visibility: visible; }
-      .mobile-menu-toggle { position: fixed; z-index: 10002; top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); width: 44px; height: 44px; border: 0; border-radius: 10px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-      .main-content { width: 100%; height: 100dvh; min-height: 100dvh; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
-      header { min-height: 64px; padding: .75rem 1rem .75rem 4.1rem; gap: .75rem; }
-      header h2 { min-width: 0; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .user-info { gap: 8px; flex-shrink: 0; }
-      .user-info > div { min-width: 0; max-width: 42vw; overflow: hidden; }
-      .user-info b { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; }
-      .user-info .badge { font-size: .65rem; }
-      .content-section { padding: 1rem; }
-      .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
-      .metric-card { min-width: 0; padding: 1rem; }
-      .metric-icon { width: 44px; height: 44px; flex: 0 0 44px; }
-      .card { min-width: 0; padding: 1rem; }
-      .pos-container { grid-template-columns: 1fr; height: auto; min-height: 0; }
-      .pos-container .table-container { max-height: 52vh !important; }
-      .cart-summary { min-height: 360px; }
-      .receipt-modal { width: min(340px, calc(100vw - 2rem)); max-width: calc(100vw - 2rem); }
+      body {
+        display: block;
+        overflow: hidden;
+      }
+
+      .sidebar {
+        position: fixed;
+        z-index: 10001;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: min(82vw, 300px);
+        height: 100dvh;
+        transform: translateX(-105%);
+        transition: transform .25s ease;
+        box-shadow: 8px 0 25px rgba(0,0,0,.22);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(15,23,42,.48);
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .2s ease, visibility .2s ease;
+      }
+
+      .sidebar-backdrop.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .mobile-menu-toggle {
+        position: fixed;
+        z-index: 10002;
+        top: max(10px, env(safe-area-inset-top));
+        left: max(10px, env(safe-area-inset-left));
+        width: 44px;
+        height: 44px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,.2);
+      }
+
+      .main-content {
+        width: 100%;
+        height: 100dvh;
+        min-height: 100dvh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      header {
+        min-height: 64px;
+        padding: .75rem 1rem .75rem 4.1rem;
+        gap: .75rem;
+      }
+
+      header h2 {
+        min-width: 0;
+        font-size: 1.1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-info {
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .user-info > div {
+        min-width: 0;
+        max-width: 42vw;
+        overflow: hidden;
+      }
+
+      .user-info b {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: .82rem;
+      }
+
+      .user-info .badge {
+        font-size: .65rem;
+      }
+
+      .user-info .btn {
+        white-space: nowrap;
+      }
+
+      .content-section {
+        padding: 1rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .75rem;
+      }
+
+      .metric-card {
+        min-width: 0;
+        padding: 1rem;
+      }
+
+      .metric-icon {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
+      }
+
+      .card {
+        min-width: 0;
+        padding: 1rem;
+      }
+
+      .pos-container {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 0;
+      }
+
+      .pos-container > div {
+        min-width: 0;
+      }
+
+      .pos-container .table-container {
+        max-height: 52vh !important;
+      }
+
+      .cart-summary {
+        min-height: 360px;
+      }
+
+      .receipt-modal {
+        width: min(340px, calc(100vw - 2rem));
+        max-width: calc(100vw - 2rem);
+      }
     }
 
     @media (max-width: 700px) {
-      header { align-items: center; flex-wrap: nowrap; }
-      header h2 { flex: 1; }
-      .user-info > div { display: none; }
-      .metrics-grid { grid-template-columns: 1fr; }
-      .metric-card { min-height: 78px; }
-      .content-section > div[style*="justify-content:space-between"] { flex-direction: column !important; align-items: stretch !important; }
-      .content-section > div[style*="justify-content:space-between"] > div { width: 100%; flex-wrap: wrap; }
-      .content-section input, .content-section select { width: 100% !important; }
-      .pos-container .table-container { max-height: 45vh !important; }
-      .modal-card { width: 100%; max-width: 100%; max-height: calc(100dvh - 1.5rem); padding: 1rem; border-radius: 12px; }
-      table { min-width: 720px; font-size: .82rem; }
-      th, td { padding: .7rem .75rem; white-space: nowrap; }
+      header {
+        align-items: center;
+        flex-wrap: nowrap;
+      }
+
+      header h2 {
+        flex: 1;
+      }
+
+      .user-info > div {
+        display: none;
+      }
+
+      .user-info .btn {
+        min-height: 42px;
+        padding: .5rem .7rem;
+      }
+
+      .content-section {
+        padding: .8rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-card {
+        min-height: 78px;
+      }
+
+      /* Barras de herramientas: una columna */
+      .content-section > div[style*="justify-content:space-between"],
+      .content-section > div[style*="justify-content: space-between"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+
+      .content-section > div[style*="justify-content:space-between"] > div,
+      .content-section > div[style*="justify-content: space-between"] > div {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .content-section input[style*="width:250px"],
+      .content-section input[style*="width: 250px"],
+      .content-section select[style*="width:200px"],
+      .content-section select[style*="width: 200px"] {
+        width: 100% !important;
+      }
+
+      .content-section .btn {
+        min-height: 42px;
+      }
+
+      .content-section > div[style*="display:flex"] .btn {
+        flex: 1 1 100%;
+        justify-content: center;
+      }
+
+      /* POS */
+      .pos-container > div:first-child > div[style*="display:flex"] {
+        flex-direction: column !important;
+      }
+
+      .pos-container .form-control {
+        width: 100% !important;
+        min-height: 44px;
+      }
+
+      .pos-container .table-container {
+        max-height: 45vh !important;
+      }
+
+      .cart-summary {
+        padding: .85rem;
+      }
+
+      .cart-item {
+        gap: .5rem;
+        align-items: flex-start;
+      }
+
+      .cart-item > div:first-child {
+        min-width: 0;
+        flex: 1;
+        overflow-wrap: anywhere;
+      }
+
+      .cart-item > div:last-child {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        flex-shrink: 0;
+      }
+
+      .cart-summary .form-group {
+        margin-bottom: .8rem;
+      }
+
+      /* Formularios */
+      .form-control,
+      select.form-control,
+      input.form-control {
+        min-height: 44px;
+      }
+
+      /* Modales */
+      .modal-overlay {
+        padding: .75rem;
+        align-items: center;
+      }
+
+      .modal-card {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100dvh - 1.5rem);
+        padding: 1rem;
+        border-radius: 12px;
+      }
+
+      .modal-card > div:last-child {
+        flex-wrap: wrap;
+      }
+
+      .modal-card > div:last-child .btn {
+        flex: 1 1 130px;
+        justify-content: center;
+      }
+
+      /* Reportes */
+      #sec-reportes .card > div[style*="gap:2rem"],
+      #sec-reportes .card > div[style*="gap: 2rem"] {
+        flex-direction: column !important;
+        gap: .75rem !important;
+      }
+
+      /* Configuración */
+      #sec-configuracion > div {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+      }
+
+      /* Tablas cómodas para deslizar */
+      table {
+        min-width: 720px;
+        font-size: .82rem;
+      }
+
+      th, td {
+        padding: .7rem .75rem;
+        white-space: nowrap;
+      }
+
+      /* Gráfica */
+      #chart-sales {
+        width: 100% !important;
+        max-width: 100%;
+      }
+    }
+
+    /* Teléfonos pequeños */
+    @media (max-width: 480px) {
+      #login-screen {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      .content-section {
+        padding: .65rem;
+      }
+
+      .card {
+        padding: .85rem;
+        border-radius: 7px;
+      }
+
+      .brand {
+        padding: 1rem;
+      }
+
+      .brand span {
+        font-size: 1.2rem;
+      }
+
+      .metric-val {
+        font-size: 1.2rem;
+      }
+
+      table {
+        min-width: 650px;
+      }
+
+      .btn {
+        max-width: 100%;
+      }
+
+      .receipt-modal {
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .content-section {
+        padding: .5rem;
+      }
+
+      header {
+        padding-left: 3.8rem;
+      }
+
+      header h2 {
+        font-size: 1rem;
+      }
+
+      .mobile-menu-toggle {
+        width: 42px;
+        height: 42px;
+      }
+
+      .cart-summary {
+        padding: .7rem;
+      }
+    }
+
+    /* Pantallas de celular en horizontal */
+    @media (max-width: 900px) and (max-height: 520px) {
+      .sidebar {
+        width: min(300px, 72vw);
+      }
+
+      header {
+        min-height: 56px;
+        padding-top: .5rem;
+        padding-bottom: .5rem;
+      }
+
+      .content-section {
+        padding: .65rem;
+      }
+
+      .pos-container .table-container {
+        max-height: 55vh !important;
+      }
+
+      .modal-card {
+        max-height: calc(100dvh - 1rem);
+      }
+    }
+
+    /* Evita desbordamientos por textos largos */
+    h1, h2, h3, h4, p, label, td, th, span, b {
+      overflow-wrap: anywhere;
+    }
+
+    button, input, select {
+      touch-action: manipulation;
+    }
+
+    /* Ajustes específicos para tablets vertical/horizontal y PC */
+    @media (min-width: 901px) {
+      .main-content { overflow-x: hidden; }
+      .content-section { max-width: 100%; }
+    }
+
+    @media (max-width: 900px) {
+      .header-actions { gap: .5rem; flex-wrap: wrap; }
+      .pos-container { grid-template-columns: 1fr !important; }
+      .pos-products, .pos-cart { min-width: 0; width: 100%; }
+      .table-container, .data-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .content-section { padding-bottom: calc(1.25rem + env(safe-area-inset-bottom)); }
+    }
+
+    @media (max-width: 700px) {
+      #login-screen { padding: .75rem; }
+      #login-screen .login-card { padding: 1.35rem 1rem; }
+      .form-row, .form-grid, .pos-controls { grid-template-columns: 1fr !important; }
+      .toolbar, .section-toolbar { flex-direction: column; align-items: stretch; }
+      .toolbar > *, .section-toolbar > * { width: 100%; }
+      .btn { min-height: 44px; }
     }
 
     @media (max-width: 480px) {
-      .content-section { padding: .65rem; }
-      .card { padding: .85rem; border-radius: 7px; }
-      table { min-width: 650px; }
+      #login-screen .login-card { border-radius: 12px; padding: 1.1rem .9rem; }
+      #login-screen .login-card h2 { font-size: 1.3rem; }
+      .content-section { padding: .85rem; }
+      .brand span { font-size: 1.15rem; }
+      table { min-width: 620px; }
     }
+
+    @media (max-width: 360px) {
+      #login-screen { padding: .5rem; }
+      #login-screen .login-card { padding: 1rem .75rem; }
+      .content-section { padding: .7rem; }
+      table { min-width: 580px; }
+    }
+
+    @media (orientation: landscape) and (max-width: 900px) and (max-height: 520px) {
+      #login-screen .login-card { max-height: 94dvh; overflow-y: auto; }
+      .sidebar { width: min(70vw, 300px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -231,7 +719,8 @@
   </div>
 
   <!-- BOTÓN MENÚ MÓVIL -->
-  <button id="mobile-menu-toggle" class="mobile-menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()">
+  <button id="mobile-menu-toggle" class="mobile-menu-toggle" type="button"
+          aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()">
     <i class="fa-solid fa-bars"></i>
   </button>
   <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="closeMobileMenu()"></div>
@@ -298,23 +787,9 @@
           </div>
         </div>
       </div>
-      
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
-        <div class="card">
-          <h3>Ventas Recientes</h3>
-          <canvas id="chart-sales" style="max-height: 250px; margin-top: 15px;"></canvas>
-        </div>
-        <div class="card">
-          <h3>Productos Más Vendidos</h3>
-          <div class="table-container" style="max-height: 250px; overflow-y: auto; margin-top: 15px;">
-            <table style="min-width: 100%;">
-              <thead>
-                <tr><th>Producto</th><th>Cant. Vendida</th></tr>
-              </thead>
-              <tbody id="tbl-top-productos"></tbody>
-            </table>
-          </div>
-        </div>
+      <div class="card" style="margin-top: 1rem;">
+        <h3>Ventas Recientes</h3>
+        <canvas id="chart-sales" style="max-height: 250px;"></canvas>
       </div>
     </section>
 
@@ -417,14 +892,10 @@
 
     <!-- COMPRAS -->
     <section id="sec-compras" class="content-section admin-only">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <input type="text" id="comp-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar por proveedor..." onkeyup="renderCompras()">
-        <button class="btn btn-primary" onclick="openCompraModal()"><i class="fa-solid fa-plus"></i> Registrar Compra</button>
-      </div>
       <div class="table-container">
         <table>
           <thead>
-            <tr><th>ID Compra</th><th>Proveedor</th><th>Fecha</th><th>Total COP</th><th>Acciones</th></tr>
+            <tr><th>ID Compra</th><th>Proveedor</th><th>Fecha</th><th>Total COP</th></tr>
           </thead>
           <tbody id="tbl-compras"></tbody>
         </table>
@@ -624,30 +1095,6 @@
     </div>
   </div>
 
-  <!-- MODAL COMPRAS NUEVO -->
-  <div id="modal-compra" class="modal-overlay">
-    <div class="modal-card">
-      <h3>Registrar Compra</h3>
-      <input type="hidden" id="mcomp-id">
-      <div class="form-group">
-        <label>Proveedor</label>
-        <select id="mcomp-prov" class="form-control"></select>
-      </div>
-      <div class="form-group">
-        <label>Fecha de Compra</label>
-        <input type="date" id="mcomp-fecha" class="form-control">
-      </div>
-      <div class="form-group">
-        <label>Total Factura (COP)</label>
-        <input type="number" id="mcomp-total" class="form-control" placeholder="Ej: 150000">
-      </div>
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top: 15px;">
-        <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveCompra()">Guardar Compra</button>
-      </div>
-    </div>
-  </div>
-
   <div id="modal-usuario" class="modal-overlay">
     <div class="modal-card">
       <h3 id="mu-title">Crear Usuario / Cajero</h3>
@@ -699,7 +1146,7 @@
 
   <script>
     // BD INICIAL
-    let DB = JSON.parse(localStorage.getItem('super_db_zero_v4')) || {
+    let DB = JSON.parse(localStorage.getItem('super_db_zero_v3')) || {
       categorias: ['Lácteos', 'Abarrotes', 'Bebidas', 'Aseo'],
       productos: [],
       clientes: [{ id: '1', cedula: '2222222222', nombre: 'Cliente General', correo: 'cliente@general.com', telefono: '3000000000', puntos: 0 }],
@@ -718,7 +1165,7 @@
     let salesChart = null;
 
     function saveDB() {
-      localStorage.setItem('super_db_zero_v4', JSON.stringify(DB));
+      localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
       renderAll();
     }
 
@@ -823,6 +1270,7 @@
       const authHeader = 'Basic ' + btoa(`${DB.alegra.email}:${DB.alegra.token}`);
       const clienteObj = DB.clientes.find(c => c.nombre === venta.cliente) || DB.clientes[0];
 
+      // Formato JSON que requiere Alegra para Facturación
       const alegraPayload = {
         date: venta.fecha,
         dueDate: venta.fecha,
@@ -852,7 +1300,11 @@
 
         if (response.ok) {
           const resData = await response.json();
-          return { success: true, alegraId: resData.id, status: 'Emitida DIAN (Alegra ID: ' + resData.id + ')' };
+          return {
+            success: true,
+            alegraId: resData.id,
+            status: 'Emitida DIAN (Alegra ID: ' + resData.id + ')'
+          };
         } else {
           const errData = await response.json();
           return { success: false, message: errData.message || 'Error al conectar con la API de Alegra' };
@@ -973,34 +1425,6 @@
           datasets: [{ label: 'Ventas COP', data: DB.ventas.length ? DB.ventas.slice(-7).map(v => v.total) : [0], borderColor: '#2563eb', fill: false }]
         }
       });
-
-      // Calcular y mostrar los productos más vendidos
-      const productSales = {};
-      DB.ventas.forEach(v => {
-        v.items.forEach(item => {
-          if (!productSales[item.nombre]) productSales[item.nombre] = 0;
-          productSales[item.nombre] += item.qty;
-        });
-      });
-
-      // Ordenar de mayor a menor y tomar el top 10
-      const sortedProducts = Object.entries(productSales)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10);
-
-      const tbodyTop = document.getElementById('tbl-top-productos');
-      if (tbodyTop) {
-        if (sortedProducts.length === 0) {
-          tbodyTop.innerHTML = '<tr><td colspan="2" style="text-align:center; color: var(--text-muted);">No hay ventas registradas aún</td></tr>';
-        } else {
-          tbodyTop.innerHTML = sortedProducts.map(p => `
-            <tr>
-              <td><b>${p[0]}</b></td>
-              <td><span class="badge badge-success">${p[1]} uds</span></td>
-            </tr>
-          `).join('');
-        }
-      }
     }
 
     function renderProducts() {
@@ -1095,7 +1519,7 @@
       `}).join('');
     }
 
-    // POS & IVA MODIFICABLE
+    // POS & IVA DINÁMICO
     function renderPOS() {
       const search = document.getElementById('pos-search')?.value.toLowerCase() || '';
       const tbody = document.getElementById('tbl-pos-products');
@@ -1111,6 +1535,12 @@
 
       const cliSelect = document.getElementById('pos-cliente');
       if (cliSelect) cliSelect.innerHTML = DB.clientes.map(c => `<option value="${c.nombre}">${c.nombre} (${c.cedula})</option>`).join('');
+
+      const posIvaElem = document.getElementById('pos-iva-percent');
+      if (posIvaElem && DB.config && DB.config.iva !== undefined) {
+        posIvaElem.value = DB.config.iva;
+      }
+      updateCartUI();
     }
 
     function handlePOSBarcode(e) {
@@ -1146,6 +1576,8 @@
 
     function updateCartUI() {
       const list = document.getElementById('cart-list');
+      if (!list) return;
+
       list.innerHTML = cart.map(item => `
         <div class="cart-item">
           <div><b>${item.nombre}</b><br><small style="color:var(--text-muted);">${formatCOP(item.precio)}</small></div>
@@ -1158,7 +1590,8 @@
         </div>
       `).join('');
 
-      const ivaPercent = parseFloat(document.getElementById('pos-iva-percent').value) || 0;
+      const ivaInput = document.getElementById('pos-iva-percent');
+      const ivaPercent = ivaInput ? (parseFloat(ivaInput.value) || 0) : (DB.config.iva || 0);
       const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
       const iva = subtotal * (ivaPercent / 100);
       const total = subtotal + iva;
@@ -1403,72 +1836,14 @@
       if(confirm('¿Eliminar cliente?')) { DB.clientes = DB.clientes.filter(c=>c.id!==id); saveDB(); }
     }
 
-    // COMPRAS
+    // REPORTES Y COMPRAS
     function renderCompras() {
-      const search = document.getElementById('comp-search')?.value.toLowerCase() || '';
       const tbody = document.getElementById('tbl-compras');
-      const filtered = DB.compras.filter(c => c.proveedor.toLowerCase().includes(search) || c.id.toLowerCase().includes(search));
-      
-      tbody.innerHTML = filtered.map(c => `
-        <tr>
-          <td>${c.id}</td><td><b>${c.proveedor}</b></td><td>${c.fecha}</td><td>${formatCOP(c.total)}</td>
-          <td>
-            <button class="btn btn-sm btn-danger" onclick="deleteCompra('${c.id}')" title="Eliminar Compra"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        </tr>
+      tbody.innerHTML = DB.compras.map(c => `
+        <tr><td>${c.id}</td><td>${c.proveedor}</td><td>${c.fecha}</td><td>${formatCOP(c.total)}</td></tr>
       `).join('');
     }
 
-    function openCompraModal() {
-      document.getElementById('mcomp-id').value = '';
-      const provSelect = document.getElementById('mcomp-prov');
-      
-      if (DB.proveedores.length === 0) {
-        provSelect.innerHTML = '<option value="">⚠️ Registre un proveedor primero</option>';
-      } else {
-        provSelect.innerHTML = DB.proveedores.map(p => `<option value="${p.nombre}">${p.nombre} (${p.empresa})</option>`).join('');
-      }
-
-      document.getElementById('mcomp-fecha').value = new Date().toISOString().split('T')[0];
-      document.getElementById('mcomp-total').value = '';
-      document.getElementById('modal-compra').classList.add('active');
-    }
-
-    function saveCompra() {
-      const id = document.getElementById('mcomp-id').value;
-      const prov = document.getElementById('mcomp-prov').value;
-      const fecha = document.getElementById('mcomp-fecha').value;
-      const total = parseFloat(document.getElementById('mcomp-total').value);
-
-      if (!prov || !fecha || isNaN(total)) {
-        return alert('Por favor, complete todos los campos y asegúrese de registrar un proveedor primero.');
-      }
-
-      const data = {
-        id: id || 'COMP-' + Date.now().toString().slice(-4),
-        proveedor: prov,
-        fecha: fecha,
-        total: total
-      };
-
-      if (id) {
-        const idx = DB.compras.findIndex(c => c.id === id);
-        DB.compras[idx] = data;
-      } else {
-        DB.compras.push(data);
-      }
-      
-      closeModals(); saveDB();
-    }
-
-    function deleteCompra(id) {
-      if(confirm('¿Eliminar esta compra del historial? Esto afectará los cálculos de ganancias en Reportes.')) { 
-        DB.compras = DB.compras.filter(c => c.id !== id); 
-        saveDB(); 
-      }
-    }
-
-    // REPORTES
     function renderReportes() {
       const totVentas = DB.ventas.reduce((acc, v) => acc + v.total, 0);
       const totCompras = DB.compras.reduce((acc, c) => acc + c.total, 0);
@@ -1491,9 +1866,16 @@
     function saveConfig() {
       DB.config.nombre = document.getElementById('cfg-nombre').value;
       DB.config.nit = document.getElementById('cfg-nit').value;
-      DB.config.iva = parseFloat(document.getElementById('cfg-iva').value) || 19;
-      document.getElementById('pos-iva-percent').value = DB.config.iva;
+      const parsedIva = parseFloat(document.getElementById('cfg-iva').value);
+      DB.config.iva = isNaN(parsedIva) ? 19 : parsedIva;
+
+      const posIvaElem = document.getElementById('pos-iva-percent');
+      if (posIvaElem) {
+        posIvaElem.value = DB.config.iva;
+      }
+
       saveDB();
+      updateCartUI();
       alert('Configuración local guardada');
     }
 
