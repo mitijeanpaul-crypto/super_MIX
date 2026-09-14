@@ -270,7 +270,7 @@
       </div>
     </section>
 
-    <!-- COMPRAS -->
+    <!-- COMPRAS (ENTRADA DE STOCK) -->
     <section id="sec-compras" class="content-section">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <h3>Ingresar Compra de Mercadería</h3>
@@ -375,13 +375,14 @@
     </div>
   </div>
 
+  <!-- MODAL DE COMPRAS -->
   <div id="modal-compra" class="modal-overlay">
     <div class="modal-card">
       <h3 style="margin-bottom: 1rem;">Registrar Entrada de Productos</h3>
       <form onsubmit="saveCompra(event)">
         <div class="form-group">
           <label>Proveedor</label>
-          <input type="text" id="compra-prov" class="form-control" placeholder="Nombre del proveedor o distribuidor" required>
+          <input type="text" id="compra-prov" class="form-control" placeholder="Ej. Distribuidora Central" required>
         </div>
         <div class="form-group">
           <label>Seleccionar Producto</label>
@@ -407,11 +408,11 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <script>
-    // ⚠️ CONFIGURACIÓN DE SUPABASE - REEMPLAZA ESTAS DOS LÍNEAS CON TUS DATOS
+    // ⚠️ CONFIGURACIÓN DE SUPABASE - REEMPLAZA ESTAS DOS LÍNEAS CON TUS DATOS REALES
     const supabaseUrl = 'TU_SUPABASE_URL';
     const supabaseKey = 'TU_SUPABASE_ANON_KEY';
     
-    // Inicialización Única de Supabase
+    // Inicialización de Supabase
     let supabaseClient = null;
     if (window.supabase && supabaseUrl !== 'TU_SUPABASE_URL') {
       supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -436,7 +437,7 @@
       document.getElementById('login-screen').style.display = 'none';
       
       if (!supabaseClient) {
-        alert("⚠️ Recuerda colocar tu URL y ANON_KEY reales de Supabase en el código HTML para sincronizar datos.");
+        console.log("Modo demostración / local activado.");
       }
       
       initApp();
@@ -456,7 +457,7 @@
       }
     }
 
-    // CONSULTAR DATOS A SUPABASE
+    // CONSULTAR DATOS
     async function fetchData(table = 'all') {
       if (!supabaseClient) return;
 
@@ -487,11 +488,11 @@
           renderComprasHistory(); updateDashboard();
         }
       } catch (err) {
-        console.error("Error al consultar datos:", err);
+        console.error("Error al consultar Supabase:", err);
       }
     }
 
-    // OPERACIONES CRUD
+    // OPERACIONES CRUD Y COMPRAS
     window.saveProduct = async function(e) {
       e.preventDefault();
       const id = document.getElementById('prod-id').value;
@@ -499,8 +500,15 @@
       const price = parseFloat(document.getElementById('prod-price').value);
       const stock = parseInt(document.getElementById('prod-stock').value);
 
+      const newProd = { id, name, price, stock };
+
       if (supabaseClient) {
-        await supabaseClient.from('products').upsert({ id, name, price, stock });
+        await supabaseClient.from('products').upsert(newProd);
+      } else {
+        const idx = window.products.findIndex(p => p.id === id);
+        if (idx >= 0) window.products[idx] = newProd;
+        else window.products.push(newProd);
+        renderProductsManage(); renderPOS(); populateCompraProductsSelect();
       }
       closeModal('modal-producto');
       e.target.reset();
@@ -512,14 +520,19 @@
       const name = document.getElementById('cli-name').value;
       const phone = document.getElementById('cli-phone').value;
       const id = 'CLI-' + Date.now();
+      const newCli = { id, doc: docNum, name, phone };
 
       if (supabaseClient) {
-        await supabaseClient.from('clients').insert({ id, doc: docNum, name, phone });
+        await supabaseClient.from('clients').insert(newCli);
+      } else {
+        window.clients.push(newCli);
+        renderClientes(); filterPOSClients(); renderCredits();
       }
       closeModal('modal-cliente');
       e.target.reset();
     };
 
+    // FUNCIÓN DE COMPRAS MEJORADA (ONLINE Y OFFLINE)
     window.saveCompra = async function(e) {
       e.preventDefault();
       const provider = document.getElementById('compra-prov').value;
@@ -528,19 +541,38 @@
       const total = parseFloat(document.getElementById('compra-total').value);
 
       const prod = window.products.find(p => p.id === prodId);
-      if (!prod) return alert("Producto no válido");
+      if (!prod) return alert("Seleccione un producto válido");
+
+      const newStock = Number(prod.stock) + qty;
+      const id = 'COMP-' + Date.now();
+      const newPurchase = {
+        id,
+        provider,
+        productId: prodId,
+        productName: prod.name,
+        qty,
+        total,
+        date: new Date().toLocaleDateString()
+      };
 
       if (supabaseClient) {
-        await supabaseClient.from('products').update({ stock: Number(prod.stock) + qty }).eq('id', prodId);
-        const id = 'COMP-' + Date.now();
-        await supabaseClient.from('purchases').insert({
-          id, provider, productId: prodId, productName: prod.name, qty, total, date: new Date().toLocaleDateString()
-        });
+        // 1. Actualiza el stock del producto en Supabase
+        await supabaseClient.from('products').update({ stock: newStock }).eq('id', prodId);
+        // 2. Registra la nueva compra en la tabla purchases
+        await supabaseClient.from('purchases').insert(newPurchase);
+      } else {
+        // Fallback local en modo prueba
+        prod.stock = newStock;
+        window.purchases.unshift(newPurchase);
+        renderProductsManage();
+        renderPOS();
+        renderComprasHistory();
+        updateDashboard();
       }
 
       closeModal('modal-compra');
       e.target.reset();
-      alert("Compra registrada correctamente.");
+      alert(`✅ Compra registrada. Se agregaron +${qty} unidades a "${prod.name}".`);
     };
 
     window.processSale = async function() {
@@ -551,6 +583,8 @@
       const client = window.clients.find(c => c.id === clientId);
       const method = document.getElementById('pos-metodo').value;
       const total = window.cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+      const saleId = 'VENT-' + Date.now();
+      const newSale = { id: saleId, client: client ? client.name : 'Varios', method, total, date: new Date().toLocaleDateString() };
 
       if (supabaseClient) {
         for (let item of window.cart) {
@@ -569,8 +603,15 @@
           }
         }
 
-        const id = 'VENT-' + Date.now();
-        await supabaseClient.from('sales').insert({ id, client: client.name, method, total, date: new Date().toLocaleDateString() });
+        await supabaseClient.from('sales').insert(newSale);
+      } else {
+        // Modo local
+        window.cart.forEach(item => {
+          const p = window.products.find(prod => prod.id === item.id);
+          if (p) p.stock -= item.qty;
+        });
+        window.sales.unshift(newSale);
+        renderProductsManage(); renderPOS(); renderSalesHistory(); updateDashboard();
       }
 
       window.cart = [];
@@ -586,16 +627,20 @@
       const credit = window.credits.find(c => c.id === clientId);
       if (!credit) return;
 
+      const newPaid = Number(credit.total_paid) + amount;
+
       if (supabaseClient) {
-        const newPaid = Number(credit.total_paid) + amount;
         await supabaseClient.from('credits').update({ total_paid: newPaid }).eq('id', clientId);
+      } else {
+        credit.total_paid = newPaid;
+        renderCredits(); updateDashboard();
       }
 
       closeModal('modal-abono');
       e.target.reset();
     };
 
-    // FUNCIONES DE INTERFAZ Y RENDERIZADO
+    // FUNCIONES DE INTERFAZ
     function showSection(sectionId, element) {
       document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -611,7 +656,16 @@
 
     function openProductModal() { document.getElementById('modal-producto').classList.add('active'); }
     function openClienteModal() { document.getElementById('modal-cliente').classList.add('active'); }
-    function openCompraModal() { document.getElementById('modal-compra').classList.add('active'); }
+    
+    // Abrir modal de compras actualizando la lista de productos primero
+    function openCompraModal() {
+      if (window.products.length === 0) {
+        return alert("Primero debes agregar productos en la sección '2. Productos'.");
+      }
+      populateCompraProductsSelect();
+      document.getElementById('modal-compra').classList.add('active');
+    }
+
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
     function updateDashboard() {
@@ -683,11 +737,12 @@
       const inCart = window.cart.find(c => c.id === id);
       if (inCart) {
         if(inCart.qty < prod.stock) inCart.qty++;
+        else alert("Alcanzaste el límite de stock disponible.");
       } else {
         if(prod.stock > 0) {
           window.cart.push({ ...prod, qty: 1 });
         } else {
-          alert("Producto sin stock.");
+          alert("Producto sin stock disponible.");
         }
       }
       renderCart();
