@@ -890,9 +890,14 @@
         </div>
       </div>
     </section>
-
+    
     <!-- COMPRAS -->
+    
     <section id="sec-compras" class="content-section admin-only">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3>Historial de Compras</h3>
+        <button class="btn btn-primary" onclick="openCompraModal()"><i class="fa-solid fa-cart-plus"></i> Registrar Compra</button>
+      </div>
       <div class="table-container">
         <table>
           <thead>
@@ -1853,12 +1858,61 @@
       if(confirm('¿Eliminar cliente?')) { DB.clientes = DB.clientes.filter(c=>c.id!==id); saveDB(); }
     }
 
-    // REPORTES Y COMPRAS
+   // REPORTES Y COMPRAS
+    
     function renderCompras() {
       const tbody = document.getElementById('tbl-compras');
       tbody.innerHTML = DB.compras.map(c => `
         <tr><td>${c.id}</td><td>${c.proveedor}</td><td>${c.fecha}</td><td>${formatCOP(c.total)}</td></tr>
       `).join('');
+    }
+
+    function openCompraModal() {
+      if (!DB.proveedores || DB.proveedores.length === 0) return alert('Debes registrar al menos un proveedor primero.');
+      if (!DB.productos || DB.productos.length === 0) return alert('Debes registrar al menos un producto primero.');
+
+      const provSelect = document.getElementById('mc-proveedor');
+      const prodSelect = document.getElementById('mc-producto');
+
+      provSelect.innerHTML = DB.proveedores.map(p => `<option value="${p.empresa || p.nombre}">${p.empresa || p.nombre}</option>`).join('');
+      prodSelect.innerHTML = DB.productos.map(p => `<option value="${p.id}">${p.nombre} (Stock actual: ${p.stock})</option>`).join('');
+
+      document.getElementById('mc-costo').value = DB.productos[0].costo || 0;
+      document.getElementById('mc-cantidad').value = 1;
+      document.getElementById('modal-compra').classList.add('active');
+    }
+
+    function onCompraProductoChange(prodId) {
+      const prod = DB.productos.find(p => p.id === prodId);
+      if (prod) document.getElementById('mc-costo').value = prod.costo;
+    }
+
+    function saveCompra() {
+      const proveedor = document.getElementById('mc-proveedor').value;
+      const prodId = document.getElementById('mc-producto').value;
+      const cantidad = parseInt(document.getElementById('mc-cantidad').value) || 0;
+      const costoUnitario = parseFloat(document.getElementById('mc-costo').value) || 0;
+
+      if (cantidad <= 0) return alert('Ingrese una cantidad válida.');
+
+      const prod = DB.productos.find(p => p.id === prodId);
+      if (!prod) return;
+
+      // Incrementa stock y actualiza costo de compra
+      prod.stock += cantidad;
+      prod.costo = costoUnitario;
+
+      // Registra la compra
+      DB.compras.push({
+        id: 'COM-' + Date.now().toString().slice(-4),
+        proveedor: proveedor,
+        fecha: new Date().toISOString().split('T')[0],
+        total: cantidad * costoUnitario
+      });
+
+      closeModals();
+      saveDB();
+      alert(`¡Compra guardada! Se sumaron +${cantidad} unidades a ${prod.nombre}.`);
     }
 
     function renderReportes() {
@@ -1897,7 +1951,6 @@
       };
       saveDB();
       alert('Configuración de Facturación Electrónica Alegra guardada con éxito.');
-    }
 
     // CARGA DE CONFIGURACIÓN
     document.getElementById('cfg-nombre').value = DB.config.nombre;
