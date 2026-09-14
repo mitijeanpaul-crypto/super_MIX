@@ -108,9 +108,10 @@
   <aside class="sidebar">
     <div class="brand"><i class="fa-solid fa-cart-shopping"></i><span>super MIX</span></div>
     <ul class="nav-list">
-      <li class="nav-item admin-only active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</li>
-      <li class="nav-item admin-only" onclick="showSection('compras', this)"><i class="fa-solid fa-truck-ramp-box"></i> Compras</li>
-      <li class="nav-item admin-only" onclick="showSection('proveedores', this)"><i class="fa-solid fa-truck"></i> Proveedores</li>
+      <li class="nav-item admin-only active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> 1. Dashboard</li>
+      <li class="nav-item admin-only" onclick="showSection('productos', this)"><i class="fa-solid fa-box"></i> 2. Productos</li>
+      <li class="nav-item admin-only" onclick="showSection('compras', this)"><i class="fa-solid fa-truck-ramp-box"></i> 5. Compras</li>
+      <li class="nav-item admin-only" onclick="showSection('proveedores', this)"><i class="fa-solid fa-truck"></i> 6. Proveedores</li>
     </ul>
   </aside>
 
@@ -133,13 +134,25 @@
       <p style="color: var(--text-muted); margin-top: 1rem;">Sistema de gestión de inventario, compras y ventas</p>
     </section>
 
+    <!-- PRODUCTOS -->
+    <section id="sec-productos" class="content-section admin-only">
+      <h3>Productos</h3>
+      <button class="btn btn-primary" onclick="openProductoModal()" style="margin-top: 1rem;"><i class="fa-solid fa-plus"></i> Nuevo Producto</button>
+      <div class="table-container" style="margin-top: 1rem;">
+        <table>
+          <thead>
+            <tr><th>Código</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr>
+          </thead>
+          <tbody id="tbl-productos"></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- COMPRAS -->
     <section id="sec-compras" class="content-section admin-only">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:10px;">
-        <h3>📦 Historial de Compras</h3>
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-primary" onclick="openCompraModal()"><i class="fa-solid fa-plus"></i> Nueva Compra</button>
-        </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:10px;">
+        <h3>📦 Compras</h3>
+        <button class="btn btn-primary" onclick="openCompraModal()"><i class="fa-solid fa-plus"></i> Nueva Compra</button>
       </div>
       <div class="table-container">
         <table>
@@ -168,10 +181,25 @@
     </section>
   </main>
 
+  <!-- MODAL: NUEVO PRODUCTO -->
+  <div id="modal-producto" class="modal-overlay">
+    <div class="modal-card">
+      <h3>Nuevo Producto</h3>
+      <div class="form-group"><label>Código</label><input type="text" id="prod-codigo" class="form-control"></div>
+      <div class="form-group"><label>Nombre</label><input type="text" id="prod-nombre" class="form-control"></div>
+      <div class="form-group"><label>Precio COP</label><input type="number" id="prod-precio" class="form-control"></div>
+      <div class="form-group"><label>Stock</label><input type="number" id="prod-stock" class="form-control"></div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="closeModals()">Cancelar</button>
+        <button class="btn btn-success" style="flex:1;" onclick="guardarProducto()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: NUEVA COMPRA -->
   <div id="modal-compra" class="modal-overlay">
     <div class="modal-card">
-      <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-cart-plus"></i> Registrar Nueva Compra</h3>
+      <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-cart-plus"></i> Nueva Compra</h3>
       
       <div class="form-group">
         <label>Proveedor *</label>
@@ -181,30 +209,30 @@
       </div>
 
       <div class="form-group">
-        <label>Fecha de Compra *</label>
+        <label>Fecha *</label>
         <input type="date" id="compra-fecha" class="form-control" required>
       </div>
 
       <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Agregar Productos</h4>
 
       <div class="form-group">
-        <label>Nombre del Producto *</label>
+        <label>Nombre del Producto</label>
         <input type="text" id="compra-producto-nombre" class="form-control" placeholder="Ej: Leche Integral">
       </div>
 
       <div style="display:flex; gap:10px; margin-bottom: 1rem;">
         <div class="form-group" style="flex:1;">
           <label>Cantidad</label>
-          <input type="number" id="compra-cantidad" class="form-control" min="1" placeholder="Ej: 10">
+          <input type="number" id="compra-cantidad" class="form-control" min="1">
         </div>
         <div class="form-group" style="flex:1;">
           <label>Precio Unit. COP</label>
-          <input type="number" id="compra-precio" class="form-control" min="0" step="0.01" placeholder="Ej: 5000">
+          <input type="number" id="compra-precio" class="form-control" min="0">
         </div>
-        <button type="button" class="btn btn-secondary" style="align-self: flex-end; white-space:nowrap;" onclick="agregarProductoCompra()">+ Agregar</button>
+        <button type="button" class="btn btn-secondary" style="align-self: flex-end;" onclick="agregarProductoCompra()">+ Agregar</button>
       </div>
 
-      <div id="compra-detalles" style="margin-top: 1rem; max-height: 250px; overflow-y: auto; background: #f8fafc; padding: 1rem; border-radius: 6px; border: 1px solid var(--border); min-height: 80px;">
+      <div id="compra-detalles" style="margin-top: 1rem; max-height: 250px; overflow-y: auto; background: #f8fafc; padding: 1rem; border-radius: 6px; border: 1px solid var(--border);">
         <em style="color: var(--text-muted);">Los productos aparecerán aquí</em>
       </div>
 
@@ -214,8 +242,8 @@
       </div>
 
       <div style="display:flex; gap:8px; margin-top:1rem;">
-        <button type="button" class="btn btn-secondary" style="flex:1; justify-content:center;" onclick="closeModals()">Cancelar</button>
-        <button type="button" class="btn btn-success" style="flex:1; justify-content:center;" onclick="guardarCompra()"><i class="fa-solid fa-check"></i> Guardar Compra</button>
+        <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModals()">Cancelar</button>
+        <button type="button" class="btn btn-success" style="flex:1;" onclick="guardarCompra()"><i class="fa-solid fa-check"></i> Guardar</button>
       </div>
     </div>
   </div>
@@ -223,41 +251,21 @@
   <!-- MODAL: NUEVO PROVEEDOR -->
   <div id="modal-proveedor" class="modal-overlay">
     <div class="modal-card">
-      <h3 style="margin-bottom: 1rem;">Registrar Nuevo Proveedor</h3>
-      
-      <div class="form-group">
-        <label>Nombre *</label>
-        <input type="text" id="prov-nombre" class="form-control" placeholder="Ej: Lácteos del Valle" required>
-      </div>
-
-      <div class="form-group">
-        <label>Teléfono</label>
-        <input type="text" id="prov-telefono" class="form-control" placeholder="Ej: 3005551234">
-      </div>
-
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="prov-email" class="form-control" placeholder="contacto@proveedor.com">
-      </div>
-
-      <div class="form-group">
-        <label>Empresa / Razón Social</label>
-        <input type="text" id="prov-empresa" class="form-control" placeholder="Ej: Lácteos del Valle S.A.">
-      </div>
-
+      <h3 style="margin-bottom: 1rem;">Nuevo Proveedor</h3>
+      <div class="form-group"><label>Nombre *</label><input type="text" id="prov-nombre" class="form-control" required></div>
+      <div class="form-group"><label>Teléfono</label><input type="text" id="prov-telefono" class="form-control"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="prov-email" class="form-control"></div>
+      <div class="form-group"><label>Empresa</label><input type="text" id="prov-empresa" class="form-control"></div>
       <div style="display:flex; gap:8px;">
-        <button type="button" class="btn btn-secondary" style="flex:1; justify-content:center;" onclick="closeModals()">Cancelar</button>
-        <button type="button" class="btn btn-success" style="flex:1; justify-content:center;" onclick="guardarProveedor()"><i class="fa-solid fa-check"></i> Guardar</button>
+        <button class="btn btn-secondary" style="flex:1;" onclick="closeModals()">Cancelar</button>
+        <button class="btn btn-success" style="flex:1;" onclick="guardarProveedor()">Guardar</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ============= DATABASE =============
     let db = {
-      usuarios: [
-        { id: 1, nombre: 'Admin', usuario: 'admin', password: 'admin123', rol: 'admin' }
-      ],
+      usuarios: [{ id: 1, nombre: 'Admin', usuario: 'admin', password: 'admin123', rol: 'admin' }],
       compras: [],
       proveedores: [],
       productos: []
@@ -267,16 +275,10 @@
     let compraActual = [];
     let totalCompraActual = 0;
 
-    // ============= LOAD/SAVE DATA =============
     function cargarDatos() {
       const datos = localStorage.getItem('superMixDB');
-      if (datos) {
-        try {
-          db = JSON.parse(datos);
-        } catch (e) {
-          console.error('Error cargando datos:', e);
-        }
-      }
+      if (datos) db = JSON.parse(datos);
+      if (!document.getElementById('compra-fecha')) return;
       document.getElementById('compra-fecha').valueAsDate = new Date();
     }
 
@@ -284,7 +286,6 @@
       localStorage.setItem('superMixDB', JSON.stringify(db));
     }
 
-    // ============= AUTENTICACIÓN =============
     function handleLogin(e) {
       e.preventDefault();
       const usuario = document.getElementById('login-user').value.trim();
@@ -299,7 +300,7 @@
         cargarDatos();
         renderCompras();
         renderProveedores();
-        mostrarBotonesMovil();
+        renderProductos();
       } else {
         alert('❌ Usuario o contraseña incorrectos\n\nPrueba:\nUsuario: admin\nContraseña: admin123');
       }
@@ -311,14 +312,11 @@
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('login-user').value = '';
         document.getElementById('login-pass').value = '';
-        ocultarBotonesMovil();
       }
     }
 
-    // ============= NAVEGACIÓN =============
     function showSection(seccion, element) {
       if (!usuarioActivo) return;
-      
       document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       
@@ -330,38 +328,77 @@
         
         if (seccion === 'compras') renderCompras();
         if (seccion === 'proveedores') renderProveedores();
+        if (seccion === 'productos') renderProductos();
         
-        cerrarMenuMovil();
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) sidebar.classList.remove('mobile-open');
       }
     }
 
     function toggleMobileMenu() {
       const sidebar = document.querySelector('.sidebar');
-      if (sidebar) {
-        sidebar.classList.toggle('mobile-open');
+      if (sidebar) sidebar.classList.toggle('mobile-open');
+    }
+
+    function closeModals() {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+    }
+
+    // PRODUCTOS
+    function openProductoModal() {
+      document.getElementById('prod-codigo').value = '';
+      document.getElementById('prod-nombre').value = '';
+      document.getElementById('prod-precio').value = '';
+      document.getElementById('prod-stock').value = '';
+      document.getElementById('modal-producto').classList.add('active');
+    }
+
+    function guardarProducto() {
+      const prod = {
+        id: Date.now(),
+        codigo: document.getElementById('prod-codigo').value,
+        nombre: document.getElementById('prod-nombre').value,
+        precio: parseFloat(document.getElementById('prod-precio').value) || 0,
+        stock: parseInt(document.getElementById('prod-stock').value) || 0
+      };
+      db.productos.push(prod);
+      guardarDatos();
+      alert('✅ Producto guardado');
+      closeModals();
+      renderProductos();
+    }
+
+    function renderProductos() {
+      const tbody = document.getElementById('tbl-productos');
+      tbody.innerHTML = '';
+      if (db.productos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color: var(--text-muted);">Sin productos</td></tr>';
+        return;
+      }
+      db.productos.forEach(p => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${p.codigo}</td>
+            <td><b>${p.nombre}</b></td>
+            <td>$ ${p.precio.toLocaleString('es-CO')}</td>
+            <td>${p.stock}</td>
+            <td>
+              <button class="btn btn-sm btn-danger" onclick="eliminarProducto(${p.id})">🗑️</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function eliminarProducto(id) {
+      if (confirm('¿Eliminar?')) {
+        db.productos = db.productos.filter(p => p.id !== id);
+        guardarDatos();
+        renderProductos();
       }
     }
 
-    function cerrarMenuMovil() {
-      const sidebar = document.querySelector('.sidebar');
-      if (sidebar) {
-        sidebar.classList.remove('mobile-open');
-      }
-    }
-
-    function mostrarBotonesMovil() {
-      const btn = document.querySelector('.mobile-menu-toggle');
-      if (window.innerWidth <= 900 && btn) {
-        btn.style.display = 'flex';
-      }
-    }
-
-    function ocultarBotonesMovil() {
-      const btn = document.querySelector('.mobile-menu-toggle');
-      if (btn) btn.style.display = 'none';
-    }
-
-    // ============= COMPRAS =============
+    // COMPRAS
     function openCompraModal() {
       compraActual = [];
       totalCompraActual = 0;
@@ -377,13 +414,8 @@
       document.getElementById('compra-cantidad').value = '';
       document.getElementById('compra-precio').value = '';
       document.getElementById('compra-detalles').innerHTML = '<em style="color: var(--text-muted);">Los productos aparecerán aquí</em>';
-      actualizarResumenCompra();
-      
+      document.getElementById('compra-total-display').textContent = '$ 0';
       document.getElementById('modal-compra').classList.add('active');
-    }
-
-    function closeModals() {
-      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
     }
 
     function agregarProductoCompra() {
@@ -392,18 +424,12 @@
       const precio = parseFloat(document.getElementById('compra-precio').value) || 0;
       
       if (!nombre || cantidad <= 0 || precio <= 0) {
-        alert('⚠️ Completa todos los campos correctamente');
+        alert('⚠️ Completa los campos');
         return;
       }
       
       const subtotal = cantidad * precio;
-      compraActual.push({
-        nombre,
-        cantidad,
-        precio,
-        subtotal
-      });
-      
+      compraActual.push({ nombre, cantidad, precio, subtotal });
       totalCompraActual += subtotal;
       
       document.getElementById('compra-producto-nombre').value = '';
@@ -423,20 +449,19 @@
       }
       
       div.innerHTML = compraActual.map((item, idx) => `
-        <div style="background: white; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--primary);">
+        <div style="background: white; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
           <div>
             <strong>${item.nombre}</strong><br>
-            <small style="color: var(--text-muted);">${item.cantidad} x $ ${item.precio.toLocaleString('es-CO', {maximumFractionDigits: 0})}</small>
+            <small>${item.cantidad} x $ ${item.precio.toLocaleString('es-CO')}</small>
           </div>
           <div style="text-align: right;">
-            <strong>$ ${item.subtotal.toLocaleString('es-CO', {maximumFractionDigits: 0})}</strong><br>
+            <strong>$ ${item.subtotal.toLocaleString('es-CO')}</strong><br>
             <button type="button" class="btn btn-sm btn-danger" onclick="quitarProductoCompra(${idx})">✕</button>
           </div>
         </div>
       `).join('');
       
-      document.getElementById('compra-total-display').textContent = 
-        '$ ' + totalCompraActual.toLocaleString('es-CO', {maximumFractionDigits: 0});
+      document.getElementById('compra-total-display').textContent = '$ ' + totalCompraActual.toLocaleString('es-CO');
     }
 
     function quitarProductoCompra(idx) {
@@ -450,11 +475,11 @@
       const fecha = document.getElementById('compra-fecha').value;
       
       if (!provId) {
-        alert('⚠️ Selecciona un proveedor');
+        alert('⚠️ Selecciona proveedor');
         return;
       }
       if (compraActual.length === 0) {
-        alert('⚠️ Agrega al menos un producto');
+        alert('⚠️ Agrega productos');
         return;
       }
       
@@ -465,12 +490,11 @@
         fecha,
         productos: compraActual.length,
         total: totalCompraActual,
-        detalles: [...compraActual],
-        registradoPor: usuarioActivo.nombre
+        detalles: [...compraActual]
       });
       
       guardarDatos();
-      alert('✅ Compra registrada exitosamente');
+      alert('✅ Compra guardada');
       closeModals();
       renderCompras();
     }
@@ -480,7 +504,7 @@
       tbody.innerHTML = '';
       
       if (db.compras.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color: var(--text-muted);">📦 Sin compras registradas</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color: var(--text-muted);">📦 Sin compras</td></tr>';
         return;
       }
       
@@ -491,7 +515,7 @@
             <td>${c.proveedor}</td>
             <td>${new Date(c.fecha).toLocaleDateString('es-CO')}</td>
             <td><span class="badge badge-success">${c.productos}</span></td>
-            <td><strong>$ ${c.total.toLocaleString('es-CO', {maximumFractionDigits: 0})}</strong></td>
+            <td><strong>$ ${c.total.toLocaleString('es-CO')}</strong></td>
             <td>
               <button class="btn btn-sm btn-secondary" onclick="verDetallesCompra('${c.id}')">👁️ Ver</button>
             </td>
@@ -504,20 +528,15 @@
       const c = db.compras.find(x => x.id === id);
       if (!c) return;
       
-      let msg = `📦 COMPRA ${c.id}\n`;
-      msg += `Proveedor: ${c.proveedor}\n`;
-      msg += `Fecha: ${new Date(c.fecha).toLocaleDateString('es-CO')}\n`;
-      msg += `Registrado por: ${c.registradoPor}\n\n`;
-      msg += `PRODUCTOS:\n`;
+      let msg = `📦 COMPRA ${c.id}\nProveedor: ${c.proveedor}\nFecha: ${new Date(c.fecha).toLocaleDateString('es-CO')}\n\nPRODUCTOS:\n`;
       c.detalles.forEach(p => {
         msg += `• ${p.nombre}: ${p.cantidad} x $ ${p.precio.toLocaleString('es-CO')} = $ ${p.subtotal.toLocaleString('es-CO')}\n`;
       });
       msg += `\nTOTAL: $ ${c.total.toLocaleString('es-CO')}`;
-      
       alert(msg);
     }
 
-    // ============= PROVEEDORES =============
+    // PROVEEDORES
     function openProveedorModal() {
       document.getElementById('prov-nombre').value = '';
       document.getElementById('prov-telefono').value = '';
@@ -530,7 +549,7 @@
       const nombre = document.getElementById('prov-nombre').value.trim();
       
       if (!nombre) {
-        alert('⚠️ El nombre del proveedor es requerido');
+        alert('⚠️ Nombre requerido');
         return;
       }
       
@@ -543,7 +562,7 @@
       });
       
       guardarDatos();
-      alert('✅ Proveedor guardado exitosamente');
+      alert('✅ Proveedor guardado');
       closeModals();
       renderProveedores();
     }
@@ -553,7 +572,7 @@
       tbody.innerHTML = '';
       
       if (db.proveedores.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color: var(--text-muted);">Sin proveedores registrados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color: var(--text-muted);">Sin proveedores</td></tr>';
         return;
       }
       
@@ -573,17 +592,19 @@
     }
 
     function eliminarProveedor(id) {
-      if (confirm('¿Estás seguro de que deseas eliminar este proveedor?')) {
+      if (confirm('¿Eliminar?')) {
         db.proveedores = db.proveedores.filter(p => p.id !== id);
         guardarDatos();
         renderProveedores();
       }
     }
 
-    // ============= INICIALIZACIÓN =============
     cargarDatos();
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 900) cerrarMenuMovil();
+      if (window.innerWidth > 900) {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) sidebar.classList.remove('mobile-open');
+      }
     });
   </script>
 </body>
