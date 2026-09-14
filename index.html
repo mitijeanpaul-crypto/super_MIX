@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>super MIX - Punto de Venta</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- FontAwesome -->
@@ -844,11 +845,19 @@
   </div>
 
   <script>
-    // BD INICIAL
+    // BASE DE DATOS: Supabase + respaldo local
+    const SUPABASE_URL = 'https://gxzuiaavzkmbmndokhgk.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_YcmFpKrpsZqCQBSLbfqSPA_9AavRXcX';
+    const SUPABASE_ROW_ID = 'super_mix';
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
     let DB = JSON.parse(localStorage.getItem('super_db_zero_v3')) || {
       categorias: ['Lácteos', 'Abarrotes', 'Bebidas', 'Aseo'],
       productos: [],
-      // NEW: Added deuda field by default to the initial general client
       clientes: [{ id: '1', cedula: '2222222222', nombre: 'Cliente General', correo: 'cliente@general.com', telefono: '3000000000', puntos: 0, deuda: 0 }],
       proveedores: [],
       usuarios: [
@@ -863,10 +872,74 @@
     let currentUser = null;
     let cart = [];
     let salesChart = null;
+    let supabaseReady = false;
 
-    function saveDB() {
+    function setSupabaseStatus(message, ok = false) {
+      const el = document.getElementById('supabase-status');
+      if (!el) return;
+      el.innerHTML = ok
+        ? '<i class="fa-solid fa-cloud" style="color:#16a34a;"></i> ' + message
+        : '<i class="fa-solid fa-triangle-exclamation" style="color:#d97706;"></i> ' + message;
+      el.style.background = ok ? '#ecfdf5' : '#fffbeb';
+      el.style.color = ok ? '#166534' : '#92400e';
+    }
+
+    async function cargarDBSupabase() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('app_state')
+          .select('data')
+          .eq('id', SUPABASE_ROW_ID)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data && data.data) {
+          DB = { ...DB, ...data.data };
+          localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
+          supabaseReady = true;
+          setSupabaseStatus('Conectado a Supabase. Datos sincronizados.', true);
+        } else {
+          // Primera ejecución: subir el estado local inicial.
+          await guardarDBSupabase();
+          supabaseReady = true;
+          setSupabaseStatus('Conectado a Supabase. Se creó el registro inicial.', true);
+        }
+      } catch (error) {
+        console.error('Supabase:', error);
+        supabaseReady = false;
+        setSupabaseStatus('Supabase no disponible. Se usará el respaldo local.', false);
+      }
+
+      renderAll();
+      updateCartUI();
+    }
+
+    async function guardarDBSupabase() {
+      const { error } = await supabaseClient
+        .from('app_state')
+        .upsert({
+          id: SUPABASE_ROW_ID,
+          data: DB,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+
+      if (error) throw error;
+    }
+
+    async function saveDB() {
       localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
       renderAll();
+
+      try {
+        await guardarDBSupabase();
+        supabaseReady = true;
+        setSupabaseStatus('Guardado en Supabase correctamente.', true);
+      } catch (error) {
+        console.error('Error guardando en Supabase:', error);
+        supabaseReady = false;
+        setSupabaseStatus('Guardado localmente. No se pudo sincronizar con Supabase.', false);
+      }
     }
 
     function formatCOP(monto) {
@@ -1623,71 +1696,40 @@
 
     // COMPRAS
     let compraItems = [];
+
     function renderCompras() {
       const tbody = document.getElementById('tbl-compras');
       if (!tbody) return;
 
-      tbody.innerHTML = DB.compras.map(c => {
-        const cantidadProductos = (c.items || []).reduce((acc, item) => acc + (Number(item.qty) || 0), 0);
+      const compras = DB.compras || [];
+      tbody.innerHTML = compras.length ? compras.slice().reverse().map(c => `
+        <tr>
+          <td><b>${c.id}</b></td>
+          <td>${c.proveedor}</td>
+          <td>${c.fecha}</td>
+          <td>${(c.items || []).reduce((acc, i) => acc + Number(i.qty || 0), 0)}</td>
+          <td><b>${formatCOP(c.total)}</b></td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="verCompra('${c.id}')">
+              <i class="fa-solid fa-eye"></i> Ver
+            </button>
+          </td>
+        </tr>
+      `).join('') : `
+        <tr>
+          <td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">
+            No hay compras registradas. Haz clic en "Registrar Compra" para comenzar.
+          </td>
+        </tr>
+      `;
 
-        return `
-          <tr>
-            <td>${c.id}</td>
-            <td>${c.proveedor}</td>
-            <td>${c.fecha}</td>
-            <td>${cantidadProductos}</td>
-            <td>${formatCOP(c.total)}</td>
-            <td style="white-space:nowrap;">
-              <button class="btn btn-sm btn-secondary" onclick="verCompra('${c.id}')">
-                <i class="fa-solid fa-eye"></i> Ver
-              </button>
-              <button class="btn btn-sm btn-danger" onclick="eliminarCompra('${c.id}')">
-                <i class="fa-solid fa-trash"></i> Eliminar
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      const totalCompras = DB.compras.reduce((acc, c) => acc + (Number(c.total) || 0), 0);
-      const metricCantidad = document.getElementById('compras-cantidad');
-      const metricTotal = document.getElementById('compras-total');
-
-      if (metricCantidad) metricCantidad.textContent = DB.compras.length;
-      if (metricTotal) metricTotal.textContent = formatCOP(totalCompras);
+      const cantidad = compras.length;
+      const total = compras.reduce((acc, c) => acc + Number(c.total || 0), 0);
+      const cantidadEl = document.getElementById('compras-cantidad');
+      const totalEl = document.getElementById('compras-total');
+      if (cantidadEl) cantidadEl.textContent = cantidad;
+      if (totalEl) totalEl.textContent = formatCOP(total);
     }
-
-    function eliminarCompra(id) {
-      const compra = DB.compras.find(c => c.id === id);
-      if (!compra) return alert('La compra no fue encontrada.');
-
-      const confirmar = confirm(
-        '¿Desea eliminar la compra ' + compra.id + '?\n\n' +
-        'Proveedor: ' + compra.proveedor + '\n' +
-        'Total: ' + formatCOP(compra.total) + '\n\n' +
-        'También se descontará del inventario la mercancía que esta compra había agregado.'
-      );
-
-      if (!confirmar) return;
-
-      // Revertir el stock de los productos incluidos en la compra.
-      (compra.items || []).forEach(item => {
-        const producto = DB.productos.find(p => p.id === item.id);
-        if (producto) {
-          producto.stock = Math.max(0, (Number(producto.stock) || 0) - (Number(item.qty) || 0));
-        }
-      });
-
-      // Eliminar la compra del historial.
-      DB.compras = DB.compras.filter(c => c.id !== id);
-
-      saveDB();
-      renderCompras();
-      renderInventario();
-
-      alert('Compra eliminada correctamente y el inventario fue actualizado.');
-    }
-
 
     function openCompraModal() {
       if (!DB.proveedores.length) {
@@ -1956,6 +1998,9 @@
     window.addEventListener('resize', () => {
       if (window.innerWidth > 900) closeMobileMenu();
     });
+
+    // Cargar datos desde Supabase al abrir el sistema.
+    cargarDBSupabase();
 
   </script>
 </body>
