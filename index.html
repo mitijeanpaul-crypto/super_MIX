@@ -83,26 +83,34 @@
 <body>
 
   <!-- LOGIN -->
-  <div id="login-screen">
-    <div class="login-card">
-      <i class="fa-solid fa-cart-shopping" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
-      <h2 style="margin-bottom: 0.5rem;">Iniciar Sesión</h2>
-      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">
-        <strong>Demo:</strong> Usuario: <code>admin</code> | Contraseña: <code>admin123</code>
-      </p>
-      <form onsubmit="handleLogin(event)">
-        <div class="form-group" style="text-align: left;">
-          <label>Usuario</label>
-          <input type="text" id="login-user" class="form-control" placeholder="*****" required autofocus>
-        </div>
-        <div class="form-group" style="text-align: left;">
-          <label>Contraseña</label>
-          <input type="password" id="login-pass" class="form-control" placeholder="admin123" required>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">Acceder</button>
-      </form>
-    </div>
+  <!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <i class="fa-solid fa-cart-shopping" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+    <h2 style="margin-bottom: 0.5rem;">Iniciar Sesión</h2>
+    
+    <!-- Se remueve la contraseña en texto claro del aviso demo -->
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">
+      <strong>Demo:</strong> Acceso para administrador
+    </p>
+
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group" style="text-align: left;">
+        <label>Usuario</label>
+        <!-- Placeholder descriptivo en lugar de asteriscos -->
+        <input type="text" id="login-user" class="form-control" placeholder="Ingrese su usuario" required autofocus>
+      </div>
+      
+      <div class="form-group" style="text-align: left;">
+        <label>Contraseña</label>
+        <!-- Placeholder enmascarado para no mostrar "admin123" -->
+        <input type="password" id="login-pass" class="form-control" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">Acceder</button>
+    </form>
   </div>
+</div>
 
   <!-- BOTÓN MÓVIL -->
   <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" style="display:none;">
