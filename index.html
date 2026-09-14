@@ -59,6 +59,8 @@
     }
     .nav-item:hover, .nav-item.active { background-color: var(--primary); color: white; }
     .nav-item.disabled { display: none !important; }
+    .nav-item .nav-icon { width: 22px; min-width: 22px; text-align: center; font-size: 1.05rem; }
+    .nav-item span { white-space: nowrap; }
 
     /* MAIN CONTENT */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
@@ -294,17 +296,17 @@
   <aside class="sidebar">
     <div class="brand"><i class="fa-solid fa-cart-shopping"></i><span>super MIX</span><span class="brand-cart">🛒</span></div>
     <ul class="nav-list">
-      <li class="nav-item admin-only active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> 1. Dashboard</li>
-      <li class="nav-item admin-only" onclick="showSection('productos', this)"><i class="fa-solid fa-box"></i> 2. Productos</li>
-      <li class="nav-item admin-only" onclick="showSection('inventario', this)"><i class="fa-solid fa-warehouse"></i> 3. Inventario</li>
-      <li class="nav-item" id="nav-pos" onclick="showSection('ventas', this)"><i class="fa-solid fa-cash-register"></i> 4. Ventas / POS</li>
-      <li class="nav-item admin-only" onclick="showSection('compras', this)"><i class="fa-solid fa-truck-ramp-box"></i> 5. Compras</li>
-      <li class="nav-item admin-only" onclick="showSection('proveedores', this)"><i class="fa-solid fa-truck"></i> 6. Proveedores</li>
-      <li class="nav-item admin-only" onclick="showSection('clientes', this)"><i class="fa-solid fa-users"></i> 7. Clientes</li>
-      <li class="nav-item admin-only" onclick="showSection('usuarios', this)"><i class="fa-solid fa-user-shield"></i> 8. Usuarios</li>
-      <li class="nav-item admin-only" onclick="showSection('reportes', this)"><i class="fa-solid fa-file-invoice-dollar"></i> 9. Reportes</li>
-      <li class="nav-item admin-only" onclick="showSection('configuracion', this)"><i class="fa-solid fa-gear"></i> 10. Configuración & Alegra</li>
-      <li class="nav-item admin-only" onclick="showSection('creditos', this)"><i class="fa-solid fa-money-bill-transfer"></i> 11. Créditos / Abonos</li>
+      <li class="nav-item admin-only active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-line nav-icon"></i><span>Dashboard</span></li>
+      <li class="nav-item admin-only" onclick="showSection('productos', this)"><i class="fa-solid fa-box-open nav-icon"></i><span>Productos</span></li>
+      <li class="nav-item admin-only" onclick="showSection('inventario', this)"><i class="fa-solid fa-warehouse nav-icon"></i><span>Inventario</span></li>
+      <li class="nav-item" id="nav-pos" onclick="showSection('ventas', this)"><i class="fa-solid fa-cash-register nav-icon"></i><span>Ventas / POS</span></li>
+      <li class="nav-item admin-only" onclick="showSection('compras', this)"><i class="fa-solid fa-cart-plus nav-icon"></i><span>Compras</span></li>
+      <li class="nav-item admin-only" onclick="showSection('proveedores', this)"><i class="fa-solid fa-truck-fast nav-icon"></i><span>Proveedores</span></li>
+      <li class="nav-item admin-only" onclick="showSection('clientes', this)"><i class="fa-solid fa-user-group nav-icon"></i><span>Clientes</span></li>
+      <li class="nav-item admin-only" onclick="showSection('usuarios', this)"><i class="fa-solid fa-user-shield nav-icon"></i><span>Usuarios</span></li>
+      <li class="nav-item admin-only" onclick="showSection('reportes', this)"><i class="fa-solid fa-chart-column nav-icon"></i><span>Reportes</span></li>
+      <li class="nav-item admin-only" onclick="showSection('configuracion', this)"><i class="fa-solid fa-sliders nav-icon"></i><span>Configuración &amp; Alegra</span></li>
+      <li class="nav-item admin-only" onclick="showSection('creditos', this)"><i class="fa-solid fa-money-bill-transfer nav-icon"></i><span>Créditos / Abonos</span></li>
     </ul>
   </aside>
 
@@ -1087,17 +1089,47 @@
       });
     }
 
+    let seccionActual = 'dashboard';
+
     function showSection(secId, element) {
+      if (!currentUser) return;
+
       if (currentUser.rol !== 'Administrador' && secId !== 'ventas') {
         alert('Acceso restringido solo para Administradores');
         return;
       }
 
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      const section = document.getElementById(`sec-${secId}`);
+      if (!section) return;
+
+      // Cambiar realmente la sección visible.
       document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
-      
-      document.getElementById(`sec-${secId}`).classList.add('active');
-      if (element) element.classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+      section.classList.add('active');
+      if (element) {
+        element.classList.add('active');
+      } else {
+        const nav = document.querySelector(`.nav-item[onclick*="showSection('${secId}'"]`);
+        if (nav) nav.classList.add('active');
+      }
+
+      seccionActual = secId;
+      const titles = {
+        dashboard: '1. Dashboard',
+        productos: '2. Productos',
+        inventario: '3. Inventario',
+        ventas: '4. Ventas / POS',
+        compras: '5. Compras',
+        proveedores: '6. Proveedores',
+        clientes: '7. Clientes',
+        usuarios: '8. Usuarios',
+        reportes: '9. Reportes',
+        configuracion: '10. Configuración & Alegra',
+        creditos: '11. Créditos / Abonos'
+      };
+      const title = document.getElementById('section-title');
+      if (title) title.textContent = titles[secId] || secId;
     }
 
     function closeModals() {
@@ -2075,9 +2107,10 @@
       }
     }
 
-    const originalShowSectionResponsive = showSection;
+    // Al cambiar de sección en móvil se cierra el menú, pero se conserva la sección elegida.
+    const showSectionBase = showSection;
     showSection = function(secId, element) {
-      originalShowSectionResponsive(secId, element);
+      showSectionBase(secId, element);
       closeMobileMenu();
     };
 
