@@ -62,6 +62,8 @@
     .nav-item .nav-icon { width: 22px; min-width: 22px; text-align: center; font-size: 1.05rem; }
     .nav-item span { white-space: nowrap; }
 
+    #tbl-productos-mas-vendidos td, #tbl-productos-mas-vendidos th { white-space: nowrap; }
+
     /* MAIN CONTENT */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     header {
@@ -394,7 +396,7 @@
   <aside class="sidebar">
     <div class="brand"><i class="fa-solid fa-cart-shopping"></i><span>super MIX</span><span class="brand-cart">🛒</span></div>
     <ul class="nav-list">
-      <li class="nav-item admin-only active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-line nav-icon"></i><span>Dashboard</span></li>
+      <li class="nav-item admin-only active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-line nav-icon"></i><span>Inicio</span></li>
       <li class="nav-item admin-only" onclick="showSection('productos', this)"><i class="fa-solid fa-box-open nav-icon"></i><span>Productos</span></li>
       <li class="nav-item admin-only" onclick="showSection('inventario', this)"><i class="fa-solid fa-warehouse nav-icon"></i><span>Inventario</span></li>
       <li class="nav-item" id="nav-pos" onclick="showSection('ventas', this)"><i class="fa-solid fa-cash-register nav-icon"></i><span>Ventas / POS</span></li>
@@ -464,6 +466,18 @@
       <div class="card" style="margin-top: 1rem;">
         <h3>Ventas Recientes</h3>
         <canvas id="chart-sales" style="max-height: 250px;"></canvas>
+      </div>
+      <div class="card" style="margin-top: 1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h3><i class="fa-solid fa-ranking-star"></i> Productos más vendidos</h3>
+          <span style="font-size:.85rem; color:var(--text-muted);">Ordenados por unidades vendidas</span>
+        </div>
+        <div class="table-container" style="margin-top:1rem;">
+          <table>
+            <thead><tr><th>#</th><th>Producto</th><th>Unidades vendidas</th><th>Ventas generadas</th></tr></thead>
+            <tbody id="tbl-productos-mas-vendidos"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -1214,7 +1228,7 @@
 
       seccionActual = secId;
       const titles = {
-        dashboard: '1. Dashboard',
+        dashboard: '1. Inicio',
         productos: '2. Productos',
         inventario: '3. Inventario',
         ventas: '4. Ventas / POS',
@@ -1407,6 +1421,8 @@
       document.getElementById('dash-vencidos').textContent = vencidosCount;
       document.getElementById('dash-ganancias').textContent = formatCOP(gananciasEst);
 
+      renderProductosMasVendidos();
+
       const ctx = document.getElementById('chart-sales').getContext('2d');
       if (salesChart) salesChart.destroy();
       salesChart = new Chart(ctx, {
@@ -1416,6 +1432,43 @@
           datasets: [{ label: 'Ventas COP', data: DB.ventas.length ? DB.ventas.slice(-7).map(v => v.total) : [0], borderColor: '#2563eb', fill: false }]
         }
       });
+    }
+
+    function renderProductosMasVendidos() {
+      const tbody = document.getElementById('tbl-productos-mas-vendidos');
+      if (!tbody) return;
+
+      const resumen = {};
+      DB.ventas.forEach(venta => {
+        (venta.items || []).forEach(item => {
+          const id = item.id || item.productoId || item.codigo || item.nombre;
+          const cantidad = Number(item.qty ?? item.cantidad ?? 0) || 0;
+          const precio = Number(item.precio ?? item.price ?? 0) || 0;
+          if (!resumen[id]) {
+            resumen[id] = { nombre: item.nombre || 'Producto sin nombre', unidades: 0, ventas: 0 };
+          }
+          resumen[id].unidades += cantidad;
+          resumen[id].ventas += cantidad * precio;
+        });
+      });
+
+      const top = Object.values(resumen)
+        .sort((a, b) => b.unidades - a.unidades || b.ventas - a.ventas)
+        .slice(0, 10);
+
+      if (!top.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:1.5rem;">Aún no hay ventas registradas.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = top.map((item, index) => `
+        <tr>
+          <td><b>${index + 1}</b></td>
+          <td><b>${item.nombre}</b></td>
+          <td>${item.unidades}</td>
+          <td>${formatCOP(item.ventas)}</td>
+        </tr>
+      `).join('');
     }
 
     function renderProducts() {
