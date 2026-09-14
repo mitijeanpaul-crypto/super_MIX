@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- SheetJS para Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  
   <style>
     :root {
       --primary: #2563eb;
@@ -144,112 +143,558 @@
     /* =========================================================
        RESPONSIVE FINAL - CELULAR, TABLET Y COMPUTADOR
        ========================================================= */
-    html { width: 100%; min-width: 0; min-height: 100%; -webkit-text-size-adjust: 100%; }
-    body { width: 100%; min-width: 0; min-height: 100vh; min-height: 100dvh; }
-    .main-content { min-width: 0; width: 100%; }
-    .content-section { width: 100%; min-width: 0; overflow-x: hidden; }
-    .brand span { font-size: 1.35rem; font-weight: 900; font-style: italic; letter-spacing: .5px; white-space: nowrap; }
-    .brand .brand-cart { font-size: 1rem; font-style: normal; letter-spacing: 0; }
-    .form-control { min-width: 0; max-width: 100%; font-size: 16px; }
-    .table-container { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { min-width: 680px; }
-    .modal-card { max-width: min(500px, calc(100vw - 2rem)); }
-    .mobile-menu-toggle, .sidebar-backdrop { display: none; }
+    html {
+      width: 100%;
+      min-width: 0;
+      min-height: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      width: 100%;
+      min-width: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    .main-content {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .content-section {
+      width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    .brand span {
+      font-size: 1.35rem;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: .5px;
+      white-space: nowrap;
+    }
+
+    .brand .brand-cart {
+      font-size: 1rem;
+      font-style: normal;
+      letter-spacing: 0;
+    }
+
+    .form-control {
+      min-width: 0;
+      max-width: 100%;
+      font-size: 16px;
+    }
+
+    .table-container {
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      min-width: 680px;
+    }
+
+    .modal-card {
+      max-width: min(500px, calc(100vw - 2rem));
+    }
+
+    .mobile-menu-toggle,
+    .sidebar-backdrop {
+      display: none;
+    }
 
     /* Pantallas medianas / tablets */
     @media (max-width: 1100px) {
       :root { --sidebar-width: 220px; }
+
       .content-section { padding: 1.25rem; }
       header { padding: .9rem 1.25rem; }
-      .pos-container { grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 1rem; }
-      .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      #sec-configuracion > div { grid-template-columns: 1fr !important; }
+
+      .pos-container {
+        grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+        gap: 1rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #sec-configuracion > div {
+        grid-template-columns: 1fr !important;
+      }
     }
 
     /* Tablet y teléfonos */
     @media (max-width: 900px) {
-      body { display: block; overflow: hidden; }
-      .sidebar { position: fixed; z-index: 10001; left: 0; top: 0; bottom: 0; width: min(82vw, 300px); height: 100dvh; transform: translateX(-105%); transition: transform .25s ease; box-shadow: 8px 0 25px rgba(0,0,0,.22); }
-      .sidebar.mobile-open { transform: translateX(0); }
-      .sidebar-backdrop { position: fixed; inset: 0; z-index: 10000; background: rgba(15,23,42,.48); display: block; opacity: 0; visibility: hidden; transition: opacity .2s ease, visibility .2s ease; }
-      .sidebar-backdrop.active { opacity: 1; visibility: visible; }
-      .mobile-menu-toggle { position: fixed; z-index: 10002; top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); width: 44px; height: 44px; border: 0; border-radius: 10px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-      .main-content { width: 100%; height: 100dvh; min-height: 100dvh; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
-      header { min-height: 64px; padding: .75rem 1rem .75rem 4.1rem; gap: .75rem; }
-      header h2 { min-width: 0; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .user-info { gap: 8px; flex-shrink: 0; }
-      .user-info > div { min-width: 0; max-width: 42vw; overflow: hidden; }
-      .user-info b { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; }
-      .user-info .badge { font-size: .65rem; }
-      .user-info .btn { white-space: nowrap; }
-      .content-section { padding: 1rem; }
-      .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
-      .metric-card { min-width: 0; padding: 1rem; }
-      .metric-icon { width: 44px; height: 44px; flex: 0 0 44px; }
-      .card { min-width: 0; padding: 1rem; }
-      .pos-container { grid-template-columns: 1fr; height: auto; min-height: 0; }
-      .pos-container > div { min-width: 0; }
-      .pos-container .table-container { max-height: 52vh !important; }
-      .cart-summary { min-height: 360px; }
-      .receipt-modal { width: min(340px, calc(100vw - 2rem)); max-width: calc(100vw - 2rem); }
+      body {
+        display: block;
+        overflow: hidden;
+      }
+
+      .sidebar {
+        position: fixed;
+        z-index: 10001;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: min(82vw, 300px);
+        height: 100dvh;
+        transform: translateX(-105%);
+        transition: transform .25s ease;
+        box-shadow: 8px 0 25px rgba(0,0,0,.22);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(15,23,42,.48);
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .2s ease, visibility .2s ease;
+      }
+
+      .sidebar-backdrop.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .mobile-menu-toggle {
+        position: fixed;
+        z-index: 10002;
+        top: max(10px, env(safe-area-inset-top));
+        left: max(10px, env(safe-area-inset-left));
+        width: 44px;
+        height: 44px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,.2);
+      }
+
+      .main-content {
+        width: 100%;
+        height: 100dvh;
+        min-height: 100dvh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      header {
+        min-height: 64px;
+        padding: .75rem 1rem .75rem 4.1rem;
+        gap: .75rem;
+      }
+
+      header h2 {
+        min-width: 0;
+        font-size: 1.1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-info {
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .user-info > div {
+        min-width: 0;
+        max-width: 42vw;
+        overflow: hidden;
+      }
+
+      .user-info b {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: .82rem;
+      }
+
+      .user-info .badge {
+        font-size: .65rem;
+      }
+
+      .user-info .btn {
+        white-space: nowrap;
+      }
+
+      .content-section {
+        padding: 1rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .75rem;
+      }
+
+      .metric-card {
+        min-width: 0;
+        padding: 1rem;
+      }
+
+      .metric-icon {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
+      }
+
+      .card {
+        min-width: 0;
+        padding: 1rem;
+      }
+
+      .pos-container {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 0;
+      }
+
+      .pos-container > div {
+        min-width: 0;
+      }
+
+      .pos-container .table-container {
+        max-height: 52vh !important;
+      }
+
+      .cart-summary {
+        min-height: 360px;
+      }
+
+      .receipt-modal {
+        width: min(340px, calc(100vw - 2rem));
+        max-width: calc(100vw - 2rem);
+      }
     }
 
     @media (max-width: 700px) {
-      header { align-items: center; flex-wrap: nowrap; }
-      header h2 { flex: 1; }
-      .user-info > div { display: none; }
-      .user-info .btn { min-height: 42px; padding: .5rem .7rem; }
-      .content-section { padding: .8rem; }
-      .metrics-grid { grid-template-columns: 1fr; }
-      .metric-card { min-height: 78px; }
-      .content-section > div[style*="justify-content:space-between"] { flex-direction: column !important; align-items: stretch !important; }
-      .content-section > div[style*="justify-content:space-between"] > div { width: 100%; flex-wrap: wrap; }
-      .content-section input[style*="width:250px"], .content-section select[style*="width: 200px"] { width: 100% !important; }
-      .content-section .btn { min-height: 42px; }
-      .content-section > div[style*="display:flex"] .btn { flex: 1 1 100%; justify-content: center; }
-      .pos-container > div:first-child > div[style*="display:flex"] { flex-direction: column !important; }
-      .pos-container .form-control { width: 100% !important; min-height: 44px; }
-      .pos-container .table-container { max-height: 45vh !important; }
-      .cart-summary { padding: .85rem; }
-      .cart-item { gap: .5rem; align-items: flex-start; }
-      .cart-item > div:first-child { min-width: 0; flex: 1; overflow-wrap: anywhere; }
-      .cart-item > div:last-child { flex-wrap: wrap; justify-content: flex-end; flex-shrink: 0; }
-      .cart-summary .form-group { margin-bottom: .8rem; }
-      .form-control, select.form-control, input.form-control { min-height: 44px; }
-      .modal-overlay { padding: .75rem; align-items: center; }
-      .modal-card { width: 100%; max-width: 100%; max-height: calc(100dvh - 1.5rem); padding: 1rem; border-radius: 12px; }
-      .modal-card > div:last-child { flex-wrap: wrap; }
-      .modal-card > div:last-child .btn { flex: 1 1 130px; justify-content: center; }
-      #sec-reportes .card > div[style*="gap:2rem"] { flex-direction: column !important; gap: .75rem !important; }
-      #sec-configuracion > div { grid-template-columns: 1fr !important; gap: 1rem !important; }
-      table { min-width: 720px; font-size: .82rem; }
-      th, td { padding: .7rem .75rem; white-space: nowrap; }
-      #chart-sales { width: 100% !important; max-width: 100%; }
+      header {
+        align-items: center;
+        flex-wrap: nowrap;
+      }
+
+      header h2 {
+        flex: 1;
+      }
+
+      .user-info > div {
+        display: none;
+      }
+
+      .user-info .btn {
+        min-height: 42px;
+        padding: .5rem .7rem;
+      }
+
+      .content-section {
+        padding: .8rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-card {
+        min-height: 78px;
+      }
+
+      /* Barras de herramientas: una columna */
+      .content-section > div[style*="justify-content:space-between"],
+      .content-section > div[style*="justify-content: space-between"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+
+      .content-section > div[style*="justify-content:space-between"] > div,
+      .content-section > div[style*="justify-content: space-between"] > div {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .content-section input[style*="width:250px"],
+      .content-section input[style*="width: 250px"],
+      .content-section select[style*="width:200px"],
+      .content-section select[style*="width: 200px"] {
+        width: 100% !important;
+      }
+
+      .content-section .btn {
+        min-height: 42px;
+      }
+
+      .content-section > div[style*="display:flex"] .btn {
+        flex: 1 1 100%;
+        justify-content: center;
+      }
+
+      /* POS */
+      .pos-container > div:first-child > div[style*="display:flex"] {
+        flex-direction: column !important;
+      }
+
+      .pos-container .form-control {
+        width: 100% !important;
+        min-height: 44px;
+      }
+
+      .pos-container .table-container {
+        max-height: 45vh !important;
+      }
+
+      .cart-summary {
+        padding: .85rem;
+      }
+
+      .cart-item {
+        gap: .5rem;
+        align-items: flex-start;
+      }
+
+      .cart-item > div:first-child {
+        min-width: 0;
+        flex: 1;
+        overflow-wrap: anywhere;
+      }
+
+      .cart-item > div:last-child {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        flex-shrink: 0;
+      }
+
+      .cart-summary .form-group {
+        margin-bottom: .8rem;
+      }
+
+      /* Formularios */
+      .form-control,
+      select.form-control,
+      input.form-control {
+        min-height: 44px;
+      }
+
+      /* Modales */
+      .modal-overlay {
+        padding: .75rem;
+        align-items: center;
+      }
+
+      .modal-card {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100dvh - 1.5rem);
+        padding: 1rem;
+        border-radius: 12px;
+      }
+
+      .modal-card > div:last-child {
+        flex-wrap: wrap;
+      }
+
+      .modal-card > div:last-child .btn {
+        flex: 1 1 130px;
+        justify-content: center;
+      }
+
+      /* Reportes */
+      #sec-reportes .card > div[style*="gap:2rem"],
+      #sec-reportes .card > div[style*="gap: 2rem"] {
+        flex-direction: column !important;
+        gap: .75rem !important;
+      }
+
+      /* Configuración */
+      #sec-configuracion > div {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+      }
+
+      /* Tablas cómodas para deslizar */
+      table {
+        min-width: 720px;
+        font-size: .82rem;
+      }
+
+      th, td {
+        padding: .7rem .75rem;
+        white-space: nowrap;
+      }
+
+      /* Gráfica */
+      #chart-sales {
+        width: 100% !important;
+        max-width: 100%;
+      }
     }
 
+    /* Teléfonos pequeños */
     @media (max-width: 480px) {
-      #login-screen { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
-      .content-section { padding: .65rem; }
-      .card { padding: .85rem; border-radius: 7px; }
-      .brand { padding: 1rem; }
-      .brand span { font-size: 1.2rem; }
-      .metric-val { font-size: 1.2rem; }
-      table { min-width: 650px; }
-      .btn { max-width: 100%; }
-      .receipt-modal { font-size: 11px; }
+      #login-screen {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      .content-section {
+        padding: .65rem;
+      }
+
+      .card {
+        padding: .85rem;
+        border-radius: 7px;
+      }
+
+      .brand {
+        padding: 1rem;
+      }
+
+      .brand span {
+        font-size: 1.2rem;
+      }
+
+      .metric-val {
+        font-size: 1.2rem;
+      }
+
+      table {
+        min-width: 650px;
+      }
+
+      .btn {
+        max-width: 100%;
+      }
+
+      .receipt-modal {
+        font-size: 11px;
+      }
     }
 
     @media (max-width: 360px) {
-      .content-section { padding: .5rem; }
-      header { padding-left: 3.8rem; }
-      header h2 { font-size: 1rem; }
-      .mobile-menu-toggle { width: 42px; height: 42px; }
-      .cart-summary { padding: .7rem; }
+      .content-section {
+        padding: .5rem;
+      }
+
+      header {
+        padding-left: 3.8rem;
+      }
+
+      header h2 {
+        font-size: 1rem;
+      }
+
+      .mobile-menu-toggle {
+        width: 42px;
+        height: 42px;
+      }
+
+      .cart-summary {
+        padding: .7rem;
+      }
+    }
+
+    /* Pantallas de celular en horizontal */
+    @media (max-width: 900px) and (max-height: 520px) {
+      .sidebar {
+        width: min(300px, 72vw);
+      }
+
+      header {
+        min-height: 56px;
+        padding-top: .5rem;
+        padding-bottom: .5rem;
+      }
+
+      .content-section {
+        padding: .65rem;
+      }
+
+      .pos-container .table-container {
+        max-height: 55vh !important;
+      }
+
+      .modal-card {
+        max-height: calc(100dvh - 1rem);
+      }
     }
 
     /* Evita desbordamientos por textos largos */
-    h1, h2, h3, h4, p, label, td, th, span, b { overflow-wrap: anywhere; }
-    button, input, select { touch-action: manipulation; }
+    h1, h2, h3, h4, p, label, td, th, span, b {
+      overflow-wrap: anywhere;
+    }
+
+    button, input, select {
+      touch-action: manipulation;
+    }
+
+    /* Ajustes específicos para tablets vertical/horizontal y PC */
+    @media (min-width: 901px) {
+      .main-content { overflow-x: hidden; }
+      .content-section { max-width: 100%; }
+    }
+
+    @media (max-width: 900px) {
+      .header-actions { gap: .5rem; flex-wrap: wrap; }
+      .pos-container { grid-template-columns: 1fr !important; }
+      .pos-products, .pos-cart { min-width: 0; width: 100%; }
+      .table-container, .data-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .content-section { padding-bottom: calc(1.25rem + env(safe-area-inset-bottom)); }
+    }
+
+    @media (max-width: 700px) {
+      #login-screen { padding: .75rem; }
+      #login-screen .login-card { padding: 1.35rem 1rem; }
+      .form-row, .form-grid, .pos-controls { grid-template-columns: 1fr !important; }
+      .toolbar, .section-toolbar { flex-direction: column; align-items: stretch; }
+      .toolbar > *, .section-toolbar > * { width: 100%; }
+      .btn { min-height: 44px; }
+    }
+
+    @media (max-width: 480px) {
+      #login-screen .login-card { border-radius: 12px; padding: 1.1rem .9rem; }
+      #login-screen .login-card h2 { font-size: 1.3rem; }
+      .content-section { padding: .85rem; }
+      .brand span { font-size: 1.15rem; }
+      table { min-width: 620px; }
+    }
+
+    @media (max-width: 360px) {
+      #login-screen { padding: .5rem; }
+      #login-screen .login-card { padding: 1rem .75rem; }
+      .content-section { padding: .7rem; }
+      table { min-width: 580px; }
+    }
+
+    @media (orientation: landscape) and (max-width: 900px) and (max-height: 520px) {
+      #login-screen .login-card { max-height: 94dvh; overflow-y: auto; }
+      .sidebar { width: min(70vw, 300px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -295,7 +740,6 @@
       <li class="nav-item admin-only" onclick="showSection('usuarios', this)"><i class="fa-solid fa-user-shield"></i> 8. Usuarios</li>
       <li class="nav-item admin-only" onclick="showSection('reportes', this)"><i class="fa-solid fa-file-invoice-dollar"></i> 9. Reportes</li>
       <li class="nav-item admin-only" onclick="showSection('configuracion', this)"><i class="fa-solid fa-gear"></i> 10. Configuración & Alegra</li>
-      <li class="nav-item admin-only" onclick="showSection('creditos', this)"><i class="fa-solid fa-money-bill-transfer"></i> 11. Créditos / Abonos</li>
     </ul>
   </aside>
 
@@ -427,8 +871,6 @@
             </div>
             <div class="form-group">
               <label>Cliente:</label>
-              <!-- NEW: Search for clients in POS -->
-              <input type="text" id="pos-cliente-search" class="form-control" placeholder="🔍 Buscar cliente..." onkeyup="filterPOSClientes()" style="margin-bottom: 5px;">
               <select id="pos-cliente" class="form-control"></select>
             </div>
             <div class="form-group">
@@ -437,8 +879,6 @@
                 <option value="Efectivo">Efectivo</option>
                 <option value="Nequi/Daviplata">Nequi / Daviplata</option>
                 <option value="Tarjeta">Tarjeta Débito/Crédito</option>
-                <!-- NEW: Credit option added -->
-                <option value="Crédito">Crédito</option> 
               </select>
             </div>
             <div class="form-group" style="display:flex; align-items:center; gap:8px;">
@@ -488,25 +928,9 @@
       <div class="table-container">
         <table>
           <thead>
-            <tr><th>Cédula/NIT</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Deuda Actual</th><th>Acciones</th></tr>
+            <tr><th>Cédula/NIT</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Acciones</th></tr>
           </thead>
           <tbody id="tbl-clientes"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- CRÉDITOS / ABONOS (NEW SECTION) -->
-    <section id="sec-creditos" class="content-section admin-only">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <h3>Gestión de Créditos y Abonos</h3>
-        <input type="text" id="cred-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar deudor..." onkeyup="renderCreditos()">
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr><th>Cédula/NIT</th><th>Nombre del Cliente</th><th>Teléfono</th><th>Deuda Total</th><th>Acciones</th></tr>
-          </thead>
-          <tbody id="tbl-creditos"></tbody>
         </table>
       </div>
     </section>
@@ -657,30 +1081,6 @@
     </div>
   </div>
 
-  <!-- MODAL ABONO (NEW) -->
-  <div id="modal-abono" class="modal-overlay">
-    <div class="modal-card">
-      <h3>Registrar Abono</h3>
-      <input type="hidden" id="mab-id">
-      <div class="form-group">
-        <label>Cliente</label>
-        <input type="text" id="mab-nombre" class="form-control" readonly style="background: var(--bg-main);">
-      </div>
-      <div class="form-group">
-        <label>Deuda Actual</label>
-        <input type="text" id="mab-deuda" class="form-control" readonly style="background: var(--bg-main); font-weight: bold; color: var(--danger);">
-      </div>
-      <div class="form-group">
-        <label>Monto a Abonar (COP)</label>
-        <input type="number" id="mab-monto" class="form-control" min="1" placeholder="Ej: 50000">
-      </div>
-      <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveAbono()"><i class="fa-solid fa-money-check-dollar"></i> Confirmar Abono</button>
-      </div>
-    </div>
-  </div>
-
   <div id="modal-proveedor" class="modal-overlay">
     <div class="modal-card">
       <h3>Registrar Proveedor</h3>
@@ -728,7 +1128,6 @@
         <div><b>Cajero:</b> <span id="rec-cajero">--</span></div>
         <div><b>Fecha:</b> <span id="rec-fecha"></span></div>
         <div><b>Cliente:</b> <span id="rec-cliente"></span></div>
-        <div><b>Método:</b> <span id="rec-metodo"></span></div>
         <div id="rec-alegra-info" style="margin-top:4px; font-weight:bold; color:#0284c7;"></div>
         <hr style="margin: 8px 0; border: dashed 1px #000;">
         <div id="rec-items"></div>
@@ -751,8 +1150,7 @@
     let DB = JSON.parse(localStorage.getItem('super_db_zero_v3')) || {
       categorias: ['Lácteos', 'Abarrotes', 'Bebidas', 'Aseo'],
       productos: [],
-      // NEW: Added deuda field by default to the initial general client
-      clientes: [{ id: '1', cedula: '2222222222', nombre: 'Cliente General', correo: 'cliente@general.com', telefono: '3000000000', puntos: 0, deuda: 0 }],
+      clientes: [{ id: '1', cedula: '2222222222', nombre: 'Cliente General', correo: 'cliente@general.com', telefono: '3000000000', puntos: 0 }],
       proveedores: [],
       usuarios: [
         { id: '1', nombre: 'Administrador Principal', user: 'admin', pass: 'admin123', rol: 'Administrador' }
@@ -978,12 +1376,10 @@
         renderCompras();
         renderProveedores();
         renderClientes();
-        renderCreditos(); // NEW render call for debts
         renderUsuarios();
         renderReportes();
       }
       renderPOS();
-      renderPOSClientes();
     }
 
     function renderCategoryDropdowns() {
@@ -1137,20 +1533,9 @@
           <td><button class="btn btn-sm btn-primary" onclick="addToCart('${p.id}')">+</button></td>
         </tr>
       `).join('');
-    }
 
-    // NEW FUNCTION: render pos clients separately for the search filter feature
-    function renderPOSClientes() {
-      const search = document.getElementById('pos-cliente-search')?.value.toLowerCase() || '';
       const cliSelect = document.getElementById('pos-cliente');
-      if (cliSelect) {
-        const filtered = DB.clientes.filter(c => c.nombre.toLowerCase().includes(search) || c.cedula.includes(search));
-        cliSelect.innerHTML = filtered.map(c => `<option value="${c.nombre}">${c.nombre} (${c.cedula})</option>`).join('');
-      }
-    }
-
-    function filterPOSClientes() {
-      renderPOSClientes();
+      if (cliSelect) cliSelect.innerHTML = DB.clientes.map(c => `<option value="${c.nombre}">${c.nombre} (${c.cedula})</option>`).join('');
     }
 
     function handlePOSBarcode(e) {
@@ -1221,29 +1606,17 @@
       const iva = subtotal * (ivaPercent / 100);
       const total = subtotal + iva;
       const emitirAlegra = document.getElementById('pos-emitir-alegra').checked;
-      const clienteNombre = document.getElementById('pos-cliente').value;
-      const metodo = document.getElementById('pos-metodo').value;
-
-      if (!clienteNombre) return alert('Por favor seleccione un cliente.');
 
       const venta = {
         id: 'VEN-' + Date.now().toString().slice(-4),
         cajero: currentUser ? currentUser.nombre : 'Cajero',
         fecha: new Date().toISOString().split('T')[0],
-        cliente: clienteNombre,
-        metodo: metodo,
+        cliente: document.getElementById('pos-cliente').value,
+        metodo: document.getElementById('pos-metodo').value,
         ivaRate: ivaPercent,
         items: [...cart], subtotal, iva, total,
         alegraStatus: 'Sin Emitir'
       };
-
-      // NEW FEATURE: Add to debt if payment method is "Crédito"
-      if (metodo === 'Crédito') {
-        const targetCliente = DB.clientes.find(c => c.nombre === clienteNombre);
-        if (targetCliente) {
-          targetCliente.deuda = (targetCliente.deuda || 0) + total;
-        }
-      }
 
       if (emitirAlegra) {
         const result = await emitAlegraInvoice(venta);
@@ -1275,7 +1648,6 @@
       document.getElementById('rec-cajero').textContent = venta.cajero;
       document.getElementById('rec-fecha').textContent = venta.fecha;
       document.getElementById('rec-cliente').textContent = venta.cliente;
-      document.getElementById('rec-metodo').textContent = venta.metodo;
       document.getElementById('rec-alegra-info').textContent = venta.alegraStatus || '';
       document.getElementById('rec-iva-rate').textContent = venta.ivaRate !== undefined ? venta.ivaRate : DB.config.iva;
       
@@ -1411,7 +1783,6 @@
       const tbody = document.getElementById('tbl-clientes');
       tbody.innerHTML = DB.clientes.filter(c => c.nombre.toLowerCase().includes(search)).map(c => `
         <tr><td>${c.cedula}</td><td><b>${c.nombre}</b></td><td>${c.correo || 'N/A'}</td><td>${c.telefono}</td>
-        <td><span class="${(c.deuda||0)>0 ? 'badge badge-danger' : 'badge badge-success'}">${formatCOP(c.deuda || 0)}</span></td>
         <td>
           <button class="btn btn-sm btn-primary" onclick="editCliente('${c.id}')"><i class="fa-solid fa-pen"></i></button>
           <button class="btn btn-sm btn-danger" onclick="deleteCliente('${c.id}')"><i class="fa-solid fa-trash"></i></button>
@@ -1436,18 +1807,10 @@
         nombre: document.getElementById('mc-nombre').value,
         correo: document.getElementById('mc-correo').value,
         telefono: document.getElementById('mc-telefono').value,
-        puntos: 0,
-        deuda: 0 // New clients start with zero debt
+        puntos: 0
       };
-      
-      // Preserve existing debt if editing
-      if (id) {
-        const idx = DB.clientes.findIndex(c => c.id === id);
-        data.deuda = DB.clientes[idx].deuda || 0; 
-        DB.clientes[idx] = data;
-      } else {
-        DB.clientes.push(data);
-      }
+      if (id) DB.clientes[DB.clientes.findIndex(c => c.id === id)] = data;
+      else DB.clientes.push(data);
       closeModals(); saveDB();
     }
 
@@ -1463,55 +1826,6 @@
 
     function deleteCliente(id) {
       if(confirm('¿Eliminar cliente?')) { DB.clientes = DB.clientes.filter(c=>c.id!==id); saveDB(); }
-    }
-
-    // CRÉDITOS & ABONOS (NEW FUNCTIONALITY)
-    function renderCreditos() {
-      const search = document.getElementById('cred-search')?.value.toLowerCase() || '';
-      const tbody = document.getElementById('tbl-creditos');
-      // Filters only clients with debt > 0
-      const deudores = DB.clientes.filter(c => (c.deuda || 0) > 0 && (c.nombre.toLowerCase().includes(search) || c.cedula.includes(search)));
-
-      tbody.innerHTML = deudores.map(c => `
-        <tr>
-          <td>${c.cedula}</td><td><b>${c.nombre}</b></td><td>${c.telefono}</td>
-          <td><span style="color:var(--danger); font-weight:bold; font-size:1.05rem;">${formatCOP(c.deuda)}</span></td>
-          <td>
-            <button class="btn btn-sm btn-success" onclick="openAbonoModal('${c.id}')"><i class="fa-solid fa-money-bill"></i> Abonar</button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function openAbonoModal(id) {
-      const c = DB.clientes.find(x => x.id === id);
-      if(!c) return;
-      document.getElementById('mab-id').value = c.id;
-      document.getElementById('mab-nombre').value = c.nombre;
-      document.getElementById('mab-deuda').value = formatCOP(c.deuda);
-      document.getElementById('mab-monto').value = '';
-      document.getElementById('modal-abono').classList.add('active');
-    }
-
-    function saveAbono() {
-      const id = document.getElementById('mab-id').value;
-      const monto = parseFloat(document.getElementById('mab-monto').value);
-      const c = DB.clientes.find(x => x.id === id);
-
-      if(!c || isNaN(monto) || monto <= 0) {
-        alert('Ingrese un monto válido mayor a 0');
-        return;
-      }
-
-      if (monto > c.deuda) {
-        alert('El monto ingresado es mayor a la deuda actual del cliente.');
-        return;
-      }
-
-      c.deuda -= monto;
-      closeModals();
-      saveDB();
-      alert(`Se ha registrado un abono de ${formatCOP(monto)} exitosamente.`);
     }
 
     // REPORTES Y COMPRAS
