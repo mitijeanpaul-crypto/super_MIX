@@ -48,6 +48,11 @@
     th, td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); }
     th { background-color: #f8fafc; color: var(--text-muted); font-weight: 600; }
 
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+    .metric-card { display: flex; align-items: center; gap: 1rem; padding: 1.25rem; background: white; border-radius: 8px; border: 1px solid var(--border); }
+    .metric-icon { width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .metric-val { font-size: 1.4rem; font-weight: bold; }
+
     .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-dark); }
@@ -108,17 +113,23 @@
   <aside class="sidebar">
     <div class="brand"><i class="fa-solid fa-cart-shopping"></i><span>super MIX</span></div>
     <ul class="nav-list">
-      <li class="nav-item admin-only active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> 1. Dashboard</li>
-      <li class="nav-item admin-only" onclick="showSection('productos', this)"><i class="fa-solid fa-box"></i> 2. Productos</li>
-      <li class="nav-item admin-only" onclick="showSection('compras', this)"><i class="fa-solid fa-truck-ramp-box"></i> 5. Compras</li>
-      <li class="nav-item admin-only" onclick="showSection('proveedores', this)"><i class="fa-solid fa-truck"></i> 6. Proveedores</li>
+      <li class="nav-item active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> 1. Dashboard</li>
+      <li class="nav-item" onclick="showSection('productos', this)"><i class="fa-solid fa-box"></i> 2. Productos</li>
+      <li class="nav-item" onclick="showSection('inventario', this)"><i class="fa-solid fa-warehouse"></i> 3. Inventario</li>
+      <li class="nav-item" onclick="showSection('ventas', this)"><i class="fa-solid fa-cash-register"></i> 4. Ventas / POS</li>
+      <li class="nav-item" onclick="showSection('compras', this)"><i class="fa-solid fa-truck-ramp-box"></i> 5. Compras</li>
+      <li class="nav-item" onclick="showSection('proveedores', this)"><i class="fa-solid fa-truck"></i> 6. Proveedores</li>
+      <li class="nav-item" onclick="showSection('clientes', this)"><i class="fa-solid fa-users"></i> 7. Clientes</li>
+      <li class="nav-item" onclick="showSection('usuarios', this)"><i class="fa-solid fa-user-shield"></i> 8. Usuarios</li>
+      <li class="nav-item" onclick="showSection('reportes', this)"><i class="fa-solid fa-file-invoice-dollar"></i> 9. Reportes</li>
+      <li class="nav-item" onclick="showSection('configuracion', this)"><i class="fa-solid fa-gear"></i> 10. Configuración & Alegra</li>
     </ul>
   </aside>
 
   <!-- MAIN CONTENT -->
   <main class="main-content">
     <header>
-      <h2 id="section-title">Dashboard</h2>
+      <h2 id="section-title">1. Dashboard</h2>
       <div class="user-info">
         <div>
           <b id="active-user-name">Usuario</b> 
@@ -129,59 +140,188 @@
     </header>
 
     <!-- DASHBOARD -->
-    <section id="sec-dashboard" class="content-section admin-only active">
-      <h3>Bienvenido a super MIX 🛍️</h3>
-      <p style="color: var(--text-muted); margin-top: 1rem;">Sistema de gestión de inventario, compras y ventas</p>
+    <section id="sec-dashboard" class="content-section active">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon" style="background:#dbeafe; color:#2563eb"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+          <div><div style="font-size:0.85rem; color:var(--text-muted);">Ventas del día</div><div class="metric-val" id="dash-ventas">$ 0</div></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon" style="background:#dcfce7; color:#16a34a"><i class="fa-solid fa-boxes-stacked"></i></div>
+          <div><div style="font-size:0.85rem; color:var(--text-muted);">Stock Total</div><div class="metric-val" id="dash-stock">0</div></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon" style="background:#fee2e2; color:#dc2626"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div><div style="font-size:0.85rem; color:var(--text-muted);">Productos Bajo Stock</div><div class="metric-val" id="dash-bajo-stock">0</div></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon" style="background:#fef3c7; color:#d97706"><i class="fa-solid fa-sack-dollar"></i></div>
+          <div><div style="font-size:0.85rem; color:var(--text-muted);">Ganancias Estimadas</div><div class="metric-val" id="dash-ganancias">$ 0</div></div>
+        </div>
+      </div>
     </section>
 
     <!-- PRODUCTOS -->
-    <section id="sec-productos" class="content-section admin-only">
-      <h3>Productos</h3>
-      <button class="btn btn-primary" onclick="openProductoModal()" style="margin-top: 1rem;"><i class="fa-solid fa-plus"></i> Nuevo Producto</button>
-      <div class="table-container" style="margin-top: 1rem;">
+    <section id="sec-productos" class="content-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:10px;">
+        <h3>📦 Productos</h3>
+        <button class="btn btn-primary" onclick="openProductoModal()"><i class="fa-solid fa-plus"></i> Nuevo Producto</button>
+      </div>
+      <div class="table-container">
         <table>
-          <thead>
-            <tr><th>Código</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr>
-          </thead>
+          <thead><tr><th>Código</th><th>Nombre</th><th>Precio COP</th><th>Stock</th><th>Acciones</th></tr></thead>
           <tbody id="tbl-productos"></tbody>
         </table>
       </div>
     </section>
 
+    <!-- INVENTARIO -->
+    <section id="sec-inventario" class="content-section">
+      <h3>📊 Control de Inventario</h3>
+      <div class="table-container" style="margin-top: 1rem;">
+        <table>
+          <thead><tr><th>Producto</th><th>Stock Actual</th><th>Stock Mínimo</th><th>Estado</th></tr></thead>
+          <tbody id="tbl-inventario"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VENTAS / POS -->
+    <section id="sec-ventas" class="content-section">
+      <h3>💳 Ventas / POS</h3>
+      <div style="margin-top: 1rem;">
+        <input type="text" id="pos-buscar" class="form-control" placeholder="🔍 Buscar producto..." style="margin-bottom: 1rem;">
+        <button class="btn btn-success" onclick="alert('Módulo POS en desarrollo')"><i class="fa-solid fa-plus"></i> Nueva Venta</button>
+      </div>
+    </section>
+
     <!-- COMPRAS -->
-    <section id="sec-compras" class="content-section admin-only">
+    <section id="sec-compras" class="content-section">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:10px;">
         <h3>📦 Compras</h3>
         <button class="btn btn-primary" onclick="openCompraModal()"><i class="fa-solid fa-plus"></i> Nueva Compra</button>
       </div>
       <div class="table-container">
         <table>
-          <thead>
-            <tr><th>ID</th><th>Proveedor</th><th>Fecha</th><th>Productos</th><th>Total COP</th><th>Acciones</th></tr>
-          </thead>
+          <thead><tr><th>ID</th><th>Proveedor</th><th>Fecha</th><th>Productos</th><th>Total COP</th><th>Acciones</th></tr></thead>
           <tbody id="tbl-compras"></tbody>
         </table>
       </div>
     </section>
 
     <!-- PROVEEDORES -->
-    <section id="sec-proveedores" class="content-section admin-only">
+    <section id="sec-proveedores" class="content-section">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:10px;">
         <h3>🚚 Proveedores</h3>
         <button class="btn btn-primary" onclick="openProveedorModal()"><i class="fa-solid fa-plus"></i> Nuevo Proveedor</button>
       </div>
       <div class="table-container">
         <table>
-          <thead>
-            <tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Empresa</th><th>Acciones</th></tr>
-          </thead>
+          <thead><tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Empresa</th><th>Acciones</th></tr></thead>
           <tbody id="tbl-proveedores"></tbody>
         </table>
       </div>
     </section>
+
+    <!-- CLIENTES -->
+    <section id="sec-clientes" class="content-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:10px;">
+        <h3>👥 Clientes</h3>
+        <button class="btn btn-primary" onclick="openClienteModal()"><i class="fa-solid fa-plus"></i> Nuevo Cliente</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Cédula/NIT</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Acciones</th></tr></thead>
+          <tbody id="tbl-clientes"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- USUARIOS -->
+    <section id="sec-usuarios" class="content-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:10px;">
+        <h3>👤 Usuarios</h3>
+        <button class="btn btn-primary" onclick="openUsuarioModal()"><i class="fa-solid fa-plus"></i> Nuevo Usuario</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Acciones</th></tr></thead>
+          <tbody id="tbl-usuarios"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- REPORTES -->
+    <section id="sec-reportes" class="content-section">
+      <div class="card" style="margin-bottom: 1.5rem; border-left: 5px solid var(--danger);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3 style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Control del Administrador</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Reiniciar el historial de ventas registradas a $ 0 COP.</p>
+          </div>
+          <button class="btn btn-danger" onclick="resetSalesToZero()"><i class="fa-solid fa-rotate-left"></i> Dejar Ventas en $ 0</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3>📈 Resumen Financiero</h3>
+          <button class="btn btn-success" onclick="exportSalesReportExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Reporte Ventas a Excel</button>
+        </div>
+        <div style="display:flex; gap:2rem; margin-top:1rem;">
+          <div>Ingresos por Ventas: <b id="rep-ventas" style="color:var(--success)">$ 0</b></div>
+          <div>Inversión en Compras: <b id="rep-compras" style="color:var(--danger)">$ 0</b></div>
+          <div>Ganancia Neta: <b id="rep-utilidad" style="color:var(--primary)">$ 0</b></div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <h4 style="padding:1rem;">Historial de Ventas</h4>
+        <table>
+          <thead><tr><th>Factura</th><th>Atendido por</th><th>Fecha</th><th>Cliente</th><th>Método</th><th>Estado Alegra DIAN</th><th>Total COP</th><th>Acción</th></tr></thead>
+          <tbody id="tbl-reportes-ventas"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CONFIGURACIÓN & ALEGRA -->
+    <section id="sec-configuracion" class="content-section">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem;">
+        <div class="card">
+          <h3><i class="fa-solid fa-store"></i> Datos del Supermercado</h3>
+          <div class="form-group" style="margin-top: 1rem;">
+            <label>Nombre Comercial</label>
+            <input type="text" id="cfg-nombre" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>NIT / RUT</label>
+            <input type="text" id="cfg-nit" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>IVA % Defecto</label>
+            <input type="number" id="cfg-iva" class="form-control">
+          </div>
+          <button class="btn btn-success" onclick="saveConfig()"><i class="fa-solid fa-floppy-disk"></i> Guardar Datos</button>
+        </div>
+
+        <div class="card">
+          <h3><i class="fa-solid fa-bolt" style="color:#0077ff;"></i> Integración Alegra DIAN</h3>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">Conecta tu cuenta Alegra para facturación electrónica.</p>
+          <div class="form-group">
+            <label>Email Alegra</label>
+            <input type="email" id="cfg-alegra-email" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Token API Alegra</label>
+            <input type="password" id="cfg-alegra-token" class="form-control">
+          </div>
+          <button class="btn btn-primary" onclick="saveAlegraConfig()"><i class="fa-solid fa-plug"></i> Guardar Credenciales</button>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- MODAL: NUEVO PRODUCTO -->
+  <!-- MODALES -->
   <div id="modal-producto" class="modal-overlay">
     <div class="modal-card">
       <h3>Nuevo Producto</h3>
@@ -196,30 +336,50 @@
     </div>
   </div>
 
-  <!-- MODAL: NUEVA COMPRA -->
+  <div id="modal-cliente" class="modal-overlay">
+    <div class="modal-card">
+      <h3>Nuevo Cliente</h3>
+      <div class="form-group"><label>Cédula/NIT</label><input type="text" id="cli-cedula" class="form-control"></div>
+      <div class="form-group"><label>Nombre</label><input type="text" id="cli-nombre" class="form-control"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="cli-email" class="form-control"></div>
+      <div class="form-group"><label>Teléfono</label><input type="text" id="cli-telefono" class="form-control"></div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="closeModals()">Cancelar</button>
+        <button class="btn btn-success" style="flex:1;" onclick="guardarCliente()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-usuario" class="modal-overlay">
+    <div class="modal-card">
+      <h3>Nuevo Usuario</h3>
+      <div class="form-group"><label>Nombre</label><input type="text" id="usr-nombre" class="form-control"></div>
+      <div class="form-group"><label>Usuario</label><input type="text" id="usr-usuario" class="form-control"></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="usr-pass" class="form-control"></div>
+      <div class="form-group"><label>Rol</label><select id="usr-rol" class="form-control"><option>Administrador</option><option>Cajero</option></select></div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="closeModals()">Cancelar</button>
+        <button class="btn btn-success" style="flex:1;" onclick="guardarUsuario()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-compra" class="modal-overlay">
     <div class="modal-card">
-      <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-cart-plus"></i> Nueva Compra</h3>
-      
+      <h3><i class="fa-solid fa-cart-plus"></i> Nueva Compra</h3>
       <div class="form-group">
         <label>Proveedor *</label>
-        <select id="compra-proveedor" class="form-control" required>
-          <option value="">-- Selecciona proveedor --</option>
-        </select>
+        <select id="compra-proveedor" class="form-control"><option value="">-- Selecciona proveedor --</option></select>
       </div>
-
       <div class="form-group">
         <label>Fecha *</label>
-        <input type="date" id="compra-fecha" class="form-control" required>
+        <input type="date" id="compra-fecha" class="form-control">
       </div>
-
       <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Agregar Productos</h4>
-
       <div class="form-group">
         <label>Nombre del Producto</label>
-        <input type="text" id="compra-producto-nombre" class="form-control" placeholder="Ej: Leche Integral">
+        <input type="text" id="compra-producto-nombre" class="form-control">
       </div>
-
       <div style="display:flex; gap:10px; margin-bottom: 1rem;">
         <div class="form-group" style="flex:1;">
           <label>Cantidad</label>
@@ -231,16 +391,8 @@
         </div>
         <button type="button" class="btn btn-secondary" style="align-self: flex-end;" onclick="agregarProductoCompra()">+ Agregar</button>
       </div>
-
-      <div id="compra-detalles" style="margin-top: 1rem; max-height: 250px; overflow-y: auto; background: #f8fafc; padding: 1rem; border-radius: 6px; border: 1px solid var(--border);">
-        <em style="color: var(--text-muted);">Los productos aparecerán aquí</em>
-      </div>
-
-      <div style="margin-top: 1rem; padding: 1rem; background: #e8f4f8; border-radius: 6px; display:flex; justify-content:space-between; align-items:center; border-left: 4px solid var(--primary);">
-        <strong>Total Compra:</strong>
-        <strong id="compra-total-display" style="font-size: 1.2rem; color: var(--primary);">$ 0</strong>
-      </div>
-
+      <div id="compra-detalles" style="margin-top: 1rem; max-height: 250px; overflow-y: auto; background: #f8fafc; padding: 1rem; border-radius: 6px; border: 1px solid var(--border);"><em style="color: var(--text-muted);">Los productos aparecerán aquí</em></div>
+      <div style="margin-top: 1rem; padding: 1rem; background: #e8f4f8; border-radius: 6px; display:flex; justify-content:space-between; align-items:center; border-left: 4px solid var(--primary);"><strong>Total Compra:</strong><strong id="compra-total-display" style="font-size: 1.2rem; color: var(--primary);">$ 0</strong></div>
       <div style="display:flex; gap:8px; margin-top:1rem;">
         <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModals()">Cancelar</button>
         <button type="button" class="btn btn-success" style="flex:1;" onclick="guardarCompra()"><i class="fa-solid fa-check"></i> Guardar</button>
@@ -248,11 +400,10 @@
     </div>
   </div>
 
-  <!-- MODAL: NUEVO PROVEEDOR -->
   <div id="modal-proveedor" class="modal-overlay">
     <div class="modal-card">
-      <h3 style="margin-bottom: 1rem;">Nuevo Proveedor</h3>
-      <div class="form-group"><label>Nombre *</label><input type="text" id="prov-nombre" class="form-control" required></div>
+      <h3>Nuevo Proveedor</h3>
+      <div class="form-group"><label>Nombre *</label><input type="text" id="prov-nombre" class="form-control"></div>
       <div class="form-group"><label>Teléfono</label><input type="text" id="prov-telefono" class="form-control"></div>
       <div class="form-group"><label>Email</label><input type="email" id="prov-email" class="form-control"></div>
       <div class="form-group"><label>Empresa</label><input type="text" id="prov-empresa" class="form-control"></div>
@@ -265,10 +416,14 @@
 
   <script>
     let db = {
-      usuarios: [{ id: 1, nombre: 'Admin', usuario: 'admin', password: 'admin123', rol: 'admin' }],
+      usuarios: [{ id: 1, nombre: 'Administrador Principal', usuario: 'admin', password: 'admin123', rol: 'Administrador' }],
       compras: [],
       proveedores: [],
-      productos: []
+      productos: [],
+      clientes: [{ id: 1, cedula: '1234567890', nombre: 'Cliente General', email: 'cliente@general.com', telefono: '3000000000' }],
+      ventas: [],
+      config: { nombre: 'SUPER MIX', nit: '900.123.456-1', iva: 19 },
+      alegra: { email: '', token: '', active: false }
     };
 
     let usuarioActivo = null;
@@ -278,7 +433,6 @@
     function cargarDatos() {
       const datos = localStorage.getItem('superMixDB');
       if (datos) db = JSON.parse(datos);
-      if (!document.getElementById('compra-fecha')) return;
       document.getElementById('compra-fecha').valueAsDate = new Date();
     }
 
@@ -290,17 +444,15 @@
       e.preventDefault();
       const usuario = document.getElementById('login-user').value.trim();
       const pass = document.getElementById('login-pass').value.trim();
-      
       const user = db.usuarios.find(u => u.usuario === usuario && u.password === pass);
+      
       if (user) {
         usuarioActivo = user;
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('active-user-name').textContent = user.nombre;
-        document.getElementById('active-user-role').textContent = user.rol.toUpperCase();
+        document.getElementById('active-user-role').textContent = user.rol;
         cargarDatos();
-        renderCompras();
-        renderProveedores();
-        renderProductos();
+        renderAll();
       } else {
         alert('❌ Usuario o contraseña incorrectos\n\nPrueba:\nUsuario: admin\nContraseña: admin123');
       }
@@ -325,11 +477,7 @@
         section.classList.add('active');
         element.classList.add('active');
         document.getElementById('section-title').textContent = element.textContent.trim();
-        
-        if (seccion === 'compras') renderCompras();
-        if (seccion === 'proveedores') renderProveedores();
-        if (seccion === 'productos') renderProductos();
-        
+        renderAll();
         const sidebar = document.querySelector('.sidebar');
         if (sidebar) sidebar.classList.remove('mobile-open');
       }
@@ -342,6 +490,30 @@
 
     function closeModals() {
       document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+    }
+
+    function renderAll() {
+      renderDashboard();
+      renderProductos();
+      renderInventario();
+      renderCompras();
+      renderProveedores();
+      renderClientes();
+      renderUsuarios();
+      renderReportes();
+    }
+
+    // DASHBOARD
+    function renderDashboard() {
+      const totalStock = db.productos.reduce((a, p) => a + (p.stock || 0), 0);
+      const bajoStock = db.productos.filter(p => (p.stock || 0) < 5).length;
+      const totalVentas = db.ventas.reduce((a, v) => a + (v.total || 0), 0);
+      const ganancias = db.productos.reduce((a, p) => a + ((p.precio - (p.costo || 0)) * (p.stock || 0)), 0);
+      
+      document.getElementById('dash-ventas').textContent = '$ ' + totalVentas.toLocaleString('es-CO');
+      document.getElementById('dash-stock').textContent = totalStock;
+      document.getElementById('dash-bajo-stock').textContent = bajoStock;
+      document.getElementById('dash-ganancias').textContent = '$ ' + Math.max(0, ganancias).toLocaleString('es-CO');
     }
 
     // PRODUCTOS
@@ -359,7 +531,8 @@
         codigo: document.getElementById('prod-codigo').value,
         nombre: document.getElementById('prod-nombre').value,
         precio: parseFloat(document.getElementById('prod-precio').value) || 0,
-        stock: parseInt(document.getElementById('prod-stock').value) || 0
+        stock: parseInt(document.getElementById('prod-stock').value) || 0,
+        costo: 0
       };
       db.productos.push(prod);
       guardarDatos();
@@ -376,17 +549,7 @@
         return;
       }
       db.productos.forEach(p => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${p.codigo}</td>
-            <td><b>${p.nombre}</b></td>
-            <td>$ ${p.precio.toLocaleString('es-CO')}</td>
-            <td>${p.stock}</td>
-            <td>
-              <button class="btn btn-sm btn-danger" onclick="eliminarProducto(${p.id})">🗑️</button>
-            </td>
-          </tr>
-        `;
+        tbody.innerHTML += `<tr><td>${p.codigo}</td><td><b>${p.nombre}</b></td><td>$ ${p.precio.toLocaleString('es-CO')}</td><td>${p.stock}</td><td><button class="btn btn-sm btn-danger" onclick="eliminarProducto(${p.id})">🗑️</button></td></tr>`;
       });
     }
 
@@ -398,17 +561,106 @@
       }
     }
 
+    // INVENTARIO
+    function renderInventario() {
+      const tbody = document.getElementById('tbl-inventario');
+      tbody.innerHTML = '';
+      if (db.productos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:2rem; color: var(--text-muted);">Sin productos</td></tr>';
+        return;
+      }
+      db.productos.forEach(p => {
+        const estado = (p.stock || 0) < 5 ? '<span class="badge" style="background:#fee2e2; color:#dc2626;">Bajo Stock</span>' : '<span class="badge badge-success">Suficiente</span>';
+        tbody.innerHTML += `<tr><td><b>${p.nombre}</b></td><td>${p.stock}</td><td>5</td><td>${estado}</td></tr>`;
+      });
+    }
+
+    // CLIENTES
+    function openClienteModal() {
+      document.getElementById('cli-cedula').value = '';
+      document.getElementById('cli-nombre').value = '';
+      document.getElementById('cli-email').value = '';
+      document.getElementById('cli-telefono').value = '';
+      document.getElementById('modal-cliente').classList.add('active');
+    }
+
+    function guardarCliente() {
+      db.clientes.push({
+        id: Date.now(),
+        cedula: document.getElementById('cli-cedula').value,
+        nombre: document.getElementById('cli-nombre').value,
+        email: document.getElementById('cli-email').value,
+        telefono: document.getElementById('cli-telefono').value
+      });
+      guardarDatos();
+      alert('✅ Cliente guardado');
+      closeModals();
+      renderClientes();
+    }
+
+    function renderClientes() {
+      const tbody = document.getElementById('tbl-clientes');
+      tbody.innerHTML = '';
+      db.clientes.forEach(c => {
+        tbody.innerHTML += `<tr><td>${c.cedula}</td><td><b>${c.nombre}</b></td><td>${c.email}</td><td>${c.telefono}</td><td><button class="btn btn-sm btn-danger" onclick="eliminarCliente(${c.id})">🗑️</button></td></tr>`;
+      });
+    }
+
+    function eliminarCliente(id) {
+      if (confirm('¿Eliminar?')) {
+        db.clientes = db.clientes.filter(c => c.id !== id);
+        guardarDatos();
+        renderClientes();
+      }
+    }
+
+    // USUARIOS
+    function openUsuarioModal() {
+      document.getElementById('usr-nombre').value = '';
+      document.getElementById('usr-usuario').value = '';
+      document.getElementById('usr-pass').value = '';
+      document.getElementById('modal-usuario').classList.add('active');
+    }
+
+    function guardarUsuario() {
+      db.usuarios.push({
+        id: Date.now(),
+        nombre: document.getElementById('usr-nombre').value,
+        usuario: document.getElementById('usr-usuario').value,
+        password: document.getElementById('usr-pass').value,
+        rol: document.getElementById('usr-rol').value
+      });
+      guardarDatos();
+      alert('✅ Usuario guardado');
+      closeModals();
+      renderUsuarios();
+    }
+
+    function renderUsuarios() {
+      const tbody = document.getElementById('tbl-usuarios');
+      tbody.innerHTML = '';
+      db.usuarios.forEach(u => {
+        tbody.innerHTML += `<tr><td><b>${u.nombre}</b></td><td>${u.usuario}</td><td><span class="badge badge-success">${u.rol}</span></td><td><button class="btn btn-sm btn-danger" onclick="eliminarUsuario(${u.id})">🗑️</button></td></tr>`;
+      });
+    }
+
+    function eliminarUsuario(id) {
+      if (confirm('¿Eliminar?')) {
+        db.usuarios = db.usuarios.filter(u => u.id !== id);
+        guardarDatos();
+        renderUsuarios();
+      }
+    }
+
     // COMPRAS
     function openCompraModal() {
       compraActual = [];
       totalCompraActual = 0;
-      
       const select = document.getElementById('compra-proveedor');
       select.innerHTML = '<option value="">-- Selecciona proveedor --</option>';
       db.proveedores.forEach(p => {
         select.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
       });
-      
       document.getElementById('compra-fecha').valueAsDate = new Date();
       document.getElementById('compra-producto-nombre').value = '';
       document.getElementById('compra-cantidad').value = '';
@@ -441,26 +693,12 @@
 
     function actualizarResumenCompra() {
       const div = document.getElementById('compra-detalles');
-      
       if (compraActual.length === 0) {
         div.innerHTML = '<em style="color: var(--text-muted);">Los productos aparecerán aquí</em>';
         document.getElementById('compra-total-display').textContent = '$ 0';
         return;
       }
-      
-      div.innerHTML = compraActual.map((item, idx) => `
-        <div style="background: white; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <strong>${item.nombre}</strong><br>
-            <small>${item.cantidad} x $ ${item.precio.toLocaleString('es-CO')}</small>
-          </div>
-          <div style="text-align: right;">
-            <strong>$ ${item.subtotal.toLocaleString('es-CO')}</strong><br>
-            <button type="button" class="btn btn-sm btn-danger" onclick="quitarProductoCompra(${idx})">✕</button>
-          </div>
-        </div>
-      `).join('');
-      
+      div.innerHTML = compraActual.map((item, idx) => `<div style="background: white; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;"><div><strong>${item.nombre}</strong><br><small>${item.cantidad} x $ ${item.precio.toLocaleString('es-CO')}</small></div><div style="text-align: right;"><strong>$ ${item.subtotal.toLocaleString('es-CO')}</strong><br><button type="button" class="btn btn-sm btn-danger" onclick="quitarProductoCompra(${idx})">✕</button></div></div>`).join('');
       document.getElementById('compra-total-display').textContent = '$ ' + totalCompraActual.toLocaleString('es-CO');
     }
 
@@ -502,32 +740,18 @@
     function renderCompras() {
       const tbody = document.getElementById('tbl-compras');
       tbody.innerHTML = '';
-      
       if (db.compras.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color: var(--text-muted);">📦 Sin compras</td></tr>';
         return;
       }
-      
       db.compras.forEach(c => {
-        tbody.innerHTML += `
-          <tr>
-            <td><strong>${c.id}</strong></td>
-            <td>${c.proveedor}</td>
-            <td>${new Date(c.fecha).toLocaleDateString('es-CO')}</td>
-            <td><span class="badge badge-success">${c.productos}</span></td>
-            <td><strong>$ ${c.total.toLocaleString('es-CO')}</strong></td>
-            <td>
-              <button class="btn btn-sm btn-secondary" onclick="verDetallesCompra('${c.id}')">👁️ Ver</button>
-            </td>
-          </tr>
-        `;
+        tbody.innerHTML += `<tr><td><strong>${c.id}</strong></td><td>${c.proveedor}</td><td>${new Date(c.fecha).toLocaleDateString('es-CO')}</td><td><span class="badge badge-success">${c.productos}</span></td><td><strong>$ ${c.total.toLocaleString('es-CO')}</strong></td><td><button class="btn btn-sm btn-secondary" onclick="verDetallesCompra('${c.id}')">👁️ Ver</button></td></tr>`;
       });
     }
 
     function verDetallesCompra(id) {
       const c = db.compras.find(x => x.id === id);
       if (!c) return;
-      
       let msg = `📦 COMPRA ${c.id}\nProveedor: ${c.proveedor}\nFecha: ${new Date(c.fecha).toLocaleDateString('es-CO')}\n\nPRODUCTOS:\n`;
       c.detalles.forEach(p => {
         msg += `• ${p.nombre}: ${p.cantidad} x $ ${p.precio.toLocaleString('es-CO')} = $ ${p.subtotal.toLocaleString('es-CO')}\n`;
@@ -547,12 +771,10 @@
 
     function guardarProveedor() {
       const nombre = document.getElementById('prov-nombre').value.trim();
-      
       if (!nombre) {
         alert('⚠️ Nombre requerido');
         return;
       }
-      
       db.proveedores.push({
         id: Date.now(),
         nombre,
@@ -560,7 +782,6 @@
         email: document.getElementById('prov-email').value.trim(),
         empresa: document.getElementById('prov-empresa').value.trim()
       });
-      
       guardarDatos();
       alert('✅ Proveedor guardado');
       closeModals();
@@ -570,24 +791,12 @@
     function renderProveedores() {
       const tbody = document.getElementById('tbl-proveedores');
       tbody.innerHTML = '';
-      
       if (db.proveedores.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color: var(--text-muted);">Sin proveedores</td></tr>';
         return;
       }
-      
       db.proveedores.forEach(p => {
-        tbody.innerHTML += `
-          <tr>
-            <td><b>${p.nombre}</b></td>
-            <td>${p.telefono || '-'}</td>
-            <td>${p.email || '-'}</td>
-            <td>${p.empresa || '-'}</td>
-            <td>
-              <button class="btn btn-sm btn-danger" onclick="eliminarProveedor(${p.id})">🗑️ Eliminar</button>
-            </td>
-          </tr>
-        `;
+        tbody.innerHTML += `<tr><td><b>${p.nombre}</b></td><td>${p.telefono || '-'}</td><td>${p.email || '-'}</td><td>${p.empresa || '-'}</td><td><button class="btn btn-sm btn-danger" onclick="eliminarProveedor(${p.id})">🗑️ Eliminar</button></td></tr>`;
       });
     }
 
@@ -597,6 +806,63 @@
         guardarDatos();
         renderProveedores();
       }
+    }
+
+    // REPORTES
+    function renderReportes() {
+      const totalVentas = db.ventas.reduce((a, v) => a + (v.total || 0), 0);
+      const totalCompras = db.compras.reduce((a, c) => a + (c.total || 0), 0);
+      
+      document.getElementById('rep-ventas').textContent = '$ ' + totalVentas.toLocaleString('es-CO');
+      document.getElementById('rep-compras').textContent = '$ ' + totalCompras.toLocaleString('es-CO');
+      document.getElementById('rep-utilidad').textContent = '$ ' + (totalVentas - totalCompras).toLocaleString('es-CO');
+      
+      const tbody = document.getElementById('tbl-reportes-ventas');
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:2rem; color: var(--text-muted);">Sin ventas registradas</td></tr>';
+    }
+
+    function resetSalesToZero() {
+      if (confirm('¿Reiniciar todas las ventas a $ 0?')) {
+        db.ventas = [];
+        guardarDatos();
+        alert('✅ Ventas reiniciadas');
+        renderReportes();
+      }
+    }
+
+    function exportSalesReportExcel() {
+      const data = db.ventas.map(v => ({
+        'Factura': v.id,
+        'Atendido por': v.cajero || '-',
+        'Fecha': v.fecha || '-',
+        'Cliente': v.cliente || '-',
+        'Método': v.metodo || '-',
+        'Total COP': v.total || 0
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Ventas");
+      XLSX.writeFile(wb, "Reporte_Ventas.xlsx");
+    }
+
+    function saveConfig() {
+      db.config = {
+        nombre: document.getElementById('cfg-nombre').value,
+        nit: document.getElementById('cfg-nit').value,
+        iva: parseInt(document.getElementById('cfg-iva').value) || 19
+      };
+      guardarDatos();
+      alert('✅ Configuración guardada');
+    }
+
+    function saveAlegraConfig() {
+      db.alegra = {
+        email: document.getElementById('cfg-alegra-email').value,
+        token: document.getElementById('cfg-alegra-token').value,
+        active: true
+      };
+      guardarDatos();
+      alert('✅ Credenciales Alegra guardadas');
     }
 
     cargarDatos();
