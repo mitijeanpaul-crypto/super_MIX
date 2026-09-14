@@ -312,6 +312,14 @@
   <main class="main-content">
     <header>
       <h2 id="section-title">1. Dashboard</h2>
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-left:auto; margin-right:12px;">
+        <div id="supabase-status" style="padding:7px 10px; border-radius:8px; font-size:.78rem; font-weight:700; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">
+          <i class="fa-solid fa-spinner fa-spin"></i> Comprobando conexión con Supabase...
+        </div>
+        <button class="btn btn-sm btn-primary" type="button" onclick="probarConexionSupabase()" title="Probar conexión con Supabase">
+          <i class="fa-solid fa-plug"></i> Probar conexión
+        </button>
+      </div>
       <div class="user-info">
         <div>
           <b id="active-user-name">Usuario</b> 
@@ -882,6 +890,35 @@
         : '<i class="fa-solid fa-triangle-exclamation" style="color:#d97706;"></i> ' + message;
       el.style.background = ok ? '#ecfdf5' : '#fffbeb';
       el.style.color = ok ? '#166534' : '#92400e';
+      el.style.borderColor = ok ? '#86efac' : '#fde68a';
+    }
+
+    async function probarConexionSupabase() {
+      setSupabaseStatus('Probando conexión...', false);
+      try {
+        if (!window.supabase || !window.supabase.createClient) {
+          throw new Error('No se cargó la librería de Supabase. Revisa tu conexión a Internet.');
+        }
+
+        const { data, error } = await supabaseClient
+          .from('app_state')
+          .select('id, updated_at')
+          .eq('id', SUPABASE_ROW_ID)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        supabaseReady = true;
+        const detalle = data?.updated_at
+          ? ' Conectado · última actualización: ' + new Date(data.updated_at).toLocaleString('es-CO')
+          : ' Conectado · tabla disponible, sin datos todavía.';
+        setSupabaseStatus('Supabase conectado.' + detalle, true);
+        console.log('Supabase OK:', data);
+      } catch (error) {
+        supabaseReady = false;
+        console.error('Error de conexión Supabase:', error);
+        setSupabaseStatus('Sin conexión: ' + (error?.message || 'error desconocido'), false);
+      }
     }
 
     async function cargarDBSupabase() {
@@ -2001,6 +2038,9 @@
 
     // Cargar datos desde Supabase al abrir el sistema.
     cargarDBSupabase();
+
+    // Comprobación visible de conexión al terminar de cargar la página.
+    setTimeout(probarConexionSupabase, 1200);
 
   </script>
 </body>
