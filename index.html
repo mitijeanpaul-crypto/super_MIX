@@ -623,7 +623,7 @@
       const uInput = document.getElementById('login-user').value.trim();
       const pInput = document.getElementById('login-pass').value.trim();
 
-      const found = DB.usuarios.find(u => u.user === uInput && u.pass === pInput);
+      const found = DB.usuarios.find(u => u.username === uInput && u.pass === pInput);
       if (found) {
         currentUser = found;
         localStorage.setItem('current_user', JSON.stringify(currentUser));
