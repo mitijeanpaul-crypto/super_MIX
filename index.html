@@ -1814,7 +1814,8 @@
 
     // COMPRAS
     let compraItems = [];
-function renderCompras() {
+
+    function renderCompras() {
       const tbody = document.getElementById('tbl-compras');
       if (!tbody) return;
 
@@ -1826,13 +1827,9 @@ function renderCompras() {
           <td>${c.fecha}</td>
           <td>${(c.items || []).reduce((acc, i) => acc + Number(i.qty || 0), 0)}</td>
           <td><b>${formatCOP(c.total)}</b></td>
-          <td style="display: flex; gap: 5px;"> <!-- Agregamos flex y gap para separar los botones -->
-            <button class="btn btn-sm btn-secondary" onclick="verCompra('${c.id}')" title="Ver detalles">
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="verCompra('${c.id}')">
               <i class="fa-solid fa-eye"></i> Ver
-            </button>
-            <!-- NUEVO BOTÓN DE ELIMINAR COMPRA -->
-            <button class="btn btn-sm btn-danger" onclick="eliminarCompra('${c.id}')" title="Eliminar esta compra">
-              <i class="fa-solid fa-trash"></i> Eliminar
             </button>
           </td>
         </tr>
@@ -1850,7 +1847,6 @@ function renderCompras() {
       const totalEl = document.getElementById('compras-total');
       if (cantidadEl) cantidadEl.textContent = cantidad;
       if (totalEl) totalEl.textContent = formatCOP(total);
-    }
     }
 
     function openCompraModal() {
@@ -1996,78 +1992,6 @@ function renderCompras() {
         `${detalle}\n\n` +
         `TOTAL: ${formatCOP(compra.total)}`
       );
-    }
-    
-    // ELIMINAR COMPRA
-    // Al eliminar una compra también se descuenta del inventario la cantidad
-    // que esa compra había agregado. La compra se elimina del DB local y
-    // saveDB() sincroniza el estado completo con Supabase.
-    async function eliminarCompra(id) {
-      if (!currentUser || currentUser.rol !== 'Administrador') {
-        alert('Solo un Administrador puede eliminar compras.');
-        return;
-      }
-
-      const compra = (DB.compras || []).find(c => String(c.id) === String(id));
-      if (!compra) {
-        alert('No se encontró la compra.');
-        return;
-      }
-
-      const total = Number(compra.total || 0);
-
-      if (!confirm(
-        `¿Eliminar la compra ${compra.id}?\n\n` +
-        `Proveedor: ${compra.proveedor || 'Sin proveedor'}\n` +
-        `Total: ${formatCOP(total)}\n\n` +
-        `También se descontarán del inventario los productos y cantidades ` +
-        `que fueron agregados por esta compra.`
-      )) {
-        return;
-      }
-
-      try {
-        // Revertir el stock de cada producto comprado.
-        (compra.items || []).forEach(item => {
-          const producto = (DB.productos || []).find(
-            p => String(p.id) === String(item.productoId)
-          );
-
-          if (producto) {
-            const cantidad = Number(item.qty || 0);
-            producto.stock = Math.max(
-              0,
-              (Number(producto.stock) || 0) - cantidad
-            );
-          }
-        });
-
-        // Eliminar la compra del historial.
-        DB.compras = (DB.compras || []).filter(
-          c => String(c.id) !== String(id)
-        );
-
-        // Guardar el cambio en localStorage y Supabase.
-        await saveDB();
-
-        // Actualizar inmediatamente las secciones afectadas.
-        if (typeof renderCompras === 'function') renderCompras();
-        if (typeof renderInventario === 'function') renderInventario();
-        if (typeof renderProducts === 'function') await renderProducts();
-        if (typeof renderReportes === 'function') renderReportes();
-        if (typeof renderPOS === 'function') await renderPOS();
-
-        alert(
-          `Compra ${compra.id} eliminada correctamente.\n\n` +
-          `Se descontaron del inventario las cantidades correspondientes.`
-        );
-      } catch (error) {
-        console.error('Error eliminando compra:', error);
-        alert(
-          'No se pudo eliminar la compra: ' +
-          (error?.message || 'error desconocido')
-        );
-      }
     }
 
     // REPORTES
