@@ -844,21 +844,67 @@
   </div>
 
   <script>
-    // BD INICIAL
-    let DB = JSON.parse(localStorage.getItem('super_db_zero_v3')) || {
-      categorias: ['Lácteos', 'Abarrotes', 'Bebidas', 'Aseo'],
-      productos: [],
-      // NEW: Added deuda field by default to the initial general client
-      clientes: [{ id: '1', cedula: '2222222222', nombre: 'Cliente General', correo: 'cliente@general.com', telefono: '3000000000', puntos: 0, deuda: 0 }],
-      proveedores: [],
-      usuarios: [
-        { id: '1', nombre: 'Administrador Principal', user: 'admin', pass: 'admin123', rol: 'Administrador' }
-      ],
-      ventas: [],
-      compras: [],
-      config: { nombre: 'SUPERMERCADO PRO', nit: '900.123.456-1', iva: 19 },
-      alegra: { email: '', token: '', active: false }
-    };
+    <!-- 1. Incluir el cliente oficial de Supabase en el <head> de tu HTML -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // --- CONFIGURACIÓN DE TU SUPABASE ---
+  const SUPABASE_URL = 'https://ryasfyjicjjptwyrxqfk.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_b89wGBYJ68J1bys1uAgY9Q_M8qmFath';
+
+  // Inicializar cliente Supabase
+  const { createClient } = supabase;
+  const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Estructura DB base
+  let DB = {
+    categorias: ['Lácteos', 'Abarrotes', 'Bebidas', 'Aseo'],
+    productos: [],
+    clientes: [],
+    proveedores: [],
+    usuarios: [],
+    ventas: [],
+    compras: [],
+    config: { nombre: 'SUPERMERCADO PRO', nit: '900.123.456-1', iva: 19 },
+    alegra: { email: '', token: '', active: false }
+  };
+
+  let currentUser = null;
+  let cart = [];
+  let salesChart = null;
+
+  // Función para sincronizar y descargar los datos desde Supabase al arrancar
+  async function cargarDatosDesdeSupabase() {
+    try {
+      console.log("Conectando a Supabase...");
+      
+      const { data: prods, error: errProd } = await _supabase.from('productos').select('*');
+      if (prods && prods.length > 0) DB.productos = prods;
+
+      const { data: clis } = await _supabase.from('clientes').select('*');
+      if (clis && clis.length > 0) DB.clientes = clis;
+
+      const { data: provs } = await _supabase.from('proveedores').select('*');
+      if (provs && provs.length > 0) DB.proveedores = provs;
+
+      const { data: usrs } = await _supabase.from('usuarios').select('*');
+      if (usrs && usrs.length > 0) DB.usuarios = usrs;
+
+      const { data: vts } = await _supabase.from('ventas').select('*');
+      if (vts && vts.length > 0) DB.ventas = vts;
+
+      console.log("¡Sincronización con Supabase exitosa!");
+      renderAll();
+    } catch (err) {
+      console.error("Error al conectar con Supabase:", err);
+    }
+  }
+
+  // Ejecutar al cargar la página
+  window.addEventListener('DOMContentLoaded', () => {
+    cargarDatosDesdeSupabase();
+  });
+</script>
 
     let currentUser = null;
     let cart = [];
