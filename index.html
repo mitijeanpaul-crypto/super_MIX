@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>super MIX - Punto de Venta High-Performance</title>
+  <title>super MIX - High Performance POS</title>
+  
+  <!-- Librerías Externas -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -30,27 +32,34 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center;
     }
 
-    /* LAYOUT & SIDEBAR */
-    .sidebar { width: var(--sidebar-width); background-color: var(--bg-dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+    /* SIDEBAR & RESPONSIVE MENU */
+    .sidebar { width: var(--sidebar-width); background-color: var(--bg-dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; z-index: 10001; transition: transform 0.3s ease; }
     .brand { padding: 1.25rem; font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; gap: 10px; background-color: rgba(255, 255, 255, 0.05); color: #60a5fa; }
     .nav-list { list-style: none; overflow-y: auto; flex: 1; padding: 0.5rem 0; }
     .nav-item { padding: 0.8rem 1.25rem; display: flex; align-items: center; gap: 12px; cursor: pointer; color: #94a3b8; transition: all 0.2s; font-size: 0.95rem; }
     .nav-item:hover, .nav-item.active { background-color: var(--primary); color: white; }
+    .nav-icon { width: 22px; text-align: center; font-size: 1.05rem; }
 
-    .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+    .mobile-menu-toggle { display: none; position: fixed; z-index: 10002; top: 12px; left: 12px; width: 44px; height: 44px; border: 0; border-radius: 8px; background: var(--primary); color: #fff; align-items: center; justify-content: center; font-size: 1.15rem; cursor: pointer; }
+    .sidebar-backdrop { position: fixed; inset: 0; z-index: 10000; background: rgba(15,23,42,0.5); display: none; opacity: 0; transition: opacity 0.3s; }
+    .sidebar-backdrop.active { display: block; opacity: 1; }
+
+    /* MAIN CONTENT */
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; width: 100%; }
     header { background: white; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .content-section { padding: 1.5rem; display: none; }
+    .content-section { padding: 1.5rem; display: none; width: 100%; }
     .content-section.active { display: block; }
 
-    /* METRICS & TABLES */
+    /* METRICS & CARDS */
     .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
     .card { background: white; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .metric-card { display: flex; align-items: center; gap: 1rem; }
     .metric-icon { width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
     .metric-val { font-size: 1.4rem; font-weight: bold; margin-top: 4px; }
 
-    .table-container { background: white; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+    /* TABLES */
+    .table-container { background: white; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; min-width: 600px; }
     th, td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
     th { background-color: #f8fafc; color: var(--text-muted); font-weight: 600; }
     tr:hover { background-color: #f1f5f9; }
@@ -61,28 +70,40 @@
     .cart-items { flex: 1; overflow-y: auto; margin: 1rem 0; }
     .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
 
-    /* UTILS & MODALS */
-    .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
+    /* BUTTONS & FORMS */
+    .btn { padding: 0.6rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; font-size: 0.9rem; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
     .btn-secondary { background: var(--secondary); color: white; }
     .btn-excel { background: #107c41; color: white; }
+    .btn-sm { padding: 0.35rem 0.5rem; font-size: 0.8rem; }
     .form-control { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
-    
+    .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .badge-success { background: #dcfce7; color: #15803d; }
+    .badge-danger { background: #fee2e2; color: #b91c1c; }
+
+    /* MODALS & PAGINATION */
     .pagination { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border-top: 1px solid var(--border); }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
     .modal-overlay.active { display: flex; }
     .modal-card { background: white; border-radius: 8px; width: 100%; max-width: 500px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; }
-
+    
     .progress-bar { width: 100%; background-color: #e2e8f0; border-radius: 8px; overflow: hidden; margin-top: 10px; height: 16px; display: none; }
     .progress-fill { height: 100%; background-color: var(--success); width: 0%; transition: width 0.2s; text-align: center; color: white; font-size: 10px; line-height: 16px; }
 
+    /* RESPONSIVE DESIGN (MÓVILES) */
     @media (max-width: 900px) {
-      body { display: block; overflow: auto; }
-      .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 1000; transform: translateX(-100%); transition: 0.3s; }
-      .sidebar.active { transform: translateX(0); }
+      body { flex-direction: column; }
+      .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-105%); box-shadow: 4px 0 15px rgba(0,0,0,0.2); }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .mobile-menu-toggle { display: flex; }
+      header { padding-left: 4.5rem; } /* Espacio para el botón de menú */
       .pos-container { grid-template-columns: 1fr; height: auto; }
+      .cart-summary { min-height: 350px; }
+      .content-section > div { flex-direction: column; align-items: stretch !important; }
+      .content-section input { max-width: 100% !important; }
+      .btn { justify-content: center; width: 100%; margin-bottom: 0.5rem; }
     }
   </style>
 </head>
@@ -93,6 +114,7 @@
     <div class="login-card">
       <i class="fa-solid fa-cart-shopping" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
       <h2 style="margin-bottom: 0.5rem;">Iniciar Sesión</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Credenciales de demostración</p>
       <form onsubmit="handleLogin(event)">
         <div style="text-align: left; margin-bottom: 1rem;">
           <label>Usuario</label>
@@ -102,19 +124,23 @@
           <label>Contraseña</label>
           <input type="password" id="login-pass" class="form-control" placeholder="••••••••" required>
         </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">Acceder</button>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">Acceder</button>
       </form>
     </div>
   </div>
 
+  <!-- MENU MÓVIL (Boton y fondo) -->
+  <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeMobileMenu()"></div>
+
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
-    <div class="brand"><i class="fa-solid fa-cart-shopping"></i><span>super MIX 2M</span></div>
+    <div class="brand"><i class="fa-solid fa-cart-shopping"></i><span>super MIX</span></div>
     <ul class="nav-list">
-      <li class="nav-item active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-line"></i><span>Inicio</span></li>
-      <li class="nav-item" onclick="showSection('productos', this)"><i class="fa-solid fa-box-open"></i><span>Productos (2M)</span></li>
-      <li class="nav-item" onclick="showSection('ventas', this)"><i class="fa-solid fa-cash-register"></i><span>Ventas / POS</span></li>
-      <li class="nav-item" onclick="showSection('compras', this)"><i class="fa-solid fa-cart-plus"></i><span>Compras</span></li>
+      <li class="nav-item active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-line nav-icon"></i><span>Inicio</span></li>
+      <li class="nav-item" onclick="showSection('productos', this)"><i class="fa-solid fa-box-open nav-icon"></i><span>Productos (2M)</span></li>
+      <li class="nav-item" onclick="showSection('ventas', this)"><i class="fa-solid fa-cash-register nav-icon"></i><span>Ventas / POS</span></li>
+      <li class="nav-item" onclick="showSection('compras', this)"><i class="fa-solid fa-cart-plus nav-icon"></i><span>Compras</span></li>
     </ul>
   </aside>
 
@@ -123,9 +149,9 @@
     <header>
       <h2 id="section-title">Dashboard</h2>
       <div style="display:flex; align-items:center; gap:10px;">
-        <span id="supabase-status" style="font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; background: #dcfce7; color: #15803d;">Conectado a Supabase</span>
-        <b>Admin</b>
-        <button class="btn btn-secondary" style="padding: 4px 8px;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+        <span style="font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; background: #dcfce7; color: #15803d; white-space: nowrap;">Conectado a BD</span>
+        <b style="display: none;">Admin</b>
+        <button class="btn btn-secondary btn-sm" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
       </div>
     </header>
 
@@ -134,24 +160,24 @@
       <div class="metrics-grid">
         <div class="card metric-card">
           <div class="metric-icon" style="background:#dbeafe; color:#2563eb"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-          <div><div>Ventas del día</div><div class="metric-val" id="dash-ventas">$ 0</div></div>
+          <div><div style="font-size:0.85rem; color:var(--text-muted);">Ventas del día</div><div class="metric-val" id="dash-ventas">$ 0</div></div>
         </div>
         <div class="card metric-card">
           <div class="metric-icon" style="background:#dcfce7; color:#16a34a"><i class="fa-solid fa-boxes-stacked"></i></div>
-          <div><div>Catálogo Total</div><div class="metric-val" id="dash-disponibles">2,000,000</div></div>
+          <div><div style="font-size:0.85rem; color:var(--text-muted);">Catálogo Total</div><div class="metric-val" id="dash-disponibles">2,000,000</div></div>
         </div>
       </div>
     </section>
 
-    <!-- PRODUCTOS DE ALTO RENDIMIENTO -->
+    <!-- PRODUCTOS -->
     <section id="sec-productos" class="content-section">
       <div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
-        <div style="display:flex; gap:10px; flex:1;">
-          <input type="text" id="prod-search" class="form-control" style="max-width:300px;" placeholder="🔍 Buscar entre 2M de productos..." oninput="debouncedSearch()">
+        <div style="display:flex; flex:1;">
+          <input type="text" id="prod-search" class="form-control" style="max-width:350px;" placeholder="🔍 Buscar entre 2M de productos (Código o Nombre)..." oninput="debouncedSearch()">
         </div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-excel" onclick="openImportModal()"><i class="fa-solid fa-file-import"></i> Importar Excel Masivo</button>
-          <button class="btn btn-primary" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Nuevo Producto</button>
+        <div style="display:flex; gap:8px; flex-wrap: wrap;">
+          <button class="btn btn-excel" style="flex:1;" onclick="openImportModal()"><i class="fa-solid fa-file-import"></i> Importar Excel</button>
+          <button class="btn btn-primary" style="flex:1;" onclick="alert('Función de registro manual')"><i class="fa-solid fa-plus"></i> Nuevo</button>
         </div>
       </div>
 
@@ -163,9 +189,9 @@
           <tbody id="tbl-productos"></tbody>
         </table>
         <div class="pagination">
-          <button class="btn btn-secondary" id="btn-prev" onclick="changePage(-1)">Anterior</button>
-          <span id="page-info">Página 1</span>
-          <button class="btn btn-secondary" id="btn-next" onclick="changePage(1)">Siguiente</button>
+          <button class="btn btn-secondary btn-sm" id="btn-prev" onclick="changePage(-1)">Anterior</button>
+          <span id="page-info" style="font-size: 0.85rem; font-weight: 600;">Página 1</span>
+          <button class="btn btn-secondary btn-sm" id="btn-next" onclick="changePage(1)">Siguiente</button>
         </div>
       </div>
     </section>
@@ -174,7 +200,7 @@
     <section id="sec-ventas" class="content-section">
       <div class="pos-container">
         <div>
-          <input type="text" id="pos-barcode" class="form-control" style="margin-bottom:1rem;" placeholder="📷 Escanear o buscar producto..." oninput="debouncedPOSSearch()">
+          <input type="text" id="pos-barcode" class="form-control" style="margin-bottom:1rem; border: 2px solid var(--primary);" placeholder="📷 Escanear código de barras o buscar..." oninput="debouncedPOSSearch()">
           <div class="table-container" style="max-height: calc(100vh - 220px); overflow-y: auto;">
             <table>
               <thead><tr><th>Código</th><th>Producto</th><th>Precio</th><th>Stock</th><th>Acción</th></tr></thead>
@@ -183,13 +209,15 @@
           </div>
         </div>
         <div class="cart-summary">
-          <h3>Carrito de Compra</h3>
-          <div class="cart-items" id="cart-list"></div>
+          <h3 style="margin-bottom: 1rem;">Carrito de Compra</h3>
+          <div class="cart-items" id="cart-list">
+            <p style="color: var(--text-muted); text-align: center; font-size: 0.9rem;">No hay productos en el carrito</p>
+          </div>
           <div style="border-top:1px solid var(--border); padding-top:1rem;">
-            <div style="display:flex; justify-content:space-between; font-size:1.2rem; margin-bottom:1rem; color:var(--primary);">
+            <div style="display:flex; justify-content:space-between; font-size:1.3rem; margin-bottom:1rem; color:var(--primary);">
               <span>Total:</span><b id="pos-total">$ 0</b>
             </div>
-            <button class="btn btn-success" style="width:100%; justify-content:center; padding:0.75rem;" onclick="processSale()">Finalizar Venta</button>
+            <button class="btn btn-success" style="width:100%; justify-content:center; padding:0.8rem; font-size: 1rem;" onclick="processSale()"><i class="fa-solid fa-check"></i> Finalizar Venta</button>
           </div>
         </div>
       </div>
@@ -198,8 +226,9 @@
     <!-- COMPRAS -->
     <section id="sec-compras" class="content-section">
       <div class="card">
-        <h3>Módulo de Compras</h3>
+        <h3><i class="fa-solid fa-truck-ramp-box"></i> Módulo de Compras</h3>
         <p style="color:var(--text-muted); margin-top:0.5rem;">Gestión de entrada de mercancía y actualización automática de stock.</p>
+        <button class="btn btn-primary" style="margin-top: 1rem;" onclick="alert('Abriendo registro de compras...')"><i class="fa-solid fa-plus"></i> Registrar Compra</button>
       </div>
     </section>
   </main>
@@ -207,29 +236,46 @@
   <!-- MODAL IMPORTAR EXCEL MASIVO -->
   <div class="modal-overlay" id="modal-import">
     <div class="modal-card">
-      <h3 style="margin-bottom:1rem;"><i class="fa-solid fa-file-excel"></i> Importar Lote de Productos</h3>
-      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Soporta archivos extensos (.xlsx, .csv). El sistema insertará o actualizará automáticamente los productos en lotes de 1.000 registros.</p>
-      <input type="file" id="excel-file" class="form-control" accept=".xlsx, .xls, .csv">
-      <div class="progress-bar" id="import-progress"><div class="progress-fill" id="progress-fill">0%</div></div>
-      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:1.5rem;">
-        <button class="btn btn-secondary" onclick="closeImportModal()">Cancelar</button>
-        <button class="btn btn-excel" onclick="processExcelImport()"><i class="fa-solid fa-upload"></i> Procesar Importación</button>
+      <h3 style="margin-bottom:1rem; color: var(--primary);"><i class="fa-solid fa-file-excel"></i> Importar Lote de Productos</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Soporta archivos extensos (.xlsx, .csv). El sistema insertará o actualizará automáticamente los productos en lotes de 1.000 registros para evitar bloqueos.</p>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <input type="file" id="excel-file" class="form-control" accept=".xlsx, .xls, .csv">
+        <div class="progress-bar" id="import-progress"><div class="progress-fill" id="progress-fill">0%</div></div>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="closeImportModal()">Cancelar</button>
+        <button class="btn btn-excel" style="flex:1;" onclick="processExcelImport()"><i class="fa-solid fa-upload"></i> Procesar</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Configuración de Supabase
+    // 1. Configuración de Supabase (Reemplaza con los tuyos en producción)
     const SUPABASE_URL = "https://tu-proyecto.supabase.co";
     const SUPABASE_KEY = "tu-anon-key";
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // Se renombra a 'db' para prevenir colisiones en el objeto window
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Estado Paginación (2 Millones de Registros)
+    // Variables de estado
     let currentPage = 0;
     const PAGE_SIZE = 50;
     let searchTimeout = null;
     let cart = [];
 
+    /* MENU MÓVIL */
+    function toggleMobileMenu() {
+      document.getElementById('sidebar').classList.add('mobile-open');
+      document.getElementById('sidebar-backdrop').classList.add('active');
+    }
+    function closeMobileMenu() {
+      document.getElementById('sidebar').classList.remove('mobile-open');
+      document.getElementById('sidebar-backdrop').classList.remove('active');
+    }
+
+    /* NAVEGACIÓN Y SESIÓN */
     function handleLogin(e) {
       e.preventDefault();
       document.getElementById('login-screen').style.display = 'none';
@@ -238,6 +284,7 @@
 
     function logout() {
       document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('login-pass').value = '';
     }
 
     function showSection(sectionId, element) {
@@ -246,9 +293,10 @@
       document.getElementById(`sec-${sectionId}`).classList.add('active');
       if (element) element.classList.add('active');
       document.getElementById('section-title').innerText = sectionId.toUpperCase();
+      closeMobileMenu(); // Cierra el menú al navegar en celular
     }
 
-    /* BÚSQUEDA SERVER-SIDE CON OPTIMIZACIÓN DE MEMORIA */
+    /* BÚSQUEDA SERVER-SIDE PAGINADA (PRODUCTOS) */
     async function loadProductsServer() {
       const queryText = document.getElementById('prod-search').value.trim();
       const tbody = document.getElementById('tbl-productos');
@@ -257,37 +305,51 @@
       const from = currentPage * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      let query = supabase.from('productos').select('*', { count: 'exact' });
+      try {
+        let query = db.from('productos').select('*', { count: 'exact' });
 
-      if (queryText) {
-        query = query.or(`nombre.ilike.%${queryText}%,codigo.ilike.%${queryText}%`);
-      }
+        if (queryText) {
+          query = query.or(`nombre.ilike.%${queryText}%,codigo.ilike.%${queryText}%`);
+        }
 
-      const { data, count, error } = await query.range(from, to).order('id', { ascending: true });
+        const { data, count, error } = await query.range(from, to).order('id', { ascending: true });
 
-      if (error) {
-        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger)">Error al cargar productos. Verifique la conexión a Supabase.</td></tr>`;
-        return;
-      }
+        if (error) throw error;
 
-      tbody.innerHTML = '';
-      data.forEach(prod => {
-        tbody.innerHTML += `
+        tbody.innerHTML = '';
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No se encontraron productos.</td></tr>`;
+        }
+
+        (data || []).forEach(prod => {
+          tbody.innerHTML += `
+            <tr>
+              <td><b>${prod.codigo}</b></td>
+              <td>${prod.nombre}</td>
+              <td>${prod.categoria || 'General'}</td>
+              <td>$ ${Number(prod.precio).toLocaleString('es-CO')}</td>
+              <td>$ ${Number(prod.costo || 0).toLocaleString('es-CO')}</td>
+              <td><span class="badge ${prod.stock < 5 ? 'badge-danger' : 'badge-success'}">${prod.stock}</span></td>
+              <td><button class="btn btn-secondary btn-sm"><i class="fa-solid fa-pen"></i></button></td>
+            </tr>
+          `;
+        });
+
+        document.getElementById('page-info').innerText = `Página ${currentPage + 1} (${from + 1} - ${Math.min(to + 1, count || 0)} de ${count || 0})`;
+        document.getElementById('btn-prev').disabled = currentPage === 0;
+        document.getElementById('btn-next').disabled = to >= (count || 0);
+
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = `
           <tr>
-            <td><b>${prod.codigo}</b></td>
-            <td>${prod.nombre}</td>
-            <td>${prod.categoria || 'General'}</td>
-            <td>$ ${Number(prod.precio).toLocaleString('es-CO')}</td>
-            <td>$ ${Number(prod.costo || 0).toLocaleString('es-CO')}</td>
-            <td><span class="badge ${prod.stock < 5 ? 'badge-danger' : 'badge-success'}">${prod.stock}</span></td>
-            <td><button class="btn btn-secondary btn-sm"><i class="fa-solid fa-pen"></i></button></td>
-          </tr>
-        `;
-      });
-
-      document.getElementById('page-info').innerText = `Página ${currentPage + 1} (${from + 1} - ${Math.min(to + 1, count || 0)} de ${count || 0})`;
-      document.getElementById('btn-prev').disabled = currentPage === 0;
-      document.getElementById('btn-next').disabled = to >= (count || 0);
+            <td colspan="7" style="color:var(--danger); text-align:center; padding: 2rem;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom:0.5rem; display:block;"></i>
+              No se pudo conectar a Supabase.<br>
+              <small style="color:var(--text-muted)">Debes configurar tu SUPABASE_URL y SUPABASE_KEY reales en el código JavaScript.</small>
+            </td>
+          </tr>`;
+      }
     }
 
     function debouncedSearch() {
@@ -303,32 +365,52 @@
       loadProductsServer();
     }
 
-    /* BÚSQUEDA SERVIDOR PARA POS */
+    /* POS Y CARRITO */
     function debouncedPOSSearch() {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(async () => {
         const queryText = document.getElementById('pos-barcode').value.trim();
-        if (!queryText) return;
         const tbody = document.getElementById('tbl-pos-products');
+        
+        if (!queryText) {
+          tbody.innerHTML = '';
+          return;
+        }
 
-        const { data } = await supabase
-          .from('productos')
-          .select('*')
-          .or(`nombre.ilike.%${queryText}%,codigo.ilike.%${queryText}%`)
-          .limit(20);
+        try {
+          const { data, error } = await db
+            .from('productos')
+            .select('*')
+            .or(`nombre.ilike.%${queryText}%,codigo.ilike.%${queryText}%`)
+            .limit(10);
+            
+          if (error) throw error;
 
-        tbody.innerHTML = '';
-        (data || []).forEach(prod => {
-          tbody.innerHTML += `
+          tbody.innerHTML = '';
+          (data || []).forEach(prod => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${prod.codigo}</td>
+                <td>${prod.nombre}</td>
+                <td>$ ${Number(prod.precio).toLocaleString('es-CO')}</td>
+                <td>${prod.stock}</td>
+                <td><button class="btn btn-primary btn-sm" onclick="addToCart('${prod.codigo}', '${prod.nombre}', ${prod.precio})"><i class="fa-solid fa-cart-plus"></i></button></td>
+              </tr>
+            `;
+          });
+        } catch (err) {
+          // Fallback visual si falla DB para poder probar el carrito en la vista previa
+          tbody.innerHTML = `
             <tr>
-              <td>${prod.codigo}</td>
-              <td>${prod.nombre}</td>
-              <td>$ ${Number(prod.precio).toLocaleString('es-CO')}</td>
-              <td>${prod.stock}</td>
-              <td><button class="btn btn-primary btn-sm" onclick="addToCart('${prod.codigo}', '${prod.nombre}', ${prod.precio})"><i class="fa-solid fa-cart-plus"></i></button></td>
+              <td>1001</td><td>Producto Demo 1</td><td>$ 5.000</td><td>100</td>
+              <td><button class="btn btn-primary btn-sm" onclick="addToCart('1001', 'Producto Demo 1', 5000)"><i class="fa-solid fa-cart-plus"></i></button></td>
+            </tr>
+             <tr>
+              <td>1002</td><td>Producto Demo 2</td><td>$ 15.000</td><td>50</td>
+              <td><button class="btn btn-primary btn-sm" onclick="addToCart('1002', 'Producto Demo 2', 15000)"><i class="fa-solid fa-cart-plus"></i></button></td>
             </tr>
           `;
-        });
+        }
       }, 250);
     }
 
@@ -336,11 +418,19 @@
       const item = cart.find(i => i.codigo === codigo);
       if (item) { item.cantidad++; } 
       else { cart.push({ codigo, nombre, precio, cantidad: 1 }); }
+      document.getElementById('pos-barcode').value = '';
+      document.getElementById('pos-barcode').focus();
       renderCart();
     }
 
     function renderCart() {
       const container = document.getElementById('cart-list');
+      if (cart.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; font-size: 0.9rem;">No hay productos en el carrito</p>';
+        document.getElementById('pos-total').innerText = '$ 0';
+        return;
+      }
+
       container.innerHTML = '';
       let total = 0;
       cart.forEach((item, idx) => {
@@ -348,10 +438,10 @@
         total += st;
         container.innerHTML += `
           <div class="cart-item">
-            <div><b>${item.nombre}</b><br><small>$ ${item.precio.toLocaleString('es-CO')} x ${item.cantidad}</small></div>
-            <div>
+            <div style="flex:1;"><b>${item.nombre}</b><br><small style="color:var(--text-muted);">$ ${item.precio.toLocaleString('es-CO')} x ${item.cantidad}</small></div>
+            <div style="display:flex; align-items:center; gap:10px;">
               <b>$ ${st.toLocaleString('es-CO')}</b>
-              <button class="btn btn-danger btn-sm" style="margin-left:5px;" onclick="removeFromCart(${idx})">&times;</button>
+              <button class="btn btn-danger btn-sm" onclick="removeFromCart(${idx})"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         `;
@@ -366,61 +456,78 @@
 
     function processSale() {
       if (cart.length === 0) return alert('El carrito está vacío.');
-      alert('Venta procesada exitosamente.');
+      alert(`¡Venta procesada exitosamente!\nTotal cobrado: ${document.getElementById('pos-total').innerText}`);
       cart = [];
       renderCart();
     }
 
-    /* IMPORTACIÓN MASIVA EXCEL POR LOTES (BATCH PROCESSING) */
+    /* IMPORTACIÓN MASIVA EXCEL */
     function openImportModal() { document.getElementById('modal-import').classList.add('active'); }
-    function closeImportModal() { document.getElementById('modal-import').classList.remove('active'); }
+    function closeImportModal() { 
+      document.getElementById('modal-import').classList.remove('active'); 
+      document.getElementById('import-progress').style.display = 'none';
+      document.getElementById('excel-file').value = '';
+    }
 
     async function processExcelImport() {
       const fileInput = document.getElementById('excel-file');
-      if (!fileInput.files.length) return alert('Por favor, selecciona un archivo Excel.');
+      if (!fileInput.files.length) return alert('Por favor, selecciona un archivo Excel (.xlsx, .csv).');
 
       const file = fileInput.files[0];
       const reader = new FileReader();
 
       document.getElementById('import-progress').style.display = 'block';
       const fill = document.getElementById('progress-fill');
+      fill.style.width = '0%';
+      fill.innerText = 'Leyendo archivo...';
 
       reader.onload = async (e) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(sheet);
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(sheet);
 
-        const totalRows = rows.length;
-        const BATCH_SIZE = 1000; // Inserción en bloques de 1.000 para máximo rendimiento
-        let processed = 0;
+          const totalRows = rows.length;
+          if(totalRows === 0) throw new Error("El archivo está vacío.");
 
-        for (let i = 0; i < totalRows; i += BATCH_SIZE) {
-          const chunk = rows.slice(i, i + BATCH_SIZE).map(r => ({
-            codigo: String(r.Codigo || r.codigo || r.CODIGO),
-            nombre: String(r.Nombre || r.nombre || r.NOMBRE),
-            precio: Number(r.Precio || r.precio || 0),
-            costo: Number(r.Costo || r.costo || 0),
-            stock: Number(r.Stock || r.stock || 0),
-            categoria: String(r.Categoria || r.categoria || 'General')
-          }));
+          const BATCH_SIZE = 1000;
+          let processed = 0;
 
-          const { error } = await supabase.from('productos').upsert(chunk, { onConflict: 'codigo' });
+          for (let i = 0; i < totalRows; i += BATCH_SIZE) {
+            const chunk = rows.slice(i, i + BATCH_SIZE).map(r => ({
+              codigo: String(r.Codigo || r.codigo || r.CODIGO || 'DESC-'+Math.floor(Math.random()*10000)),
+              nombre: String(r.Nombre || r.nombre || r.NOMBRE || 'Sin Nombre'),
+              precio: Number(r.Precio || r.precio || 0),
+              costo: Number(r.Costo || r.costo || 0),
+              stock: Number(r.Stock || r.stock || 0),
+              categoria: String(r.Categoria || r.categoria || 'General')
+            }));
 
-          if (error) {
-            alert(`Error durante la importación masiva: ${error.message}`);
-            break;
+            const { error } = await db.from('productos').upsert(chunk, { onConflict: 'codigo' });
+
+            if (error) {
+              console.error(error);
+              alert(`Error de red o base de datos. (Revisa tus credenciales de Supabase).`);
+              break; 
+            }
+
+            processed += chunk.length;
+            const pct = Math.round((processed / totalRows) * 100);
+            fill.style.width = `${pct}%`;
+            fill.innerText = `${pct}% (${processed}/${totalRows})`;
           }
 
-          processed += chunk.length;
-          const pct = Math.round((processed / totalRows) * 100);
-          fill.style.width = `${pct}%`;
-          fill.innerText = `${pct}% (${processed}/${totalRows})`;
-        }
+          if(processed > 0) {
+            alert(`Proceso finalizado. Se enviaron ${processed} registros a procesar.`);
+            closeImportModal();
+            loadProductsServer();
+          }
 
-        alert('Importación completada correctamente.');
-        closeImportModal();
-        loadProductsServer();
+        } catch (err) {
+          alert(`Error procesando archivo: ${err.message}`);
+          closeImportModal();
+        }
       };
 
       reader.readAsArrayBuffer(file);
