@@ -2183,8 +2183,125 @@ button:disabled{opacity:.45;cursor:not-allowed;}
       document.getElementById('modal-producto').classList.add('active');
     }
 
-    function deleteProduct(id) {
-      if (confirm('¿Eliminar producto?')) { DB.productos = DB.productos.filter(p => p.id !== id); saveDB(); }
+    async function deleteProduct(id) {
+  if (!currentUser || currentUser.rol !== 'Administrador') {
+    return alert('Acceso restringido solo para Administradores.');
+  }
+
+  const producto = DB.productos.find(
+    p => String(p.id) === String(id)
+  );
+
+  if (!producto) {
+    return alert('El producto no fue encontrado.');
+  }
+
+  const confirmar = confirm(
+    `¿Eliminar el producto?\n\n` +
+    `Código: ${producto.codigo || 'Sin código'}\n` +
+    `Nombre: ${producto.nombre}\n\n` +
+    `El producto se ocultará del sistema, pero se conservará ` +
+    `su historial de ventas y compras.`
+  );
+
+  if (!confirmar) return;
+
+  try {
+    // Buscar producto en Supabase por legacy_id
+    let { data: productoDB, error: findError } =
+      await supabaseClient
+        .from('productos')
+        .select('id,legacy_id,nombre')
+        .eq('legacy_id', String(id))
+        .maybeSingle();
+
+    if (findError) throw findError;
+
+    // Compatibilidad con productos cuyo ID sea UUID
+    if (
+      !productoDB &&
+      /^[0-9a-f-]{36}$/i.test(String(id))
+    ) {
+      const result = await supabaseClient
+        .from('productos')
+        .select('id,legacy_id,nombre')
+        .eq('id', String(id))
+        .maybeSingle();
+
+      if (result.error) throw result.error;
+
+      productoDB = result.data;
+    }
+
+    if (!productoDB) {
+      throw new Error(
+        'No se encontró el producto en Supabase.'
+      );
+    }
+
+    // BAJA LÓGICA
+    const { error: updateError } =
+      await supabaseClient
+        .from('productos')
+        .update({
+          activo: false,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', productoDB.id);
+
+    if (updateError) throw updateError;
+
+    // Confirmar que Supabase lo dejó inactivo
+    const { data: confirmado, error: confirmError } =
+      await supabaseClient
+        .from('productos')
+        .select('id,activo')
+        .eq('id', productoDB.id)
+        .maybeSingle();
+
+    if (confirmError) throw confirmError;
+
+    if (!confirmado || confirmado.activo !== false) {
+      throw new Error(
+        'Supabase no confirmó la eliminación del producto.'
+      );
+    }
+
+    // Quitar de la memoria local
+    DB.productos = DB.productos.filter(
+      p => String(p.id) !== String(id)
+    );
+
+    localStorage.setItem(
+      LOCAL_DB_KEY,
+      JSON.stringify(DB)
+    );
+
+    // Actualizar las secciones
+    await renderProducts();
+    renderInventario();
+
+    if (typeof renderPOS === 'function') {
+      await renderPOS();
+    }
+
+    alert(
+      `Producto "${producto.nombre}" eliminado correctamente.`
+    );
+
+  } catch (error) {
+
+    console.error(
+      'Error eliminando producto:',
+      error
+    );
+
+    alert(
+      'No se pudo eliminar el producto:\n\n' +
+      (error?.message || error)
+    );
+  }
+}
     }
 
     function renderInventario() {
