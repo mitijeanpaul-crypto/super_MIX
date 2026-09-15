@@ -1814,8 +1814,7 @@
 
     // COMPRAS
     let compraItems = [];
-
-    function renderCompras() {
+function renderCompras() {
       const tbody = document.getElementById('tbl-compras');
       if (!tbody) return;
 
@@ -1827,9 +1826,13 @@
           <td>${c.fecha}</td>
           <td>${(c.items || []).reduce((acc, i) => acc + Number(i.qty || 0), 0)}</td>
           <td><b>${formatCOP(c.total)}</b></td>
-          <td>
-            <button class="btn btn-sm btn-secondary" onclick="verCompra('${c.id}')">
+          <td style="display: flex; gap: 5px;"> <!-- Agregamos flex y gap para separar los botones -->
+            <button class="btn btn-sm btn-secondary" onclick="verCompra('${c.id}')" title="Ver detalles">
               <i class="fa-solid fa-eye"></i> Ver
+            </button>
+            <!-- NUEVO BOTÓN DE ELIMINAR COMPRA -->
+            <button class="btn btn-sm btn-danger" onclick="eliminarCompra('${c.id}')" title="Eliminar esta compra">
+              <i class="fa-solid fa-trash"></i> Eliminar
             </button>
           </td>
         </tr>
@@ -1847,6 +1850,7 @@
       const totalEl = document.getElementById('compras-total');
       if (cantidadEl) cantidadEl.textContent = cantidad;
       if (totalEl) totalEl.textContent = formatCOP(total);
+    }
     }
 
     function openCompraModal() {
