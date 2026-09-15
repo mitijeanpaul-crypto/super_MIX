@@ -371,28 +371,30 @@
 
     <!-- PRODUCTOS -->
     <section id="sec-productos" class="content-section admin-only">
-      <div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
-        <div style="display:flex; gap:10px; flex:1;">
-          <input type="text" id="prod-search" class="form-control" style="width: 250px;" placeholder="🔍 Buscar por nombre o código..." onkeyup="renderProducts()">
-          <select id="prod-cat-filter" class="form-control" style="width: 200px;" onchange="renderProducts()"></select>
-        </div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-excel" onclick="exportProductsExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
-          <button class="btn btn-secondary" onclick="openCategoryModal()"><i class="fa-solid fa-tags"></i> Nueva Categoría</button>
-          <button class="btn btn-primary" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Registrar Producto</button>
-        </div>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Código</th><th>Nombre</th><th>Categoría</th><th>Vencimiento (Alerta 20d)</th><th>Precio COP</th><th>Costo COP</th><th>Stock</th><th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tbl-productos"></tbody>
-        </table>
-      </div>
-    </section>
+  <!-- BARRA SUPERIOR CON STICKY AGREGADO -->
+  <div style="position: sticky; top: 0; z-index: 10; background-color: #ffffff; padding: 10px 0; display:flex; justify-content:space-between; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
+    <div style="display:flex; gap:10px; flex:1;">
+      <input type="text" id="prod-search" class="form-control" style="width: 250px;" placeholder="🔍 Buscar por nombre o código..." onkeyup="renderProducts()">
+      <select id="prod-cat-filter" class="form-control" style="width: 200px;" onchange="renderProducts()"></select>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-excel" onclick="exportProductsExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
+      <button class="btn btn-secondary" onclick="openCategoryModal()"><i class="fa-solid fa-tags"></i> Nueva Categoría</button>
+      <button class="btn btn-primary" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Registrar Producto</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th><th>Nombre</th><th>Categoría</th><th>Vencimiento (Alerta 20d)</th><th>Precio COP</th><th>Costo COP</th><th>Stock</th><th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tbl-productos"></tbody>
+    </table>
+  </div>
+</section>
 
     <!-- INVENTARIO -->
     <section id="sec-inventario" class="content-section admin-only">
