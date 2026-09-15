@@ -578,21 +578,32 @@
     let salesChart = null;
 
     async function cargarDatosDesdeSupabase() {
-      try {
-        const { data: prods } = await _supabase.from('productos').select('*');
-        if (prods && prods.length > 0) DB.productos = prods;
+  try {
+    const { data: prods } = await _supabase.from('productos').select('*');
+    if (prods && prods.length > 0) DB.productos = prods;
 
-        const { data: clis } = await _supabase.from('clientes').select('*');
-        if (clis && clis.length > 0) DB.clientes = clis;
+    const { data: clis } = await _supabase.from('clientes').select('*');
+    if (clis && clis.length > 0) DB.clientes = clis;
 
-        const { data: provs } = await _supabase.from('proveedores').select('*');
-        if (provs && provs.length > 0) DB.proveedores = provs;
+    const { data: provs } = await _supabase.from('proveedores').select('*');
+    if (provs && provs.length > 0) DB.proveedores = provs;
 
-        const { data: usrs } = await _supabase.from('usuarios').select('*');
-        if (usrs && usrs.length > 0) DB.usuarios = usrs;
+    const { data: usrs, error: errUsr } = await _supabase.from('usuarios').select('*');
+    if (usrs && usrs.length > 0) {
+      DB.usuarios = usrs;
+      console.log("Usuarios cargados desde Supabase:", DB.usuarios);
+    } else {
+      console.warn("No se pudieron cargar usuarios de Supabase o está vacía. Usando respaldo local.", errUsr);
+    }
 
-        const { data: vts } = await _supabase.from('ventas').select('*');
-        if (vts && vts.length > 0) DB.ventas = vts;
+    const { data: vts } = await _supabase.from('ventas').select('*');
+    if (vts && vts.length > 0) DB.ventas = vts;
+
+    renderAll();
+  } catch (err) {
+    console.error("Error sincronizando Supabase:", err);
+  }
+}
 
         renderAll();
       } catch (err) {
@@ -619,31 +630,33 @@
     }
 
     function handleLogin(e) {
-      e.preventDefault();
-      const uInput = document.getElementById('login-user').value.trim();
-      const pInput = document.getElementById('login-pass').value.trim();
+  e.preventDefault();
+  const uInput = document.getElementById('login-user').value.trim();
+  const pInput = document.getElementById('login-pass').value.trim();
 
-      const found = DB.usuarios.find(u => u.username === uInput && u.pass === pInput);
-      if (found) {
-        currentUser = found;
-        localStorage.setItem('current_user', JSON.stringify(currentUser));
-        
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('active-user-name').textContent = currentUser.nombre;
-        document.getElementById('active-user-role').textContent = currentUser.rol;
-        
-        applyRolePermissions();
-        renderAll();
+  // Asegúrate de usar .username aquí:
+  const found = DB.usuarios.find(u => u.username === uInput && u.pass === pInput);
+  
+  if (found) {
+    currentUser = found;
+    localStorage.setItem('current_user', JSON.stringify(currentUser));
+    
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('active-user-name').textContent = currentUser.nombre;
+    document.getElementById('active-user-role').textContent = currentUser.rol;
+    
+    applyRolePermissions();
+    renderAll();
 
-        if (currentUser.rol !== 'Administrador') {
-          showSection('ventas', document.getElementById('nav-pos'));
-        } else {
-          showSection('dashboard', document.querySelector('.nav-item.admin-only'));
-        }
-      } else {
-        alert('Usuario o contraseña incorrectos.');
-      }
+    if (currentUser.rol !== 'Administrador') {
+      showSection('ventas', document.getElementById('nav-pos'));
+    } else {
+      showSection('dashboard', document.querySelector('.nav-item.admin-only'));
     }
+  } else {
+    alert('Usuario o contraseña incorrectos.');
+  }
+}
 
     function logout() {
       currentUser = null;
