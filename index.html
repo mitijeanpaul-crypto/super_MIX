@@ -1291,6 +1291,13 @@
       if (catName && !DB.categorias.includes(catName)) {
         DB.categorias.push(catName);
         closeModals(); saveDB();
+        renderCategoryDropdowns();
+
+
+      }else if (DB.categorias.includes(catName)) {
+        alert('La categoría ya existe.');
+      } else {
+        alert('Ingrese un nombre válido para la categoría.');
       }
     }
 
@@ -2188,6 +2195,8 @@
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) sincronizarMovimientosSupabase();
     });
+    // Carga las categorías en los selectores al abrir la página
+    renderCategoryDropdowns();
 
     // Comprobación visible de conexión al terminar de cargar la página.
     setTimeout(probarConexionSupabase, 1200);
