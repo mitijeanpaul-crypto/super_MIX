@@ -756,55 +756,74 @@
   </div>
 
   <div id="modal-compra" class="modal-overlay">
-    <div class="modal-card" style="max-width:760px;">
-      <h3><i class="fa-solid fa-cart-plus"></i> Registrar Compra</h3>
+  <div class="modal-card" style="max-width:760px;">
+    <h3><i class="fa-solid fa-cart-plus"></i> Registrar Compra</h3>
 
-      <div class="form-group" style="margin-top:1rem;">
-        <label>Proveedor</label>
-        <select id="mcop-proveedor" class="form-control"></select>
-      </div>
+    <div class="form-group" style="margin-top:1rem;">
+      <label>Proveedor</label>
+      <select id="mcop-proveedor" class="form-control"></select>
+    </div>
 
-      <div class="form-group">
-        <label>Producto</label>
-        <select id="mcop-producto" class="form-control"></select>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <div class="form-group">
-          <label>Cantidad</label>
-          <input type="number" id="mcop-cantidad" class="form-control" min="1" value="1">
-        </div>
-        <div class="form-group">
-          <label>Costo unitario COP</label>
-          <input type="number" id="mcop-costo" class="form-control" min="0" value="0">
-        </div>
-      </div>
-
-      <button class="btn btn-secondary" type="button" onclick="agregarItemCompra()">
-        <i class="fa-solid fa-plus"></i> Agregar producto
-      </button>
-
-      <div class="table-container" style="margin-top:1rem; max-height:260px; overflow:auto;">
-        <table style="min-width:620px;">
-          <thead>
-            <tr><th>Producto</th><th>Cantidad</th><th>Costo Unit.</th><th>Subtotal</th><th></th></tr>
-          </thead>
-          <tbody id="tbl-compra-items"></tbody>
-        </table>
-      </div>
-
-      <div style="display:flex; justify-content:flex-end; font-size:1.15rem; margin-top:1rem;">
-        <b>Total: <span id="mcop-total">$ 0</span></b>
-      </div>
-
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:1rem; flex-wrap:wrap;">
-        <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
-        <button class="btn btn-success" onclick="saveCompra()">
-          <i class="fa-solid fa-check"></i> Guardar Compra
+    <!-- CAMPO DE BÚSQUEDA Y CÓDIGO DE BARRAS -->
+    <div class="form-group">
+      <label>Buscar / Escanear Producto</label>
+      <div style="display: flex; gap: 5px;">
+        <input 
+          type="text" 
+          id="mcop-buscar" 
+          class="form-control" 
+          placeholder="🔍 Escribe nombre o escanea código..." 
+          oninput="filtrarProductosCompra()" 
+          onkeydown="handleBarcodeCompra(event)"
+          autocomplete="off"
+        >
+        <button type="button" class="btn btn-secondary" onclick="filtrarProductosCompra()">
+          <i class="fa-solid fa-magnifying-glass"></i>
         </button>
       </div>
     </div>
+
+    <div class="form-group">
+      <label>Producto Seleccionado</label>
+      <select id="mcop-producto" class="form-control" onchange="actualizarCostoCompra()"></select>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div class="form-group">
+        <label>Cantidad</label>
+        <input type="number" id="mcop-cantidad" class="form-control" min="1" value="1">
+      </div>
+      <div class="form-group">
+        <label>Costo unitario COP</label>
+        <input type="number" id="mcop-costo" class="form-control" min="0" value="0">
+      </div>
+    </div>
+
+    <button class="btn btn-secondary" type="button" onclick="agregarItemCompra()">
+      <i class="fa-solid fa-plus"></i> Agregar producto
+    </button>
+
+    <div class="table-container" style="margin-top:1rem; max-height:260px; overflow:auto;">
+      <table style="min-width:620px;">
+        <thead>
+          <tr><th>Producto</th><th>Cantidad</th><th>Costo Unit.</th><th>Subtotal</th><th></th></tr>
+        </thead>
+        <tbody id="tbl-compra-items"></tbody>
+      </table>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; font-size:1.15rem; margin-top:1rem;">
+      <b>Total: <span id="mcop-total">$ 0</span></b>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:1rem; flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
+      <button class="btn btn-success" onclick="saveCompra()">
+        <i class="fa-solid fa-check"></i> Guardar Compra
+      </button>
+    </div>
   </div>
+</div>
 
   <div id="modal-usuario" class="modal-overlay">
     <div class="modal-card">
@@ -1896,30 +1915,92 @@
     }
 
     function agregarItemCompra() {
-      const productId = document.getElementById('mcop-producto').value;
-      const cantidad = parseInt(document.getElementById('mcop-cantidad').value);
-      const costo = parseFloat(document.getElementById('mcop-costo').value);
+  const productId = document.getElementById('mcop-producto').value;
+  const cantidad = parseInt(document.getElementById('mcop-cantidad').value);
+  const costo = parseFloat(document.getElementById('mcop-costo').value);
 
-      const product = DB.productos.find(p => p.id === productId);
-      if (!product) return alert('Seleccione un producto.');
-      if (!Number.isInteger(cantidad) || cantidad <= 0) return alert('La cantidad debe ser mayor a 0.');
-      if (isNaN(costo) || costo < 0) return alert('Ingrese un costo unitario válido.');
+  const product = DB.productos.find(p => p.id === productId);
+  if (!product) return alert('Seleccione un producto.');
+  if (!Number.isInteger(cantidad) || cantidad <= 0) return alert('La cantidad debe ser mayor a 0.');
+  if (isNaN(costo) || costo < 0) return alert('Ingrese un costo unitario válido.');
 
-      const existing = compraItems.find(i => i.productoId === productId && i.costo === costo);
-      if (existing) {
-        existing.qty += cantidad;
-      } else {
-        compraItems.push({
-          productoId: product.id,
-          codigo: product.codigo,
-          nombre: product.nombre,
-          qty: cantidad,
-          costo: costo
-        });
-      }
+  const existing = compraItems.find(i => i.productoId === productId && i.costo === costo);
+  if (existing) {
+    existing.qty += cantidad;
+  } else {
+    compraItems.push({
+      productoId: product.id,
+      codigo: product.codigo,
+      nombre: product.nombre,
+      qty: cantidad,
+      costo: costo
+    });
+  }
 
-      renderCompraItems();
+  // Si tienes una función para repintar la tabla del modal y refrescar el total:
+  if (typeof renderCompraItems === 'function') renderCompraItems();
+
+  // Reset del buscador para registrar el siguiente producto inmediatamente
+  const inputBuscar = document.getElementById('mcop-buscar');
+  if (inputBuscar) {
+    inputBuscar.value = '';
+    filtrarProductosCompra();
+    inputBuscar.focus();
+  }
+}
+
+// FUNCIONES DE BÚSQUEDA Y LECTOR DE CÓDIGO DE BARRAS
+function actualizarCostoCompra() {
+  const selectProd = document.getElementById('mcop-producto');
+  const inputCosto = document.getElementById('mcop-costo');
+  if (!selectProd || !inputCosto) return;
+
+  const prodId = selectProd.value;
+  const producto = (DB.productos || []).find(p => String(p.id) === String(prodId));
+
+  if (producto) {
+    inputCosto.value = producto.costo || 0;
+  }
+}
+
+function filtrarProductosCompra() {
+  const busqueda = (document.getElementById('mcop-buscar')?.value || '').toLowerCase().trim();
+  const selectProd = document.getElementById('mcop-producto');
+  if (!selectProd) return;
+
+  const filtrados = (DB.productos || []).filter(p => 
+    String(p.codigo || '').toLowerCase().includes(busqueda) || 
+    String(p.nombre || '').toLowerCase().includes(busqueda)
+  );
+
+  if (filtrados.length > 0) {
+    selectProd.innerHTML = filtrados.map(p =>
+      `<option value="${p.id}">${p.codigo} - ${p.nombre}</option>`
+    ).join('');
+  } else {
+    selectProd.innerHTML = `<option value="">No se encontraron coincidencias</option>`;
+  }
+
+  actualizarCostoCompra();
+}
+
+function handleBarcodeCompra(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const busqueda = document.getElementById('mcop-buscar').value.trim();
+    const productoExacto = (DB.productos || []).find(p => String(p.codigo) === busqueda);
+    
+    if (productoExacto) {
+      filtrarProductosCompra();
+      document.getElementById('mcop-producto').value = productoExacto.id;
+      actualizarCostoCompra();
+      document.getElementById('mcop-cantidad').focus();
+    } else {
+      filtrarProductosCompra();
     }
+  }
+}
+      renderCompraItems();
 
     function eliminarItemCompra(index) {
       compraItems.splice(index, 1);
