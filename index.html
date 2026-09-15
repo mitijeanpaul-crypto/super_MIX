@@ -1831,6 +1831,9 @@
             <button class="btn btn-sm btn-secondary" onclick="verCompra('${c.id}')">
               <i class="fa-solid fa-eye"></i> Ver
             </button>
+            <button class="btn btn-sm btn-danger" onclick="eliminarCompra('${c.id}')" title="Eliminar compra">
+              <i class="fa-solid fa-trash"></i> Eliminar
+            </button>
           </td>
         </tr>
       `).join('') : `
@@ -1992,6 +1995,62 @@
         `${detalle}\n\n` +
         `TOTAL: ${formatCOP(compra.total)}`
       );
+    }
+
+    // ELIMINAR COMPRA Y DESHACER SU EFECTO EN EL INVENTARIO
+    function eliminarCompra(id) {
+      if (!currentUser || currentUser.rol !== 'Administrador') {
+        return alert('Acceso Denegado. Solo el Administrador puede eliminar compras.');
+      }
+
+      const compra = DB.compras.find(c => c.id === id);
+      if (!compra) return alert('La compra no existe o ya fue eliminada.');
+
+      const detalle = (compra.items || []).map(i =>
+        `• ${i.nombre}: ${i.qty} unidades`
+      ).join('\n');
+
+      const confirmar = confirm(
+        `¿Está seguro de eliminar la compra ${compra.id}?\n\n` +
+        `Proveedor: ${compra.proveedor}\n` +
+        `Total: ${formatCOP(compra.total)}\n\n` +
+        `Se quitarán del inventario las cantidades de esta compra:\n${detalle}\n\n` +
+        `Esta acción no se puede deshacer.`
+      );
+
+      if (!confirmar) return;
+
+      // Revertir las cantidades que esta compra había agregado al inventario.
+      for (const item of (compra.items || [])) {
+        const producto = DB.productos.find(p => p.id === item.productoId);
+        if (producto) {
+          const stockActual = Number(producto.stock) || 0;
+          const cantidadARevertir = Number(item.qty) || 0;
+          producto.stock = stockActual - cantidadARevertir;
+          if (producto.stock < 0) producto.stock = 0;
+        }
+      }
+
+      // Eliminar únicamente la compra seleccionada.
+      DB.compras = DB.compras.filter(c => c.id !== id);
+
+      // Recuperar el costo de la compra restante más reciente de cada producto afectado.
+      const productosAfectados = new Set((compra.items || []).map(item => item.productoId));
+      productosAfectados.forEach(productoId => {
+        const producto = DB.productos.find(p => p.id === productoId);
+        if (!producto) return;
+
+        const comprasRestantes = DB.compras
+          .filter(c => (c.items || []).some(i => i.productoId === productoId))
+          .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+        const ultimaCompra = comprasRestantes[0];
+        const itemUltimaCompra = ultimaCompra?.items?.find(i => i.productoId === productoId);
+        if (itemUltimaCompra) producto.costo = Number(itemUltimaCompra.costo) || 0;
+      });
+
+      saveDB();
+      alert(`La compra ${compra.id} fue eliminada correctamente y el inventario fue actualizado.`);
     }
 
     // REPORTES
