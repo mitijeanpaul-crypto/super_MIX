@@ -262,6 +262,38 @@
     button, input, select { touch-action: manipulation; }
   </style>
     <link rel="icon" type="image/png" href="super_mix_favicon.png">
+<style>
+    /* Indicador de conexión del sistema */
+    .system-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: .85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .system-status i {
+      color: #16a34a;
+      font-size: .9rem;
+    }
+
+    .system-status-error {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #b91c1c;
+    }
+
+    .system-status-error i {
+      color: #dc2626;
+    }
+</style>
 </head>
 <body>
 
@@ -274,11 +306,11 @@
       <form onsubmit="handleLogin(event)">
         <div class="form-group" style="text-align: left;">
           <label>Usuario</label>
-          <input type="text" id="login-user" class="form-control" placeholder="Ej: admin o cajero1" required autofocus>
+          <input type="text" id="login-user" class="form-control" autocomplete="off" placeholder="Ej: admin o cajero1" required autofocus>
         </div>
         <div class="form-group" style="text-align: left;">
           <label>Contraseña</label>
-          <input type="password" id="login-pass" class="form-control" placeholder="••••••••" required>
+          <input type="password" id="login-pass" class="form-control" autocomplete="new-password" placeholder="••••••••" required>
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">Acceder</button>
       </form>
@@ -296,7 +328,7 @@
   <aside class="sidebar">
     <div class="brand"><i class="fa-solid fa-cart-shopping"></i><span>super MIX</span><span class="brand-cart">🛒</span></div>
     <ul class="nav-list">
-      <li class="nav-item admin-only active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-line nav-icon"></i><span>Dashboard</span></li>
+      <li class="nav-item admin-only active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-line nav-icon"></i><span>Inicio</span></li>
       <li class="nav-item admin-only" onclick="showSection('productos', this)"><i class="fa-solid fa-box-open nav-icon"></i><span>Productos</span></li>
       <li class="nav-item admin-only" onclick="showSection('inventario', this)"><i class="fa-solid fa-warehouse nav-icon"></i><span>Inventario</span></li>
       <li class="nav-item" id="nav-pos" onclick="showSection('ventas', this)"><i class="fa-solid fa-cash-register nav-icon"></i><span>Ventas / POS</span></li>
@@ -313,11 +345,12 @@
   <!-- MAIN CONTENT -->
   <main class="main-content">
     <header>
-      <h2 id="section-title">1. Dashboard</h2>
+      <h2 id="section-title">1. Inicio</h2>
       <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-left:auto; margin-right:12px;">
-        <div id="supabase-status" style="padding:7px 10px; border-radius:8px; font-size:.78rem; font-weight:700; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">
-          <i class="fa-solid fa-spinner fa-spin"></i> Comprobando conexión con Supabase...
-        </div>
+        <div id="supabase-status" class="system-status">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>Sistema Conectado</span>
+      </div>
         <button class="btn btn-sm btn-primary" type="button" onclick="probarConexionSupabase()" title="Probar conexión con Supabase">
           <i class="fa-solid fa-plug"></i> Probar conexión
         </button>
@@ -367,6 +400,15 @@
         <h3>Ventas Recientes</h3>
         <canvas id="chart-sales" style="max-height: 250px;"></canvas>
       </div>
+      <div class="card" style="margin-top: 1rem;">
+        <h3><i class="fa-solid fa-ranking-star"></i> Productos más vendidos</h3>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Producto</th><th>Código</th><th>Unidades vendidas</th></tr></thead>
+            <tbody id="tbl-top-productos"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <!-- PRODUCTOS -->
@@ -379,6 +421,8 @@
     </div>
     <div style="display:flex; gap:8px;">
       <button class="btn btn-excel" onclick="exportProductsExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
+      <button class="btn btn-excel" onclick="document.getElementById('productos-excel-input').click()"><i class="fa-solid fa-file-import"></i> Importar Excel</button>
+      <input type="file" id="productos-excel-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="importProductsExcel(event)">
       <button class="btn btn-secondary" onclick="openCategoryModal()"><i class="fa-solid fa-tags"></i> Nueva Categoría</button>
       <button class="btn btn-primary" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Registrar Producto</button>
     </div>
@@ -398,14 +442,37 @@
 
     <!-- INVENTARIO -->
     <section id="sec-inventario" class="content-section admin-only">
-      <div class="card" style="margin-bottom: 1rem; display:flex; justify-content:space-between; align-items:center;">
+      <div class="card" style="margin-bottom: 1rem; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
         <h3>Control de Vencimientos (Alerta 20 Días) e Inventarios</h3>
         <button class="btn btn-excel" onclick="exportInventoryExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Inventario</button>
       </div>
+
+      <!-- BÚSQUEDA EXCLUSIVA DE INVENTARIOS -->
+      <div class="card" style="margin-bottom:1rem;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <input
+            type="text"
+            id="inv-search"
+            class="form-control"
+            placeholder="🔎 Buscar por nombre o código de barras..."
+            autocomplete="off"
+            oninput="renderInventario()"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();renderInventario();}"
+            style="flex:1; min-width:250px;">
+          <button type="button" class="btn btn-primary" onclick="renderInventario()">
+            <i class="fa-solid fa-magnifying-glass"></i> Buscar
+          </button>
+          <button type="button" class="btn btn-secondary"
+            onclick="document.getElementById('inv-search').value=''; renderInventario(); document.getElementById('inv-search').focus();">
+            <i class="fa-solid fa-xmark"></i> Limpiar
+          </button>
+        </div>
+      </div>
+
       <div class="table-container">
         <table>
           <thead>
-            <tr><th>Producto</th><th>Categoría</th><th>Fecha Vencimiento</th><th>Estado Vencimiento</th><th>Stock Actual</th><th>Estado Stock</th></tr>
+            <tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Fecha Vencimiento</th><th>Estado Vencimiento</th><th>Stock Actual</th><th>Estado Stock</th></tr>
           </thead>
           <tbody id="tbl-inventario"></tbody>
         </table>
@@ -909,12 +976,20 @@
     function setSupabaseStatus(message, ok = false) {
       const el = document.getElementById('supabase-status');
       if (!el) return;
-      el.innerHTML = ok
-        ? '<i class="fa-solid fa-cloud" style="color:#16a34a;"></i> ' + message
-        : '<i class="fa-solid fa-triangle-exclamation" style="color:#d97706;"></i> ' + message;
-      el.style.background = ok ? '#ecfdf5' : '#fffbeb';
-      el.style.color = ok ? '#166534' : '#92400e';
-      el.style.borderColor = ok ? '#86efac' : '#fde68a';
+
+      if (ok) {
+        el.className = 'system-status';
+        el.innerHTML = `
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Sistema Conectado</span>
+        `;
+      } else {
+        el.className = 'system-status system-status-error';
+        el.innerHTML = `
+          <i class="fa-solid fa-circle-xmark"></i>
+          <span>Sistema Desconectado</span>
+        `;
+      }
     }
 
     async function probarConexionSupabase() {
@@ -946,9 +1021,10 @@
     }
 
     let sincronizacionEnCurso = false;
+    let guardadoSupabaseEnCurso = false;
 
     async function sincronizarMovimientosSupabase() {
-      if (sincronizacionEnCurso || document.hidden) return;
+      if (sincronizacionEnCurso || guardadoSupabaseEnCurso || document.hidden) return;
       sincronizacionEnCurso = true;
       try {
         const { data, error } = await supabaseClient
@@ -989,6 +1065,13 @@
 
         if (data && data.data) {
           DB = { ...DB, ...data.data };
+          DB.categorias = Array.isArray(DB.categorias) ? DB.categorias : [];
+          DB.productos = Array.isArray(DB.productos) ? DB.productos : [];
+          DB.clientes = Array.isArray(DB.clientes) ? DB.clientes : [];
+          DB.proveedores = Array.isArray(DB.proveedores) ? DB.proveedores : [];
+          DB.usuarios = Array.isArray(DB.usuarios) ? DB.usuarios : [];
+          DB.ventas = Array.isArray(DB.ventas) ? DB.ventas : [];
+          DB.compras = Array.isArray(DB.compras) ? DB.compras : [];
           localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
           supabaseReady = true;
           setSupabaseStatus('Conectado a Supabase. Datos sincronizados.', true);
@@ -1024,7 +1107,7 @@
     async function saveDB() {
       localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
       renderAll();
-
+      guardadoSupabaseEnCurso = true;
       try {
         await guardarDBSupabase();
         supabaseReady = true;
@@ -1033,6 +1116,8 @@
         console.error('Error guardando en Supabase:', error);
         supabaseReady = false;
         setSupabaseStatus('Guardado localmente. No se pudo sincronizar con Supabase.', false);
+      } finally {
+        guardadoSupabaseEnCurso = false;
       }
     }
 
@@ -1072,17 +1157,19 @@
       }
     }
 
+    // La sesión NO se restaura automáticamente al recargar la página.
+    // Cada vez que se abre/refresca el sistema se solicita nuevamente el login.
     function restaurarSesion() {
-      try {
-        const sesion = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-        if (!sesion?.user) return;
-        const found = DB.usuarios.find(u => u.user === sesion.user);
-        if (found) iniciarSesionUI(found, false);
-        else localStorage.removeItem(SESSION_KEY);
-      } catch (error) {
-        console.error('No se pudo restaurar la sesión:', error);
-        localStorage.removeItem(SESSION_KEY);
-      }
+      currentUser = null;
+      localStorage.removeItem(SESSION_KEY);
+
+      const loginScreen = document.getElementById('login-screen');
+      if (loginScreen) loginScreen.style.display = 'flex';
+
+      const loginUser = document.getElementById('login-user');
+      const loginPass = document.getElementById('login-pass');
+      if (loginUser) loginUser.value = '';
+      if (loginPass) loginPass.value = '';
     }
 
     function handleLogin(e) {
@@ -1137,7 +1224,7 @@
 
       seccionActual = secId;
       const titles = {
-        dashboard: '1. Dashboard',
+        dashboard: '1. Inicio',
         productos: '2. Productos',
         inventario: '3. Inventario',
         ventas: '4. Ventas / POS',
@@ -1226,6 +1313,56 @@
       }
     }
 
+    // IMPORTACIÓN / EXPORTACIÓN EXCEL
+    function importProductsExcel(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const wb = XLSX.read(e.target.result, { type: 'array' });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+          if (!rows.length) return alert('El archivo Excel no contiene registros.');
+
+          let agregados = 0, actualizados = 0, omitidos = 0;
+          rows.forEach(row => {
+            const codigo = String(row['Código'] ?? row['Codigo'] ?? row['código'] ?? row['codigo'] ?? '').trim();
+            const nombre = String(row['Nombre'] ?? row['nombre'] ?? '').trim();
+            const categoria = String(row['Categoría'] ?? row['Categoria'] ?? row['categoría'] ?? row['categoria'] ?? '').trim();
+            if (!codigo || !nombre || !categoria) { omitidos++; return; }
+
+            if (!DB.categorias.includes(categoria)) DB.categorias.push(categoria);
+            const existente = DB.productos.find(p => String(p.codigo).trim() === codigo);
+            const producto = {
+              id: existente?.id || Date.now().toString() + Math.random().toString(36).slice(2,8),
+              codigo, nombre, categoria,
+              vencimiento: String(row['Fecha Vencimiento'] ?? row['Vencimiento'] ?? '').trim(),
+              precio: Math.max(0, Number(row['Precio COP'] ?? row['Precio'] ?? 0) || 0),
+              costo: Math.max(0, Number(row['Costo COP'] ?? row['Costo'] ?? 0) || 0),
+              stock: Math.max(0, parseInt(row['Stock'] ?? 0) || 0),
+              minStock: Math.max(0, parseInt(row['Stock Mínimo'] ?? row['MinStock'] ?? 5) || 5)
+            };
+            if (existente) {
+              Object.assign(existente, producto);
+              actualizados++;
+            } else {
+              DB.productos.push(producto);
+              agregados++;
+            }
+          });
+          renderCategoryDropdowns();
+          saveDB();
+          event.target.value = '';
+          alert(`Importación terminada. Agregados: ${agregados}. Actualizados: ${actualizados}. Omitidos: ${omitidos}.`);
+        } catch (err) {
+          console.error(err);
+          alert('No se pudo leer el archivo Excel. Verifique que sea .xlsx, .xls o .csv.');
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
     // EXPORTACIÓN EXCEL
     function exportProductsExcel() {
       const data = DB.productos.map(p => ({
@@ -1246,6 +1383,7 @@
 
     function exportInventoryExcel() {
       const data = DB.productos.map(p => ({
+        'Código': p.codigo,
         'Producto': p.nombre,
         'Categoría': p.categoria,
         'Fecha Vencimiento': p.vencimiento || 'N/A',
@@ -1295,11 +1433,30 @@
       renderPOSClientes();
     }
 
-    function renderCategoryDropdowns() {
+    function renderCategoryDropdowns(selectedCategory = null) {
       const catFilter = document.getElementById('prod-cat-filter');
       const catModal = document.getElementById('mp-categoria');
-      if (catFilter) catFilter.innerHTML = `<option value="">Todas las Categorías</option>` + DB.categorias.map(c => `<option value="${c}">${c}</option>`).join('');
-      if (catModal) catModal.innerHTML = DB.categorias.map(c => `<option value="${c}">${c}</option>`).join('');
+      const categorias = Array.isArray(DB.categorias) ? DB.categorias : [];
+
+      if (catFilter) {
+        const actual = catFilter.value;
+        catFilter.innerHTML = `<option value="">Todas las Categorías</option>` +
+          categorias.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+        if (actual && categorias.includes(actual)) catFilter.value = actual;
+      }
+
+      if (catModal) {
+        const valor = selectedCategory !== null ? String(selectedCategory) : catModal.value;
+        catModal.innerHTML = categorias.map(c =>
+          `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`
+        ).join('');
+        if (valor && categorias.includes(valor)) catModal.value = valor;
+        else if (catModal.options.length) catModal.selectedIndex = 0;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
     }
 
     function openCategoryModal() {
@@ -1336,6 +1493,7 @@
       document.getElementById('dash-disponibles').textContent = stockTotal;
       document.getElementById('dash-vencidos').textContent = vencidosCount;
       document.getElementById('dash-ganancias').textContent = formatCOP(gananciasEst);
+      renderTopProducts();
 
       const ctx = document.getElementById('chart-sales').getContext('2d');
       if (salesChart) salesChart.destroy();
@@ -1348,12 +1506,25 @@
       });
     }
 
+    function renderTopProducts() {
+      const tbody = document.getElementById('tbl-top-productos');
+      if (!tbody) return;
+      const vendidos = {};
+      (DB.ventas || []).forEach(v => (v.items || []).forEach(i => {
+        const key = String(i.id || i.codigo || i.nombre);
+        if (!vendidos[key]) vendidos[key] = { nombre: i.nombre || 'Sin nombre', codigo: i.codigo || '', qty: 0 };
+        vendidos[key].qty += Number(i.qty) || 0;
+      }));
+      const lista = Object.values(vendidos).sort((a,b) => b.qty - a.qty).slice(0, 10);
+      tbody.innerHTML = lista.length ? lista.map(i => `<tr><td><b>${escapeHtml(i.nombre)}</b></td><td>${escapeHtml(i.codigo)}</td><td>${i.qty}</td></tr>`).join('') : `<tr><td colspan="3" style="text-align:center;padding:1rem;">No hay ventas registradas.</td></tr>`;
+    }
+
     function renderProducts() {
       const search = document.getElementById('prod-search')?.value.toLowerCase() || '';
       const catFilter = document.getElementById('prod-cat-filter')?.value || '';
       const tbody = document.getElementById('tbl-productos');
       
-      const filtered = DB.productos.filter(p => (p.nombre.toLowerCase().includes(search) || p.codigo.includes(search)) && (catFilter === '' || p.categoria === catFilter));
+      const filtered = DB.productos.filter(p => (String(p.nombre || '').toLowerCase().includes(search) || String(p.codigo || '').toLowerCase().includes(search)) && (catFilter === '' || p.categoria === catFilter));
       
       tbody.innerHTML = filtered.map(p => {
         const vencStatus = getVencimientoStatus(p.vencimiento);
@@ -1381,63 +1552,117 @@
       document.getElementById('mp-costo').value = '';
       document.getElementById('mp-stock').value = '';
       document.getElementById('mp-min').value = '5';
+      renderCategoryDropdowns('');
       document.getElementById('modal-producto').classList.add('active');
     }
 
     function saveProduct() {
-      const id = document.getElementById('mp-id').value;
+      const id = document.getElementById('mp-id').value.trim();
+      const codigo = document.getElementById('mp-codigo').value.trim();
+      const nombre = document.getElementById('mp-nombre').value.trim();
+      const categoria = document.getElementById('mp-categoria').value.trim();
+
+      if (!codigo || !nombre || !categoria) {
+        return alert('Código, nombre y categoría son obligatorios.');
+      }
+
       const prodData = {
         id: id || Date.now().toString(),
-        codigo: document.getElementById('mp-codigo').value,
-        nombre: document.getElementById('mp-nombre').value,
-        categoria: document.getElementById('mp-categoria').value,
+        codigo,
+        nombre,
+        categoria,
         vencimiento: document.getElementById('mp-vencimiento').value,
-        precio: parseFloat(document.getElementById('mp-precio').value) || 0,
-        costo: parseFloat(document.getElementById('mp-costo').value) || 0,
-        stock: parseInt(document.getElementById('mp-stock').value) || 0,
-        minStock: parseInt(document.getElementById('mp-min').value) || 5
+        precio: Math.max(0, parseFloat(document.getElementById('mp-precio').value) || 0),
+        costo: Math.max(0, parseFloat(document.getElementById('mp-costo').value) || 0),
+        stock: Math.max(0, parseInt(document.getElementById('mp-stock').value) || 0),
+        minStock: Math.max(0, parseInt(document.getElementById('mp-min').value) || 5)
       };
 
+      const duplicado = DB.productos.find(p => String(p.codigo).trim() === codigo && String(p.id) !== String(prodData.id));
+      if (duplicado) return alert('Ya existe un producto con ese código de barras.');
+
       if (id) {
-        const idx = DB.productos.findIndex(p => p.id === id);
+        const idx = DB.productos.findIndex(p => String(p.id) === String(id));
+        if (idx < 0) return alert('El producto que intenta editar ya no existe.');
         DB.productos[idx] = prodData;
       } else {
         DB.productos.push(prodData);
       }
-      closeModals(); saveDB();
+      closeModals();
+      saveDB();
     }
 
     function editProduct(id) {
-      const p = DB.productos.find(x => x.id === id);
+      const p = DB.productos.find(x => String(x.id) === String(id));
+      if (!p) return alert('Producto no encontrado.');
+
       document.getElementById('modal-prod-title').textContent = 'Editar Producto';
       document.getElementById('mp-id').value = p.id;
-      document.getElementById('mp-codigo').value = p.codigo;
-      document.getElementById('mp-nombre').value = p.nombre;
-      document.getElementById('mp-categoria').value = p.categoria;
+      document.getElementById('mp-codigo').value = p.codigo || '';
+      document.getElementById('mp-nombre').value = p.nombre || '';
+      // Reconstruir el selector y conservar exactamente la categoría del producto.
+      if (p.categoria && !DB.categorias.includes(p.categoria)) DB.categorias.push(p.categoria);
+      renderCategoryDropdowns(p.categoria || '');
       document.getElementById('mp-vencimiento').value = p.vencimiento || '';
-      document.getElementById('mp-precio').value = p.precio;
-      document.getElementById('mp-costo').value = p.costo;
-      document.getElementById('mp-stock').value = p.stock;
-      document.getElementById('mp-min').value = p.minStock;
+      document.getElementById('mp-precio').value = p.precio ?? 0;
+      document.getElementById('mp-costo').value = p.costo ?? 0;
+      document.getElementById('mp-stock').value = p.stock ?? 0;
+      document.getElementById('mp-min').value = p.minStock ?? 5;
       document.getElementById('modal-producto').classList.add('active');
     }
 
     function deleteProduct(id) {
-      if (confirm('¿Eliminar producto?')) { DB.productos = DB.productos.filter(p => p.id !== id); saveDB(); }
+      const producto = DB.productos.find(p => String(p.id) === String(id));
+      if (!producto) return alert('Producto no encontrado.');
+      const usadoEnCompras = (DB.compras || []).some(c => (c.items || []).some(i => String(i.productoId) === String(id)));
+      if (usadoEnCompras) return alert('No se puede eliminar este producto porque aparece en compras registradas. Elimínelo de esas compras primero.');
+      if (confirm(`¿Eliminar el producto "${producto.nombre}"?`)) {
+        DB.productos = DB.productos.filter(p => String(p.id) !== String(id));
+        saveDB();
+      }
     }
 
     function renderInventario() {
       const tbody = document.getElementById('tbl-inventario');
-      tbody.innerHTML = DB.productos.map(p => {
+      if (!tbody) return;
+
+      // La búsqueda existe únicamente dentro de Inventarios.
+      const input = document.getElementById('inv-search');
+      const busqueda = (input?.value || '').trim().toLowerCase();
+
+      const productosFiltrados = (DB.productos || []).filter(p => {
+        const nombre = String(p.nombre || '').toLowerCase();
+        const codigo = String(p.codigo || '').toLowerCase();
+        return !busqueda || nombre.includes(busqueda) || codigo.includes(busqueda);
+      });
+
+      tbody.innerHTML = productosFiltrados.map(p => {
         const vencStatus = getVencimientoStatus(p.vencimiento);
+        const stock = Number(p.stock) || 0;
+        const minStock = Number(p.minStock) || 0;
+
         return `
         <tr>
-          <td><b>${p.nombre}</b></td><td>${p.categoria}</td><td>${p.vencimiento || 'No registrada'}</td>
+          <td><b>${p.codigo || ''}</b></td>
+          <td><b>${p.nombre || ''}</b></td>
+          <td>${p.categoria || ''}</td>
+          <td>${p.vencimiento || 'No registrada'}</td>
           <td><span class="badge ${vencStatus.class}">${vencStatus.label}</span></td>
-          <td><b>${p.stock}</b></td>
-          <td><span class="badge ${p.stock <= p.minStock ? 'badge-danger' : 'badge-success'}">${p.stock <= p.minStock ? 'Bajo Stock' : 'Suficiente'}</span></td>
+          <td><b>${stock}</b></td>
+          <td><span class="badge ${stock <= minStock ? 'badge-danger' : 'badge-success'}">${stock <= minStock ? 'Bajo Stock' : 'Suficiente'}</span></td>
         </tr>
       `}).join('');
+
+      if (!productosFiltrados.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align:center; padding:2rem;">
+              <i class="fa-solid fa-magnifying-glass" style="font-size:2rem;"></i>
+              <br><br><b>No se encontraron productos</b>
+              <br><small>Verifica el nombre o código de barras.</small>
+            </td>
+          </tr>`;
+      }
     }
 
     // POS & IVA MODIFICABLE
@@ -1552,6 +1777,21 @@
       const clienteNombre = clienteSelect?.value || 'Consumidor final';
       const metodo = document.getElementById('pos-metodo').value;
 
+      // Verificar stock real antes de finalizar la venta.
+      for (const item of cart) {
+        const productoActual = DB.productos.find(p => String(p.id) === String(item.id));
+        if (!productoActual) return alert(`El producto "${item.nombre}" ya no existe.`);
+        if ((Number(productoActual.stock) || 0) < item.qty) {
+          return alert(`Stock insuficiente para "${productoActual.nombre}". Disponible: ${productoActual.stock}.`);
+        }
+      }
+
+      // Una venta a crédito necesita un cliente registrado para poder asociar la deuda.
+      const targetCliente = DB.clientes.find(c => c.nombre === clienteNombre);
+      if (metodo === 'Crédito' && !targetCliente) {
+        return alert('Para vender a crédito debe seleccionar un cliente registrado.');
+      }
+
       const venta = {
         id: 'VEN-' + Date.now().toString().slice(-4),
         cajero: currentUser ? currentUser.nombre : 'Cajero',
@@ -1564,11 +1804,8 @@
       };
 
       // NEW FEATURE: Add to debt if payment method is "Crédito"
-      if (metodo === 'Crédito') {
-        const targetCliente = DB.clientes.find(c => c.nombre === clienteNombre);
-        if (targetCliente) {
-          targetCliente.deuda = (targetCliente.deuda || 0) + total;
-        }
+      if (metodo === 'Crédito' && targetCliente) {
+        targetCliente.deuda = (targetCliente.deuda || 0) + total;
       }
 
       if (emitirAlegra) {
@@ -1675,8 +1912,14 @@
     }
 
     function deleteUsuario(id) {
-      if(confirm('¿Desea eliminar este usuario del sistema?')) {
-        DB.usuarios = DB.usuarios.filter(u => u.id !== id);
+      const usuario = DB.usuarios.find(u => String(u.id) === String(id));
+      if (!usuario) return alert('Usuario no encontrado.');
+      if (currentUser && String(currentUser.id) === String(id)) return alert('No puede eliminar el usuario con el que está conectado.');
+      if (usuario.rol === 'Administrador' && DB.usuarios.filter(u => u.rol === 'Administrador').length <= 1) {
+        return alert('Debe existir al menos un Administrador en el sistema.');
+      }
+      if(confirm(`¿Desea eliminar al usuario "${usuario.nombre}"?`)) {
+        DB.usuarios = DB.usuarios.filter(u => String(u.id) !== String(id));
         saveDB();
       }
     }
@@ -1728,7 +1971,12 @@
     }
 
     function deleteProveedor(id) {
-      if(confirm('¿Eliminar proveedor?')) { DB.proveedores = DB.proveedores.filter(p=>p.id!==id); saveDB(); }
+      const proveedor = DB.proveedores.find(p => String(p.id) === String(id));
+      if (!proveedor) return alert('Proveedor no encontrado.');
+      if (confirm(`¿Eliminar el proveedor "${proveedor.empresa || proveedor.nombre}"?`)) {
+        DB.proveedores = DB.proveedores.filter(p => String(p.id) !== String(id));
+        saveDB();
+      }
     }
 
     // CLIENTES
@@ -1788,7 +2036,13 @@
     }
 
     function deleteCliente(id) {
-      if(confirm('¿Eliminar cliente?')) { DB.clientes = DB.clientes.filter(c=>c.id!==id); saveDB(); }
+      const cliente = DB.clientes.find(c => String(c.id) === String(id));
+      if (!cliente) return alert('Cliente no encontrado.');
+      if ((Number(cliente.deuda) || 0) > 0) return alert('No se puede eliminar un cliente que tiene una deuda pendiente.');
+      if (confirm(`¿Eliminar el cliente "${cliente.nombre}"?`)) {
+        DB.clientes = DB.clientes.filter(c => String(c.id) !== String(id));
+        saveDB();
+      }
     }
 
     // CRÉDITOS & ABONOS (NEW FUNCTIONALITY)
@@ -1908,12 +2162,6 @@
       document.getElementById('mcop-producto').onchange = actualizarCostoCompra;
     }
 
-    function actualizarCostoCompra() {
-      const productId = document.getElementById('mcop-producto').value;
-      const product = DB.productos.find(p => p.id === productId);
-      document.getElementById('mcop-costo').value = product ? (product.costo || 0) : 0;
-    }
-
     function agregarItemCompra() {
   const productId = document.getElementById('mcop-producto').value;
   const cantidad = parseInt(document.getElementById('mcop-cantidad').value);
@@ -2000,7 +2248,6 @@ function handleBarcodeCompra(e) {
     }
   }
 }
-      renderCompraItems();
 
     function eliminarItemCompra(index) {
       compraItems.splice(index, 1);
@@ -2144,25 +2391,6 @@ function handleBarcodeCompra(e) {
     }
 
     // REPORTES
-    function renderReportes() {
-      const totVentas = DB.ventas.reduce((acc, v) => acc + v.total, 0);
-      const totCompras = DB.compras.reduce((acc, c) => acc + c.total, 0);
-
-      document.getElementById('rep-ventas').textContent = formatCOP(totVentas);
-      document.getElementById('rep-compras').textContent = formatCOP(totCompras);
-      document.getElementById('rep-utilidad').textContent = formatCOP(totVentas - totCompras);
-
-      const tbody = document.getElementById('tbl-reportes-ventas');
-      tbody.innerHTML = DB.ventas.map(v => `
-        <tr>
-          <td>${v.id}</td><td><b>${v.cajero || 'Cajero'}</b></td><td>${v.fecha}</td><td>${v.cliente}</td><td>${v.metodo}</td>
-          <td><span class="badge ${v.alegraStatus && v.alegraStatus.includes('Emitida') ? 'badge-alegra' : 'badge-secondary'}">${v.alegraStatus || 'Local'}</span></td>
-          <td>${formatCOP(v.total)}</td>
-          <td><button class="btn btn-sm btn-secondary" onclick='openReceiptModal(${JSON.stringify(v)})'><i class="fa-solid fa-receipt"></i></button></td>
-        </tr>
-      `).join('');
-    }
-
     function renderReportes() {
       const totVentas = DB.ventas.reduce((acc, v) => acc + v.total, 0);
       const totCompras = DB.compras.reduce((acc, c) => acc + c.total, 0);
