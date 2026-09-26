@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>super MIX</title>
+  <title>super MIX - Punto de Venta</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -377,6 +377,7 @@
       <li class="nav-item admin-only" onclick="showSection('clientes', this)"><i class="fa-solid fa-user-group nav-icon"></i><span>Clientes</span></li>
       <li class="nav-item admin-only" onclick="showSection('usuarios', this)"><i class="fa-solid fa-user-shield nav-icon"></i><span>Usuarios</span></li>
       <li class="nav-item admin-only" onclick="showSection('reportes', this)"><i class="fa-solid fa-chart-column nav-icon"></i><span>Reportes</span></li>
+      <li class="nav-item admin-only" onclick="showSection('cierres', this)"><i class="fa-solid fa-lock nav-icon"></i><span>Cierres de Ventas</span></li>
       <li class="nav-item admin-only" onclick="showSection('configuracion', this)"><i class="fa-solid fa-sliders nav-icon"></i><span>Configuración &amp; Alegra</span></li>
       <li class="nav-item admin-only" onclick="showSection('creditos', this)"><i class="fa-solid fa-money-bill-transfer nav-icon"></i><span>Créditos / Abonos</span></li>
     </ul>
@@ -783,13 +784,23 @@
         <div class="report-section-title">
           <div>
             <h3><i class="fa-solid fa-calendar-plus"></i> Productos ingresados por mes</h3>
-            <p style="font-size:.82rem; color:var(--text-muted);">Conteo mensual según la fecha de ingreso registrada del producto.</p>
+            <p style="font-size:.82rem; color:var(--text-muted);">Selecciona un mes para consultar los productos registrados durante ese período.</p>
           </div>
           <button class="btn btn-excel" onclick="exportMonthlyProductsExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Mensual</button>
         </div>
+        <div class="report-filters" style="margin:1rem 0;">
+          <label for="prod-mes-select" style="font-weight:700;">Mes:</label>
+          <select id="prod-mes-select" class="form-control" onchange="renderProductosIngresadosPorMes()" style="min-width:260px;">
+          </select>
+          <button type="button" class="btn btn-secondary" onclick="limpiarFiltroProductosMes()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+        </div>
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+          <div><div style="font-size:.8rem; color:var(--text-muted);">Productos ingresados</div><div id="prod-mes-total" class="metric-val">0</div></div>
+          <div><div style="font-size:.8rem; color:var(--text-muted);">Período seleccionado</div><div id="prod-mes-label" style="font-size:1rem; font-weight:800;">--</div></div>
+        </div>
         <div class="table-container">
           <table>
-            <thead><tr><th>Mes</th><th>Productos ingresados</th></tr></thead>
+            <thead><tr><th>Fecha de ingreso</th><th>Código</th><th>Producto</th><th>Categoría</th><th>Stock</th></tr></thead>
             <tbody id="tbl-productos-mes"></tbody>
           </table>
         </div>
@@ -808,6 +819,67 @@
           <thead><tr><th>Factura</th><th>Fecha</th><th>Atendido por</th><th>Cliente</th><th>Productos</th><th>Método</th><th>Estado Alegra DIAN</th><th>Total COP</th><th>Acción</th></tr></thead>
           <tbody id="tbl-reportes-ventas"></tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- CIERRES DE VENTAS -->
+    <section id="sec-cierres" class="content-section admin-only">
+      <div class="card" style="margin-bottom:1.5rem; border-left:5px solid var(--primary);">
+        <div class="report-section-title">
+          <div>
+            <h3><i class="fa-solid fa-lock"></i> Cierre de Ventas</h3>
+            <p style="font-size:.82rem; color:var(--text-muted);">Consolida las ventas de una fecha, separadas por método de pago, y registra quién realizó el cierre.</p>
+          </div>
+          <button type="button" class="btn btn-excel" onclick="exportCierresVentasExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Cierres</button>
+        </div>
+
+        <div class="report-filters" style="margin-bottom:1rem;">
+          <input type="date" id="cierre-fecha" class="form-control" onchange="renderCierreVentas()">
+          <button type="button" class="btn btn-primary" onclick="renderCierreVentas()"><i class="fa-solid fa-rotate"></i> Revisar</button>
+          <button type="button" class="btn btn-success" onclick="registrarCierreVentas()"><i class="fa-solid fa-lock"></i> Registrar Cierre</button>
+        </div>
+
+        <div class="metrics-grid" style="margin-bottom:0;">
+          <div class="card metric-card">
+            <div class="metric-icon" style="background:#dbeafe; color:#2563eb"><i class="fa-solid fa-receipt"></i></div>
+            <div><div style="font-size:.85rem; color:var(--text-muted);">Facturas</div><div class="metric-val" id="cierre-facturas">0</div></div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="background:#dcfce7; color:#16a34a"><i class="fa-solid fa-boxes-stacked"></i></div>
+            <div><div style="font-size:.85rem; color:var(--text-muted);">Unidades</div><div class="metric-val" id="cierre-unidades">0</div></div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="background:#fef3c7; color:#d97706"><i class="fa-solid fa-cash-register"></i></div>
+            <div><div style="font-size:.85rem; color:var(--text-muted);">Total Ventas</div><div class="metric-val" id="cierre-total">$ 0</div></div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="background:#f1f5f9; color:#475569"><i class="fa-solid fa-circle-info"></i></div>
+            <div><div style="font-size:.85rem; color:var(--text-muted);">Estado</div><div class="metric-val" id="cierre-estado">Abierto</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem;">
+        <h3 style="margin-bottom:1rem;"><i class="fa-solid fa-money-bill-transfer"></i> Resumen por método de pago</h3>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Método de Pago</th><th>Facturas</th><th>Total COP</th></tr></thead>
+            <tbody id="tbl-cierre-metodos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="report-section-title">
+          <h3><i class="fa-solid fa-clock-rotate-left"></i> Historial de Cierres</h3>
+          <button type="button" class="btn btn-secondary" onclick="limpiarCierresSeleccion()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Fecha</th><th>Facturas</th><th>Unidades</th><th>Total COP</th><th>Efectivo</th><th>Nequi / Daviplata</th><th>Tarjeta</th><th>Crédito</th><th>Cerrado por</th><th>Fecha/Hora Cierre</th></tr></thead>
+            <tbody id="tbl-historial-cierres"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -1055,7 +1127,7 @@
         <div style="display:flex; justify-content:space-between;"><span>IVA (<span id="rec-iva-rate">19</span>%):</span><span id="rec-iva"></span></div>
         <div style="display:flex; justify-content:space-between; font-weight:bold; font-size: 14px;"><span>TOTAL:</span><span id="rec-total"></span></div>
         <hr style="margin: 8px 0; border: dashed 1px #000;">
-        <div style="text-align:center; margin-top:10px;">¡Gracias por elegirnos! ¡Vuelve pronto! 🛍️</div>
+        <div style="text-align:center; margin-top:10px;">¡Gracias por su compra!</div>
       </div>
       <div style="margin-top: 10px; display:flex; gap:10px;">
         <button class="btn btn-primary" style="flex:1;" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Recibo</button>
@@ -1086,8 +1158,11 @@
       ventas: [],
       compras: [],
       config: { nombre: 'SUPERMERCADO PRO', nit: '900.123.456-1', iva: 19 },
-      alegra: { email: '', token: '', active: false }
+      alegra: { email: '', token: '', active: false },
+      cierres: []
     };
+
+    DB.cierres = Array.isArray(DB.cierres) ? DB.cierres : [];
 
     let currentUser = null;
     const SESSION_KEY = 'super_mix_session_user';
@@ -1194,6 +1269,7 @@
           DB.usuarios = Array.isArray(DB.usuarios) ? DB.usuarios : [];
           DB.ventas = Array.isArray(DB.ventas) ? DB.ventas : [];
           DB.compras = Array.isArray(DB.compras) ? DB.compras : [];
+          DB.cierres = Array.isArray(DB.cierres) ? DB.cierres : [];
           localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
           supabaseReady = true;
           setSupabaseStatus('Conectado a Supabase. Datos sincronizados.', true);
@@ -1420,7 +1496,9 @@
         usuarios: '8. Usuarios',
         reportes: '9. Reportes',
         configuracion: '10. Configuración & Alegra',
-        creditos: '11. Créditos / Abonos'
+        cierres: '10. Cierres de Ventas',
+        configuracion: '11. Configuración & Alegra',
+        creditos: '12. Créditos / Abonos'
       };
       const title = document.getElementById('section-title');
       if (title) title.textContent = titles[secId] || secId;
@@ -1617,6 +1695,7 @@
         renderCreditos(); // NEW render call for debts
         renderUsuarios();
         renderReportes();
+        renderCierreVentas();
       }
       renderPOS();
       renderPOSClientes();
@@ -2689,29 +2768,64 @@ function handleBarcodeCompra(e) {
       `).join('') : `<tr><td colspan="6" class="empty-report"><i class="fa-solid fa-circle-check" style="font-size:2rem;"></i><br><br>No hay productos vencidos.</td></tr>`;
     }
 
-    function renderProductosIngresadosPorMes() {
-      const tbody = document.getElementById('tbl-productos-mes');
-      if (!tbody) return;
-
+    function getUltimosMesesProductos() {
       const ahora = new Date();
       const meses = [];
-      for (let i=0; i<12; i++) {
-        const d = new Date(ahora.getFullYear(), ahora.getMonth()-i, 1);
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        const nombre = d.toLocaleDateString('es-CO', {month:'long', year:'numeric'});
-        meses.push({key, nombre:nombre.charAt(0).toUpperCase()+nombre.slice(1)});
+      for (let i = 0; i < 12; i++) {
+        const d = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const nombre = d.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
+        meses.push({
+          key,
+          nombre: nombre.charAt(0).toUpperCase() + nombre.slice(1)
+        });
+      }
+      return meses;
+    }
+
+    function renderProductosIngresadosPorMes() {
+      const select = document.getElementById('prod-mes-select');
+      const tbody = document.getElementById('tbl-productos-mes');
+      if (!select || !tbody) return;
+
+      const meses = getUltimosMesesProductos();
+      const actual = select.value;
+      if (!select.dataset.cargado) {
+        select.innerHTML = meses.map(m => `<option value="${m.key}">${escapeHtml(m.nombre)}</option>`).join('');
+        select.dataset.cargado = '1';
+        select.value = actual && meses.some(m => m.key === actual) ? actual : meses[0].key;
+      } else if (![...select.options].some(o => o.value === select.value)) {
+        select.value = meses[0].key;
       }
 
-      const conteo = {};
-      (DB.productos || []).forEach(p => {
-        const fecha = String(p.fechaIngreso || '').slice(0,7);
-        if (fecha) conteo[fecha] = (conteo[fecha] || 0) + 1;
-      });
+      const key = select.value;
+      const seleccionado = meses.find(m => m.key === key) || meses[0];
+      const productos = (DB.productos || [])
+        .filter(p => String(p.fechaIngreso || '').slice(0, 7) === key)
+        .sort((a, b) => String(a.fechaIngreso || '').localeCompare(String(b.fechaIngreso || '')));
 
-      const filas = meses.map(m => `<tr><td>${escapeHtml(m.nombre)}</td><td><b>${conteo[m.key] || 0}</b></td></tr>`);
-      const sinFecha = (DB.productos || []).filter(p => !p.fechaIngreso).length;
-      if (sinFecha) filas.push(`<tr><td>Sin fecha de ingreso registrada</td><td><span class="badge badge-warning">${sinFecha}</span></td></tr>`);
-      tbody.innerHTML = filas.join('');
+      const totalEl = document.getElementById('prod-mes-total');
+      const labelEl = document.getElementById('prod-mes-label');
+      if (totalEl) totalEl.textContent = productos.length;
+      if (labelEl) labelEl.textContent = seleccionado?.nombre || '--';
+
+      tbody.innerHTML = productos.length ? productos.map(p => `
+        <tr>
+          <td>${escapeHtml(p.fechaIngreso || 'N/A')}</td>
+          <td><b>${escapeHtml(p.codigo || '')}</b></td>
+          <td><b>${escapeHtml(p.nombre || '')}</b></td>
+          <td>${escapeHtml(p.categoria || '')}</td>
+          <td>${Number(p.stock) || 0}</td>
+        </tr>
+      `).join('') : `<tr><td colspan="5" class="empty-report"><i class="fa-solid fa-box-open" style="font-size:2rem;"></i><br><br>No hay productos ingresados en ${escapeHtml(seleccionado?.nombre || 'el período seleccionado')}.</td></tr>`;
+    }
+
+    function limpiarFiltroProductosMes() {
+      const select = document.getElementById('prod-mes-select');
+      if (!select) return;
+      const meses = getUltimosMesesProductos();
+      select.value = meses[0]?.key || '';
+      renderProductosIngresadosPorMes();
     }
 
     function exportDailySalesExcel(fecha) {
@@ -2765,21 +2879,32 @@ function handleBarcodeCompra(e) {
     }
 
     function exportMonthlyProductsExcel() {
-      const ahora = new Date();
-      const filas = [];
-      for (let i=0; i<12; i++) {
-        const d = new Date(ahora.getFullYear(), ahora.getMonth()-i, 1);
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        const nombre = d.toLocaleDateString('es-CO', {month:'long', year:'numeric'});
-        const total = (DB.productos || []).filter(p => String(p.fechaIngreso || '').slice(0,7) === key).length;
-        filas.push({'Mes':nombre.charAt(0).toUpperCase()+nombre.slice(1), 'Productos ingresados':total});
-      }
-      const sinFecha = (DB.productos || []).filter(p => !p.fechaIngreso).length;
-      if (sinFecha) filas.push({'Mes':'Sin fecha de ingreso registrada','Productos ingresados':sinFecha});
+      const select = document.getElementById('prod-mes-select');
+      const meses = getUltimosMesesProductos();
+      const key = select?.value || meses[0]?.key;
+      const seleccionado = meses.find(m => m.key === key) || meses[0];
+      const productos = (DB.productos || [])
+        .filter(p => String(p.fechaIngreso || '').slice(0, 7) === key)
+        .sort((a, b) => String(a.fechaIngreso || '').localeCompare(String(b.fechaIngreso || '')));
+
+      const detalle = productos.map(p => ({
+        'Fecha de ingreso': p.fechaIngreso || '',
+        'Código': p.codigo || '',
+        'Producto': p.nombre || '',
+        'Categoría': p.categoria || '',
+        'Precio COP': Number(p.precio) || 0,
+        'Costo COP': Number(p.costo) || 0,
+        'Stock': Number(p.stock) || 0
+      }));
+      const resumen = [{
+        'Período': seleccionado?.nombre || key || '',
+        'Productos ingresados': productos.length
+      }];
 
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filas), 'Productos por Mes');
-      XLSX.writeFile(wb, 'Productos_Ingresados_por_Mes.xlsx');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumen), 'Resumen');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detalle.length ? detalle : [{'Producto':'No hay productos ingresados en este mes'}]), 'Productos');
+      XLSX.writeFile(wb, `Productos_Ingresados_${key || 'mes'}.xlsx`);
     }
 
     function verFacturaPorId(id) {
@@ -2826,6 +2951,153 @@ function handleBarcodeCompra(e) {
       DB.ventas = (DB.ventas || []).filter(v => String(v.id) !== String(id));
       saveDB();
       alert(`La factura ${venta.id} fue eliminada y el inventario/deuda se actualizaron.`);
+    }
+
+    function getVentasDeFechaCierre(fecha) {
+      return (DB.ventas || []).filter(v => String(v.fecha || '') === String(fecha));
+    }
+
+    function getResumenMetodosCierre(ventas) {
+      const base = {
+        'Efectivo': { facturas: 0, total: 0 },
+        'Nequi/Daviplata': { facturas: 0, total: 0 },
+        'Tarjeta': { facturas: 0, total: 0 },
+        'Crédito': { facturas: 0, total: 0 }
+      };
+      (ventas || []).forEach(v => {
+        const metodo = Object.prototype.hasOwnProperty.call(base, v.metodo) ? v.metodo : (v.metodo || 'Otros');
+        if (!base[metodo]) base[metodo] = { facturas: 0, total: 0 };
+        base[metodo].facturas += 1;
+        base[metodo].total += Number(v.total) || 0;
+      });
+      return base;
+    }
+
+    function getCierreRegistrado(fecha) {
+      return (DB.cierres || []).find(c => String(c.fecha) === String(fecha));
+    }
+
+    function renderCierreVentas() {
+      const fechaEl = document.getElementById('cierre-fecha');
+      if (!fechaEl) return;
+      if (!fechaEl.value) fechaEl.value = getLocalDateISO();
+      const fecha = fechaEl.value;
+      const ventas = getVentasDeFechaCierre(fecha);
+      const total = ventas.reduce((a, v) => a + (Number(v.total) || 0), 0);
+      const unidades = ventas.reduce((a, v) => a + (v.items || []).reduce((s, i) => s + (Number(i.qty) || 0), 0), 0);
+      const resumen = getResumenMetodosCierre(ventas);
+      const cierre = getCierreRegistrado(fecha);
+
+      const f = document.getElementById('cierre-facturas');
+      const u = document.getElementById('cierre-unidades');
+      const t = document.getElementById('cierre-total');
+      const estado = document.getElementById('cierre-estado');
+      if (f) f.textContent = ventas.length;
+      if (u) u.textContent = unidades;
+      if (t) t.textContent = formatCOP(total);
+      if (estado) {
+        estado.textContent = cierre ? 'Cerrado' : 'Abierto';
+        estado.style.color = cierre ? 'var(--success)' : 'var(--warning)';
+      }
+
+      const tbody = document.getElementById('tbl-cierre-metodos');
+      if (tbody) {
+        const orden = ['Efectivo', 'Nequi/Daviplata', 'Tarjeta', 'Crédito'];
+        const metodos = orden.filter(m => resumen[m].facturas > 0).concat(Object.keys(resumen).filter(m => !orden.includes(m) && resumen[m].facturas > 0));
+        tbody.innerHTML = metodos.length ? metodos.map(m => `
+          <tr><td>${escapeHtml(m)}</td><td>${resumen[m].facturas}</td><td><b>${formatCOP(resumen[m].total)}</b></td></tr>
+        `).join('') : `<tr><td colspan="3" class="empty-report">No hay ventas para ${escapeHtml(fecha)}.</td></tr>`;
+      }
+
+      const historial = [...(DB.cierres || [])].sort((a,b) => new Date((b.fechaHora || '')).getTime() - new Date((a.fechaHora || '')).getTime());
+      const histBody = document.getElementById('tbl-historial-cierres');
+      if (histBody) {
+        histBody.innerHTML = historial.length ? historial.map(c => `
+          <tr>
+            <td><b>${escapeHtml(c.fecha || '')}</b></td>
+            <td>${Number(c.facturas) || 0}</td>
+            <td>${Number(c.unidades) || 0}</td>
+            <td><b>${formatCOP(Number(c.total) || 0)}</b></td>
+            <td>${formatCOP(Number(c.metodos?.Efectivo?.total) || 0)}</td>
+            <td>${formatCOP(Number(c.metodos?.['Nequi/Daviplata']?.total) || 0)}</td>
+            <td>${formatCOP(Number(c.metodos?.Tarjeta?.total) || 0)}</td>
+            <td>${formatCOP(Number(c.metodos?.Crédito?.total) || 0)}</td>
+            <td>${escapeHtml(c.cerradoPor || '')}</td>
+            <td>${escapeHtml(c.fechaHora ? new Date(c.fechaHora).toLocaleString('es-CO') : '')}</td>
+          </tr>
+        `).join('') : `<tr><td colspan="10" class="empty-report">No hay cierres registrados.</td></tr>`;
+      }
+    }
+
+    function registrarCierreVentas() {
+      if (!currentUser || currentUser.rol !== 'Administrador') {
+        return alert('Acceso Denegado. Solo el Administrador puede registrar cierres de ventas.');
+      }
+      const fecha = document.getElementById('cierre-fecha')?.value || getLocalDateISO();
+      const ventas = getVentasDeFechaCierre(fecha);
+      const existente = getCierreRegistrado(fecha);
+      if (existente) {
+        return alert(`La fecha ${fecha} ya tiene un cierre registrado por ${existente.cerradoPor || 'Administrador'}.`);
+      }
+
+      const total = ventas.reduce((a, v) => a + (Number(v.total) || 0), 0);
+      const unidades = ventas.reduce((a, v) => a + (v.items || []).reduce((s, i) => s + (Number(i.qty) || 0), 0), 0);
+      const metodos = getResumenMetodosCierre(ventas);
+      const mensaje = [
+        `Fecha: ${fecha}`,
+        `Facturas: ${ventas.length}`,
+        `Unidades: ${unidades}`,
+        `Total de ventas: ${formatCOP(total)}`,
+        '',
+        `Efectivo: ${formatCOP(metodos.Efectivo?.total || 0)}`,
+        `Nequi/Daviplata: ${formatCOP(metodos['Nequi/Daviplata']?.total || 0)}`,
+        `Tarjeta: ${formatCOP(metodos.Tarjeta?.total || 0)}`,
+        `Crédito: ${formatCOP(metodos.Crédito?.total || 0)}`
+      ].join('\n');
+
+      if (!confirm(`¿Registrar el cierre de ventas?\n\n${mensaje}\n\nEl cierre será guardado como resumen histórico.`)) return;
+
+      DB.cierres = Array.isArray(DB.cierres) ? DB.cierres : [];
+      DB.cierres.push({
+        id: 'CIE-' + Date.now().toString().slice(-6),
+        fecha,
+        facturas: ventas.length,
+        unidades,
+        total,
+        metodos,
+        cerradoPor: currentUser.nombre,
+        fechaHora: new Date().toISOString()
+      });
+      saveDB();
+      renderCierreVentas();
+      alert(`Cierre de ventas ${fecha} registrado correctamente.`);
+    }
+
+    function limpiarCierresSeleccion() {
+      const el = document.getElementById('cierre-fecha');
+      if (el) el.value = getLocalDateISO();
+      renderCierreVentas();
+    }
+
+    function exportCierresVentasExcel() {
+      const cierres = [...(DB.cierres || [])].sort((a,b) => String(b.fecha).localeCompare(String(a.fecha)));
+      const filas = cierres.map(c => ({
+        'ID Cierre': c.id || '',
+        'Fecha': c.fecha || '',
+        'Facturas': Number(c.facturas) || 0,
+        'Unidades': Number(c.unidades) || 0,
+        'Total Ventas COP': Number(c.total) || 0,
+        'Efectivo COP': Number(c.metodos?.Efectivo?.total) || 0,
+        'Nequi/Daviplata COP': Number(c.metodos?.['Nequi/Daviplata']?.total) || 0,
+        'Tarjeta COP': Number(c.metodos?.Tarjeta?.total) || 0,
+        'Crédito COP': Number(c.metodos?.Crédito?.total) || 0,
+        'Cerrado Por': c.cerradoPor || '',
+        'Fecha/Hora Cierre': c.fechaHora ? new Date(c.fechaHora).toLocaleString('es-CO') : ''
+      }));
+      const ws = XLSX.utils.json_to_sheet(filas.length ? filas : [{'ID Cierre':'','Fecha':'','Facturas':0,'Unidades':0,'Total Ventas COP':0,'Cerrado Por':''}]);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Cierres de Ventas');
+      XLSX.writeFile(wb, 'Cierres_de_Ventas.xlsx');
     }
 
     function saveConfig() {
