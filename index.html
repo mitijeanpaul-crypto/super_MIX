@@ -568,9 +568,9 @@
               <label>Método de Pago:</label>
               <select id="pos-metodo" class="form-control">
                 <option value="Efectivo">Efectivo</option>
-                <option value="Nequi/Daviplata">Nequi / Daviplata</option>
-                <option value="Tarjeta">Tarjeta Débito/Crédito</option>
-                <!-- NEW: Credit option added -->
+                <option value="Nequi</option>
+                <option value="Tarjeta">transferencia bancolombia</option>
+                <--crédito -->
                 <option value="Crédito">Crédito</option> 
               </select>
             </div>
@@ -800,7 +800,7 @@
         </div>
         <div class="table-container">
           <table>
-            <thead><tr><th>Fecha de ingreso</th><th>Código</th><th>Producto</th><th>Categoría</th><th>Stock</th></tr></thead>
+            <thead><tr><th>Producto ingresado</th><th>Fecha de ingreso</th><th>Código</th><th>Categoría</th><th>Stock</th></tr></thead>
             <tbody id="tbl-productos-mes"></tbody>
           </table>
         </div>
@@ -1321,6 +1321,15 @@
 
     function formatCOP(monto) {
       return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(monto);
+    }
+
+    function formatearFechaLocal(fecha) {
+      if (!fecha) return 'Sin fecha';
+      const texto = String(fecha);
+      const m = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+      const d = new Date(fecha);
+      return Number.isNaN(d.getTime()) ? texto : d.toLocaleDateString('es-CO');
     }
 
     function getLocalDateISO(date = new Date()) {
@@ -2811,9 +2820,9 @@ function handleBarcodeCompra(e) {
 
       tbody.innerHTML = productos.length ? productos.map(p => `
         <tr>
-          <td>${escapeHtml(p.fechaIngreso || 'N/A')}</td>
+          <td><b>${escapeHtml(p.nombre || 'Sin nombre')}</b></td>
+          <td>${formatearFechaLocal(p.fechaIngreso)}</td>
           <td><b>${escapeHtml(p.codigo || '')}</b></td>
-          <td><b>${escapeHtml(p.nombre || '')}</b></td>
           <td>${escapeHtml(p.categoria || '')}</td>
           <td>${Number(p.stock) || 0}</td>
         </tr>
