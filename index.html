@@ -293,6 +293,46 @@
     .system-status-error i {
       color: #dc2626;
     }
+
+    /* REPORTES Y FILTROS */
+    .report-filters {
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .report-filters .form-control { min-width:170px; }
+    .search-with-actions {
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .search-with-actions .form-control { flex:1; min-width:220px; }
+    .product-list-inline {
+      font-size:.8rem;
+      line-height:1.35;
+      white-space:normal;
+      min-width:180px;
+    }
+    .report-section-title {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:1rem;
+    }
+    .daily-total {
+      font-size:1.35rem;
+      font-weight:800;
+      color:var(--success);
+    }
+    .empty-report {
+      text-align:center;
+      padding:2rem;
+      color:var(--text-muted);
+    }
 </style>
 </head>
 <body>
@@ -416,8 +456,9 @@
   <!-- BARRA SUPERIOR CON STICKY AGREGADO -->
   <div style="position: sticky; top: 0; z-index: 10; background-color: #ffffff; padding: 10px 0; display:flex; justify-content:space-between; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
     <div style="display:flex; gap:10px; flex:1;">
-      <input type="text" id="prod-search" class="form-control" style="width: 250px;" placeholder="🔍 Buscar por nombre o código..." onkeyup="renderProducts()">
+      <input type="text" id="prod-search" class="form-control" style="width: 250px;" placeholder="🔍 Buscar por nombre o código..." oninput="renderProducts()">
       <select id="prod-cat-filter" class="form-control" style="width: 200px;" onchange="renderProducts()"></select>
+      <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaProductos()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
     </div>
     <div style="display:flex; gap:8px;">
       <button class="btn btn-excel" onclick="exportProductsExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
@@ -482,9 +523,10 @@
     <section id="sec-ventas" class="content-section">
       <div class="pos-container">
         <div>
-          <div style="display:flex; gap:10px; margin-bottom:1rem;">
+          <div style="display:flex; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
             <input type="text" id="pos-barcode" class="form-control" placeholder="📷 Escanear o ingresar código..." onkeypress="handlePOSBarcode(event)" autofocus>
-            <input type="text" id="pos-search" class="form-control" placeholder="🔍 Buscar por nombre..." onkeyup="renderPOS()">
+            <input type="text" id="pos-search" class="form-control" placeholder="🔍 Buscar por nombre..." oninput="renderPOS()">
+            <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaPOS()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
           </div>
           <div class="table-container" style="max-height: calc(100vh - 220px); overflow-y: auto;">
             <table>
@@ -515,7 +557,10 @@
             <div class="form-group">
               <label>Cliente <span style="font-weight:normal; color:var(--text-muted);">(opcional)</span>:</label>
               <!-- NEW: Search for clients in POS -->
-              <input type="text" id="pos-cliente-search" class="form-control" placeholder="🔍 Buscar cliente..." onkeyup="filterPOSClientes()" style="margin-bottom: 5px;">
+              <div style="display:flex; gap:6px; align-items:center; margin-bottom:5px; flex-wrap:wrap;">
+                <input type="text" id="pos-cliente-search" class="form-control" placeholder="🔍 Buscar cliente..." oninput="filterPOSClientes()" style="margin-bottom:0; flex:1; min-width:220px;">
+                <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaPOSCliente()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+              </div>
               <select id="pos-cliente" class="form-control"></select>
             </div>
             <div class="form-group">
@@ -590,8 +635,11 @@
 
     <!-- PROVEEDORES -->
     <section id="sec-proveedores" class="content-section admin-only">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <input type="text" id="prov-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar proveedor..." onkeyup="renderProveedores()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:8px; flex-wrap:wrap;">
+        <div class="search-with-actions">
+          <input type="text" id="prov-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar proveedor..." oninput="renderProveedores()">
+          <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaProveedor()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+        </div>
         <button class="btn btn-primary" onclick="openProveedorModal()"><i class="fa-solid fa-plus"></i> Registrar Proveedor</button>
       </div>
       <div class="table-container">
@@ -606,8 +654,11 @@
 
     <!-- CLIENTES -->
     <section id="sec-clientes" class="content-section admin-only">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <input type="text" id="cli-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar cliente..." onkeyup="renderClientes()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:8px; flex-wrap:wrap;">
+        <div class="search-with-actions">
+          <input type="text" id="cli-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar cliente..." oninput="renderClientes()">
+          <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaCliente()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+        </div>
         <button class="btn btn-primary" onclick="openClienteModal()"><i class="fa-solid fa-plus"></i> Registrar Cliente</button>
       </div>
       <div class="table-container">
@@ -622,9 +673,12 @@
 
     <!-- CRÉDITOS / ABONOS (NEW SECTION) -->
     <section id="sec-creditos" class="content-section admin-only">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:8px; flex-wrap:wrap;">
         <h3>Gestión de Créditos y Abonos</h3>
-        <input type="text" id="cred-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar deudor..." onkeyup="renderCreditos()">
+        <div class="search-with-actions">
+          <input type="text" id="cred-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar deudor..." oninput="renderCreditos()">
+          <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaCreditos()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+        </div>
       </div>
       <div class="table-container">
         <table>
@@ -654,34 +708,104 @@
 
     <!-- REPORTES Y REINICIO DE VENTAS -->
     <section id="sec-reportes" class="content-section admin-only">
-      <div class="card" style="margin-bottom: 1.5rem; border-left: 5px solid var(--danger);">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="card" style="margin-bottom:1.5rem; border-left:5px solid var(--danger);">
+        <div class="report-section-title">
           <div>
-            <h3 style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Control del Administrador</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Reiniciar el historial de ventas registradas a $ 0 COP.</p>
+            <h3 style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Control del Administrador</h3>
+            <p style="font-size:.85rem; color:var(--text-muted);">Reiniciar el historial de ventas registradas a $ 0 COP.</p>
           </div>
           <button class="btn btn-danger" onclick="resetSalesToZero()"><i class="fa-solid fa-rotate-left"></i> Dejar Ventas en $ 0</button>
         </div>
       </div>
 
-      <div class="card" style="margin-bottom: 1.5rem;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="report-section-title">
           <h3>Resumen Financiero</h3>
-          <button class="btn btn-excel" onclick="exportSalesReportExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Reporte Ventas a Excel</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-excel" onclick="exportSalesReportExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Ventas</button>
+            <button class="btn btn-excel" onclick="exportDailySalesExcel(document.getElementById('rep-dia').value)"><i class="fa-solid fa-calendar-day"></i> Descargar Día</button>
+          </div>
         </div>
-        <div style="display:flex; gap:2rem; margin-top:1rem;">
+        <div style="display:flex; gap:2rem; margin-top:1rem; flex-wrap:wrap;">
           <div>Ingresos por Ventas: <b id="rep-ventas" style="color:var(--success)">$ 0</b></div>
           <div>Inversión en Compras: <b id="rep-compras" style="color:var(--danger)">$ 0</b></div>
           <div>Ganancia Neta: <b id="rep-utilidad" style="color:var(--primary)">$ 0</b></div>
         </div>
       </div>
-      
+
+      <!-- VENTAS DEL DÍA -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="report-section-title">
+          <div>
+            <h3><i class="fa-solid fa-calendar-day"></i> Revisar ventas por día</h3>
+            <p style="font-size:.82rem; color:var(--text-muted);">Consulta, revisa y descarga las ventas de una fecha específica.</p>
+          </div>
+          <div class="report-filters">
+            <input type="date" id="rep-dia" class="form-control" onchange="renderVentasDelDia()">
+            <input type="text" id="rep-dia-search" class="form-control" placeholder="🔍 Factura, cliente o producto..." oninput="renderVentasDelDia()">
+            <button type="button" class="btn btn-primary" onclick="renderVentasDelDia()"><i class="fa-solid fa-magnifying-glass"></i> Revisar</button>
+            <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaVentasDelDia()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+            <button type="button" class="btn btn-excel" onclick="exportDailySalesExcel(document.getElementById('rep-dia').value)"><i class="fa-solid fa-download"></i> Descargar</button>
+          </div>
+        </div>
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+          <div><div style="font-size:.8rem; color:var(--text-muted);">Total del día</div><div id="rep-dia-total" class="daily-total">$ 0</div></div>
+          <div><div style="font-size:.8rem; color:var(--text-muted);">Facturas</div><div id="rep-dia-cantidad" style="font-size:1.35rem; font-weight:800;">0</div></div>
+          <div><div style="font-size:.8rem; color:var(--text-muted);">Unidades vendidas</div><div id="rep-dia-unidades" style="font-size:1.35rem; font-weight:800;">0</div></div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Factura</th><th>Fecha</th><th>Cliente</th><th>Productos</th><th>Método</th><th>Cajero</th><th>Total COP</th><th>Acciones</th></tr></thead>
+            <tbody id="tbl-ventas-dia"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRODUCTOS VENCIDOS -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="report-section-title">
+          <div>
+            <h3><i class="fa-solid fa-triangle-exclamation"></i> Productos vencidos</h3>
+            <p style="font-size:.82rem; color:var(--text-muted);">Listado independiente de productos cuya fecha de vencimiento ya pasó.</p>
+          </div>
+          <button class="btn btn-excel" onclick="exportExpiredProductsExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Vencidos</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Vencimiento</th><th>Días vencido</th><th>Stock</th></tr></thead>
+            <tbody id="tbl-productos-vencidos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRODUCTOS INGRESADOS POR MES -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="report-section-title">
+          <div>
+            <h3><i class="fa-solid fa-calendar-plus"></i> Productos ingresados por mes</h3>
+            <p style="font-size:.82rem; color:var(--text-muted);">Conteo mensual según la fecha de ingreso registrada del producto.</p>
+          </div>
+          <button class="btn btn-excel" onclick="exportMonthlyProductsExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Mensual</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Mes</th><th>Productos ingresados</th></tr></thead>
+            <tbody id="tbl-productos-mes"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- HISTORIAL DE VENTAS -->
       <div class="table-container">
-        <h4 style="padding:1rem;">Historial de Ventas</h4>
+        <div style="padding:1rem; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h4>Historial de Ventas</h4>
+          <div class="search-with-actions">
+            <input type="text" id="rep-search" class="form-control" placeholder="🔍 Buscar factura, cliente o producto..." oninput="renderReportes()">
+            <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaReportes()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+          </div>
+        </div>
         <table>
-          <thead>
-            <tr><th>Factura</th><th>Atendido por</th><th>Fecha</th><th>Cliente</th><th>Método</th><th>Estado Alegra DIAN</th><th>Total COP</th><th>Acción</th></tr>
-          </thead>
+          <thead><tr><th>Factura</th><th>Fecha</th><th>Atendido por</th><th>Cliente</th><th>Productos</th><th>Método</th><th>Estado Alegra DIAN</th><th>Total COP</th><th>Acción</th></tr></thead>
           <tbody id="tbl-reportes-ventas"></tbody>
         </table>
       </div>
@@ -833,7 +957,7 @@
     <!-- CAMPO DE BÚSQUEDA Y CÓDIGO DE BARRAS -->
     <div class="form-group">
       <label>Buscar / Escanear Producto</label>
-      <div style="display: flex; gap: 5px;">
+      <div style="display:flex; gap:5px; flex-wrap:wrap;">
         <input 
           type="text" 
           id="mcop-buscar" 
@@ -843,9 +967,8 @@
           onkeydown="handleBarcodeCompra(event)"
           autocomplete="off"
         >
-        <button type="button" class="btn btn-secondary" onclick="filtrarProductosCompra()">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
+        <button type="button" class="btn btn-secondary" onclick="filtrarProductosCompra()"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaCompra()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
       </div>
     </div>
 
@@ -1124,6 +1247,70 @@
       return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(monto);
     }
 
+    function getLocalDateISO(date = new Date()) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function limpiarCampo(id, renderFn) {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+      if (typeof renderFn === 'function') renderFn();
+      if (el) el.focus();
+    }
+
+    function limpiarBusquedaProductos() {
+      const el = document.getElementById('prod-search');
+      if (el) el.value = '';
+      const cat = document.getElementById('prod-cat-filter');
+      if (cat) cat.value = '';
+      renderProducts();
+      if (el) el.focus();
+    }
+
+    function limpiarBusquedaPOS() {
+      const barcode = document.getElementById('pos-barcode');
+      const search = document.getElementById('pos-search');
+      if (barcode) barcode.value = '';
+      if (search) search.value = '';
+      renderPOS();
+      if (search) search.focus();
+      else if (barcode) barcode.focus();
+    }
+
+    function limpiarBusquedaPOSCliente() {
+      limpiarCampo('pos-cliente-search', renderPOSClientes);
+    }
+
+    function limpiarBusquedaCompra() {
+      limpiarCampo('mcop-buscar', filtrarProductosCompra);
+    }
+
+    function limpiarBusquedaProveedor() {
+      limpiarCampo('prov-search', renderProveedores);
+    }
+
+    function limpiarBusquedaCliente() {
+      limpiarCampo('cli-search', renderClientes);
+    }
+
+    function limpiarBusquedaCreditos() {
+      limpiarCampo('cred-search', renderCreditos);
+    }
+
+    function limpiarBusquedaReportes() {
+      limpiarCampo('rep-search', renderReportes);
+    }
+
+    function limpiarBusquedaVentasDelDia() {
+      const el = document.getElementById('rep-dia-search');
+      if (el) el.value = '';
+      renderVentasDelDia();
+      if (el) el.focus();
+    }
+
     function getVencimientoStatus(fechaStr) {
       if (!fechaStr) return { label: 'Sin Fecha', class: 'badge-secondary', diffDays: 999 };
       const hoy = new Date();
@@ -1336,6 +1523,7 @@
             const producto = {
               id: existente?.id || Date.now().toString() + Math.random().toString(36).slice(2,8),
               codigo, nombre, categoria,
+              fechaIngreso: String(row['Fecha Ingreso'] ?? existente?.fechaIngreso ?? getLocalDateISO()).trim(),
               vencimiento: String(row['Fecha Vencimiento'] ?? row['Vencimiento'] ?? '').trim(),
               precio: Math.max(0, Number(row['Precio COP'] ?? row['Precio'] ?? 0) || 0),
               costo: Math.max(0, Number(row['Costo COP'] ?? row['Costo'] ?? 0) || 0),
@@ -1368,6 +1556,7 @@
         'Código': p.codigo,
         'Nombre': p.nombre,
         'Categoría': p.categoria,
+        'Fecha Ingreso': p.fechaIngreso || 'N/A',
         'Fecha Vencimiento': p.vencimiento || 'N/A',
         'Estado Vencimiento (20d)': getVencimientoStatus(p.vencimiento).label,
         'Precio COP': p.precio,
@@ -1402,6 +1591,7 @@
         'Atendido Por': v.cajero,
         'Fecha': v.fecha,
         'Cliente': v.cliente,
+        'Productos': (v.items || []).map(i => `${i.nombre || 'Sin nombre'} x${i.qty || 0}`).join(' | '),
         'Método Pago': v.metodo,
         'Estado Alegra DIAN': v.alegraStatus || 'Local',
         'Subtotal COP': v.subtotal,
@@ -1479,7 +1669,7 @@
     }
 
     function renderDashboard() {
-      const hoy = new Date().toISOString().split('T')[0];
+      const hoy = getLocalDateISO();
       const ventasHoy = DB.ventas.filter(v => v.fecha === hoy).reduce((acc, v) => acc + v.total, 0);
       const stockTotal = DB.productos.reduce((acc, p) => acc + p.stock, 0);
       const vencidosCount = DB.productos.filter(p => {
@@ -1565,11 +1755,13 @@
         return alert('Código, nombre y categoría son obligatorios.');
       }
 
+      const existenteProducto = id ? DB.productos.find(p => String(p.id) === String(id)) : null;
       const prodData = {
         id: id || Date.now().toString(),
         codigo,
         nombre,
         categoria,
+        fechaIngreso: existenteProducto?.fechaIngreso || getLocalDateISO(),
         vencimiento: document.getElementById('mp-vencimiento').value,
         precio: Math.max(0, parseFloat(document.getElementById('mp-precio').value) || 0),
         costo: Math.max(0, parseFloat(document.getElementById('mp-costo').value) || 0),
@@ -1794,7 +1986,7 @@
       const venta = {
         id: 'VEN-' + Date.now().toString().slice(-4),
         cajero: currentUser ? currentUser.nombre : 'Cajero',
-        fecha: new Date().toISOString().split('T')[0],
+        fecha: getLocalDateISO(),
         cliente: clienteNombre,
         metodo: metodo,
         ivaRate: ivaPercent,
@@ -2304,7 +2496,7 @@ function handleBarcodeCompra(e) {
         id: 'COM-' + Date.now().toString().slice(-6),
         proveedor: proveedorObj.empresa || proveedorObj.nombre,
         proveedorId: proveedorObj.id,
-        fecha: new Date().toISOString().split('T')[0],
+        fecha: getLocalDateISO(),
         items: compraItems.map(i => ({...i})),
         total: total
       };
@@ -2390,23 +2582,250 @@ function handleBarcodeCompra(e) {
     }
 
     // REPORTES
+    function getSaleProductNames(venta) {
+      return (venta.items || []).map(i => `${i.nombre || 'Sin nombre'} x${Number(i.qty) || 0}`).join(' · ');
+    }
+
+    function ventaCoincideBusqueda(venta, busqueda) {
+      if (!busqueda) return true;
+      const texto = [
+        venta.id, venta.fecha, venta.cajero, venta.cliente, venta.metodo, venta.alegraStatus,
+        getSaleProductNames(venta)
+      ].join(' ').toLowerCase();
+      return texto.includes(busqueda);
+    }
+
+    function renderTablaVentas(tbody, ventas, incluirEliminar = true) {
+      if (!tbody) return;
+      tbody.innerHTML = ventas.length ? ventas.map(v => `
+        <tr>
+          <td><b>${escapeHtml(v.id)}</b></td>
+          <td>${escapeHtml(v.fecha || '')}</td>
+          <td><b>${escapeHtml(v.cajero || 'Cajero')}</b></td>
+          <td>${escapeHtml(v.cliente || 'Consumidor final')}</td>
+          <td class="product-list-inline">${escapeHtml(getSaleProductNames(v) || 'Sin productos')}</td>
+          <td>${escapeHtml(v.metodo || '')}</td>
+          <td><span class="badge ${v.alegraStatus && v.alegraStatus.includes('Emitida') ? 'badge-alegra' : 'badge-secondary'}">${escapeHtml(v.alegraStatus || 'Local')}</span></td>
+          <td><b>${formatCOP(Number(v.total) || 0)}</b></td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-sm btn-secondary" onclick="verFacturaPorId('${String(v.id).replace(/'/g, "\\'")}')" title="Ver factura"><i class="fa-solid fa-receipt"></i></button>
+            ${incluirEliminar ? `<button class="btn btn-sm btn-danger" onclick="eliminarFactura('${String(v.id).replace(/'/g, "\\'")}')" title="Eliminar factura"><i class="fa-solid fa-trash"></i></button>` : ''}
+          </td>
+        </tr>
+      `).join('') : `<tr><td colspan="9" class="empty-report"><i class="fa-solid fa-file-circle-xmark" style="font-size:2rem;"></i><br><br>No hay ventas para mostrar.</td></tr>`;
+    }
+
     function renderReportes() {
-      const totVentas = DB.ventas.reduce((acc, v) => acc + v.total, 0);
-      const totCompras = DB.compras.reduce((acc, c) => acc + c.total, 0);
-      
+      const totVentas = (DB.ventas || []).reduce((acc, v) => acc + (Number(v.total) || 0), 0);
+      const totCompras = (DB.compras || []).reduce((acc, c) => acc + (Number(c.total) || 0), 0);
+
       document.getElementById('rep-ventas').textContent = formatCOP(totVentas);
       document.getElementById('rep-compras').textContent = formatCOP(totCompras);
       document.getElementById('rep-utilidad').textContent = formatCOP(totVentas - totCompras);
 
-      const tbody = document.getElementById('tbl-reportes-ventas');
-      tbody.innerHTML = DB.ventas.map(v => `
+      const busqueda = (document.getElementById('rep-search')?.value || '').trim().toLowerCase();
+      const ventasFiltradas = (DB.ventas || []).slice().reverse().filter(v => ventaCoincideBusqueda(v, busqueda));
+      renderTablaVentas(document.getElementById('tbl-reportes-ventas'), ventasFiltradas, true);
+      renderProductosVencidos();
+      renderProductosIngresadosPorMes();
+      renderVentasDelDia();
+    }
+
+    function renderVentasDelDia() {
+      const dateEl = document.getElementById('rep-dia');
+      if (!dateEl) return;
+      if (!dateEl.value) dateEl.value = getLocalDateISO();
+
+      const fecha = dateEl.value;
+      const busqueda = (document.getElementById('rep-dia-search')?.value || '').trim().toLowerCase();
+      const ventasDia = (DB.ventas || []).filter(v => String(v.fecha || '') === fecha).filter(v => ventaCoincideBusqueda(v, busqueda)).slice().reverse();
+
+      const total = ventasDia.reduce((acc, v) => acc + (Number(v.total) || 0), 0);
+      const unidades = ventasDia.reduce((acc, v) => acc + (v.items || []).reduce((s, i) => s + (Number(i.qty) || 0), 0), 0);
+
+      const totalEl = document.getElementById('rep-dia-total');
+      const cantidadEl = document.getElementById('rep-dia-cantidad');
+      const unidadesEl = document.getElementById('rep-dia-unidades');
+      if (totalEl) totalEl.textContent = formatCOP(total);
+      if (cantidadEl) cantidadEl.textContent = ventasDia.length;
+      if (unidadesEl) unidadesEl.textContent = unidades;
+
+      const tbody = document.getElementById('tbl-ventas-dia');
+      if (!tbody) return;
+      tbody.innerHTML = ventasDia.length ? ventasDia.map(v => `
         <tr>
-          <td>${v.id}</td><td><b>${v.cajero || 'Cajero'}</b></td><td>${v.fecha}</td><td>${v.cliente}</td><td>${v.metodo}</td>
-          <td><span class="badge ${v.alegraStatus && v.alegraStatus.includes('Emitida') ? 'badge-alegra' : 'badge-secondary'}">${v.alegraStatus || 'Local'}</span></td>
-          <td>${formatCOP(v.total)}</td>
-          <td><button class="btn btn-sm btn-secondary" onclick='openReceiptModal(${JSON.stringify(v)})'><i class="fa-solid fa-receipt"></i></button></td>
+          <td><b>${escapeHtml(v.id)}</b></td>
+          <td>${escapeHtml(v.fecha || '')}</td>
+          <td>${escapeHtml(v.cliente || 'Consumidor final')}</td>
+          <td class="product-list-inline">${escapeHtml(getSaleProductNames(v) || 'Sin productos')}</td>
+          <td>${escapeHtml(v.metodo || '')}</td>
+          <td>${escapeHtml(v.cajero || 'Cajero')}</td>
+          <td><b>${formatCOP(Number(v.total) || 0)}</b></td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-sm btn-secondary" onclick="verFacturaPorId('${String(v.id).replace(/'/g, "\\'")}')" title="Revisar factura"><i class="fa-solid fa-eye"></i></button>
+            <button class="btn btn-sm btn-danger" onclick="eliminarFactura('${String(v.id).replace(/'/g, "\\'")}')" title="Eliminar factura"><i class="fa-solid fa-trash"></i></button>
+          </td>
         </tr>
-      `).join('');
+      `).join('') : `<tr><td colspan="8" class="empty-report">No hay ventas para ${escapeHtml(fecha)}.</td></tr>`;
+    }
+
+    function renderProductosVencidos() {
+      const tbody = document.getElementById('tbl-productos-vencidos');
+      if (!tbody) return;
+      const vencidos = (DB.productos || [])
+        .map(p => ({ ...p, estado: getVencimientoStatus(p.vencimiento) }))
+        .filter(p => p.vencimiento && p.estado.diffDays < 0)
+        .sort((a,b) => a.estado.diffDays - b.estado.diffDays);
+
+      tbody.innerHTML = vencidos.length ? vencidos.map(p => `
+        <tr>
+          <td><b>${escapeHtml(p.codigo || '')}</b></td>
+          <td><b>${escapeHtml(p.nombre || '')}</b></td>
+          <td>${escapeHtml(p.categoria || '')}</td>
+          <td>${escapeHtml(p.vencimiento || '')}</td>
+          <td><span class="badge badge-danger">${Math.abs(p.estado.diffDays)} día(s)</span></td>
+          <td><b>${Number(p.stock) || 0}</b></td>
+        </tr>
+      `).join('') : `<tr><td colspan="6" class="empty-report"><i class="fa-solid fa-circle-check" style="font-size:2rem;"></i><br><br>No hay productos vencidos.</td></tr>`;
+    }
+
+    function renderProductosIngresadosPorMes() {
+      const tbody = document.getElementById('tbl-productos-mes');
+      if (!tbody) return;
+
+      const ahora = new Date();
+      const meses = [];
+      for (let i=0; i<12; i++) {
+        const d = new Date(ahora.getFullYear(), ahora.getMonth()-i, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        const nombre = d.toLocaleDateString('es-CO', {month:'long', year:'numeric'});
+        meses.push({key, nombre:nombre.charAt(0).toUpperCase()+nombre.slice(1)});
+      }
+
+      const conteo = {};
+      (DB.productos || []).forEach(p => {
+        const fecha = String(p.fechaIngreso || '').slice(0,7);
+        if (fecha) conteo[fecha] = (conteo[fecha] || 0) + 1;
+      });
+
+      const filas = meses.map(m => `<tr><td>${escapeHtml(m.nombre)}</td><td><b>${conteo[m.key] || 0}</b></td></tr>`);
+      const sinFecha = (DB.productos || []).filter(p => !p.fechaIngreso).length;
+      if (sinFecha) filas.push(`<tr><td>Sin fecha de ingreso registrada</td><td><span class="badge badge-warning">${sinFecha}</span></td></tr>`);
+      tbody.innerHTML = filas.join('');
+    }
+
+    function exportDailySalesExcel(fecha) {
+      const dia = fecha || getLocalDateISO();
+      const ventas = (DB.ventas || []).filter(v => String(v.fecha || '') === dia);
+
+      const filas = ventas.map(v => ({
+        'Factura ID': v.id,
+        'Fecha': v.fecha,
+        'Atendido Por': v.cajero || 'Cajero',
+        'Cliente': v.cliente || 'Consumidor final',
+        'Productos': getSaleProductNames(v),
+        'Método Pago': v.metodo || '',
+        'Subtotal COP': Number(v.subtotal) || 0,
+        'Valor IVA COP': Number(v.iva) || 0,
+        'Total Venta COP': Number(v.total) || 0,
+        'Estado Alegra DIAN': v.alegraStatus || 'Local'
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(filas.length ? filas : [{
+        'Factura ID':'', 'Fecha':dia, 'Atendido Por':'', 'Cliente':'',
+        'Productos':'Sin ventas', 'Método Pago':'', 'Subtotal COP':0,
+        'Valor IVA COP':0, 'Total Venta COP':0, 'Estado Alegra DIAN':''
+      }]);
+
+      const resumen = [{
+        'Fecha':dia,
+        'Facturas':ventas.length,
+        'Unidades Vendidas':ventas.reduce((a,v)=>a+(v.items||[]).reduce((s,i)=>s+(Number(i.qty)||0),0),0),
+        'Total Ventas COP':ventas.reduce((a,v)=>a+(Number(v.total)||0),0)
+      }];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumen), 'Resumen');
+      XLSX.utils.book_append_sheet(wb, ws, 'Ventas del Día');
+      XLSX.writeFile(wb, `Ventas_${dia}.xlsx`);
+    }
+
+    function exportExpiredProductsExcel() {
+      const data = (DB.productos || [])
+        .map(p => ({...p, estado:getVencimientoStatus(p.vencimiento)}))
+        .filter(p => p.vencimiento && p.estado.diffDays < 0)
+        .map(p => ({
+          'Código':p.codigo || '', 'Producto':p.nombre || '', 'Categoría':p.categoria || '',
+          'Fecha Vencimiento':p.vencimiento, 'Días Vencido':Math.abs(p.estado.diffDays), 'Stock':Number(p.stock)||0
+        }));
+      const ws = XLSX.utils.json_to_sheet(data.length ? data : [{'Producto':'No hay productos vencidos'}]);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Productos Vencidos');
+      XLSX.writeFile(wb, 'Productos_Vencidos.xlsx');
+    }
+
+    function exportMonthlyProductsExcel() {
+      const ahora = new Date();
+      const filas = [];
+      for (let i=0; i<12; i++) {
+        const d = new Date(ahora.getFullYear(), ahora.getMonth()-i, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        const nombre = d.toLocaleDateString('es-CO', {month:'long', year:'numeric'});
+        const total = (DB.productos || []).filter(p => String(p.fechaIngreso || '').slice(0,7) === key).length;
+        filas.push({'Mes':nombre.charAt(0).toUpperCase()+nombre.slice(1), 'Productos ingresados':total});
+      }
+      const sinFecha = (DB.productos || []).filter(p => !p.fechaIngreso).length;
+      if (sinFecha) filas.push({'Mes':'Sin fecha de ingreso registrada','Productos ingresados':sinFecha});
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filas), 'Productos por Mes');
+      XLSX.writeFile(wb, 'Productos_Ingresados_por_Mes.xlsx');
+    }
+
+    function verFacturaPorId(id) {
+      const venta = (DB.ventas || []).find(v => String(v.id) === String(id));
+      if (!venta) return alert('La factura no existe o ya fue eliminada.');
+      openReceiptModal(venta);
+    }
+
+    function eliminarFactura(id) {
+      if (!currentUser || currentUser.rol !== 'Administrador') {
+        return alert('Acceso Denegado. Solo el Administrador puede eliminar facturas.');
+      }
+
+      const venta = (DB.ventas || []).find(v => String(v.id) === String(id));
+      if (!venta) return alert('La factura no existe o ya fue eliminada.');
+
+      const detalle = getSaleProductNames(venta) || 'Sin productos';
+      const advertenciaAlegra = venta.alegraStatus && venta.alegraStatus !== 'Sin Emitir'
+        ? '\\n\\nATENCIÓN: esta venta tiene estado de Alegra/DIAN. Eliminarla aquí borra el registro LOCAL, pero no anula automáticamente el documento fiscal en Alegra/DIAN.'
+        : '';
+
+      const confirmar = confirm(
+        `¿Desea eliminar la factura ${venta.id}?\\n\\n` +
+        `Fecha: ${venta.fecha}\\n` +
+        `Cliente: ${venta.cliente || 'Consumidor final'}\\n` +
+        `Productos: ${detalle}\\n` +
+        `Total: ${formatCOP(Number(venta.total) || 0)}\\n\\n` +
+        `Se devolverán las cantidades vendidas al inventario.` +
+        advertenciaAlegra
+      );
+
+      if (!confirmar) return;
+
+      for (const item of (venta.items || [])) {
+        const producto = (DB.productos || []).find(p => String(p.id) === String(item.id || item.productoId));
+        if (producto) producto.stock = (Number(producto.stock) || 0) + (Number(item.qty) || 0);
+      }
+
+      if (venta.metodo === 'Crédito' && venta.cliente) {
+        const cliente = (DB.clientes || []).find(c => c.nombre === venta.cliente);
+        if (cliente) cliente.deuda = Math.max(0, (Number(cliente.deuda) || 0) - (Number(venta.total) || 0));
+      }
+
+      DB.ventas = (DB.ventas || []).filter(v => String(v.id) !== String(id));
+      saveDB();
+      alert(`La factura ${venta.id} fue eliminada y el inventario/deuda se actualizaron.`);
     }
 
     function saveConfig() {
@@ -2438,6 +2857,9 @@ function handleBarcodeCompra(e) {
     }
 
     // CARGA DE CONFIGURACIÓN
+    const repDia = document.getElementById('rep-dia');
+    if (repDia) repDia.value = getLocalDateISO();
+
     document.getElementById('cfg-nombre').value = DB.config.nombre;
     document.getElementById('cfg-nit').value = DB.config.nit;
     document.getElementById('cfg-iva').value = getConfiguredIva();
