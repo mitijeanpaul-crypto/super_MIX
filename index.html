@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>super MIX</title>
+  <title>super MIX - Punto de Venta</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -294,6 +294,11 @@
       color: #dc2626;
     }
 
+    .report-filters, .search-with-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .search-with-actions .form-control { min-width:240px; }
+    .product-list-inline { max-width:420px; white-space:normal !important; line-height:1.35; }
+    .empty-report { text-align:center; padding:2rem !important; color:var(--text-muted); }
+
     /* REPORTES Y FILTROS */
     .report-filters {
       display:flex;
@@ -401,6 +406,7 @@
           <b id="active-user-name">Usuario</b> 
           <span class="badge badge-success" id="active-user-role">Rol</span>
         </div>
+        <button class="btn btn-sm btn-primary" onclick="openChangePasswordModal()" title="Cambiar contraseña"><i class="fa-solid fa-key"></i> Seguridad</button>
         <button class="btn btn-sm btn-secondary" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
       </div>
     </header>
@@ -568,9 +574,9 @@
               <label>Método de Pago:</label>
               <select id="pos-metodo" class="form-control">
                 <option value="Efectivo">Efectivo</option>
-                <option value="Nequi">Nequi</option>
-                <option value="Transferencia">transferencia bancolombia</option>
-                <--crédito -->
+                <option value="Nequi/Daviplata">Nequi / Daviplata</option>
+                <option value="Tarjeta">Tarjeta Débito/Crédito</option>
+                <!-- NEW: Credit option added -->
                 <option value="Crédito">Crédito</option> 
               </select>
             </div>
@@ -818,6 +824,25 @@
         <table>
           <thead><tr><th>Factura</th><th>Fecha</th><th>Atendido por</th><th>Cliente</th><th>Productos</th><th>Método</th><th>Estado Alegra DIAN</th><th>Total COP</th><th>Acción</th></tr></thead>
           <tbody id="tbl-reportes-ventas"></tbody>
+        </table>
+      </div>
+
+      <!-- FACTURAS ELIMINADAS -->
+      <div class="table-container" style="margin-top:1.5rem;">
+        <div style="padding:1rem; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div>
+            <h4><i class="fa-solid fa-trash-can"></i> Facturas eliminadas</h4>
+            <p style="font-size:.82rem; color:var(--text-muted); margin-top:.25rem;">Historial de facturas retiradas del listado activo. Se conservan para consulta administrativa.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <input type="text" id="rep-eliminadas-search" class="form-control" placeholder="🔍 Buscar factura, cliente o producto..." oninput="renderFacturasEliminadas()">
+            <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaFacturasEliminadas()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
+            <button type="button" class="btn btn-excel" onclick="exportFacturasEliminadasExcel()"><i class="fa-solid fa-file-excel"></i> Descargar</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Factura</th><th>Fecha venta</th><th>Eliminada el</th><th>Eliminada por</th><th>Cliente</th><th>Productos</th><th>Método</th><th>Total COP</th><th>Acción</th></tr></thead>
+          <tbody id="tbl-facturas-eliminadas"></tbody>
         </table>
       </div>
     </section>
@@ -1092,7 +1117,7 @@
       <input type="hidden" id="mu-id">
       <div class="form-group"><label>Nombre Completo</label><input type="text" id="mu-nombre" class="form-control" required></div>
       <div class="form-group"><label>Nombre de Usuario (Login)</label><input type="text" id="mu-user" class="form-control" required></div>
-      <div class="form-group"><label>Contraseña</label><input type="password" id="mu-pass" class="form-control" required></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="mu-pass" class="form-control" autocomplete="new-password" placeholder="Mínimo 8 caracteres"></div>
       <div class="form-group">
         <label>Rol de Acceso</label>
         <select id="mu-rol" class="form-control">
@@ -1104,6 +1129,21 @@
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
         <button class="btn btn-primary" onclick="saveUsuario()">Guardar Usuario</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-cambiar-password" class="modal-overlay">
+    <div class="modal-card">
+      <h3><i class="fa-solid fa-shield-halved"></i> Seguridad de la cuenta</h3>
+      <p style="font-size:.85rem; color:var(--text-muted); margin:.5rem 0 1rem;">Cambia la contraseña del usuario actualmente conectado.</p>
+      <div class="form-group"><label>Contraseña actual</label><input type="password" id="sec-pass-actual" class="form-control" autocomplete="current-password" required></div>
+      <div class="form-group"><label>Nueva contraseña</label><input type="password" id="sec-pass-nueva" class="form-control" autocomplete="new-password" minlength="8" required></div>
+      <div class="form-group"><label>Confirmar nueva contraseña</label><input type="password" id="sec-pass-confirmar" class="form-control" autocomplete="new-password" minlength="8" required></div>
+      <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:1rem;">Mínimo 8 caracteres, con mayúscula, minúscula y número.</div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
+        <button class="btn btn-success" onclick="cambiarMiPassword()"><i class="fa-solid fa-floppy-disk"></i> Cambiar contraseña</button>
       </div>
     </div>
   </div>
@@ -1127,7 +1167,7 @@
         <div style="display:flex; justify-content:space-between;"><span>IVA (<span id="rec-iva-rate">19</span>%):</span><span id="rec-iva"></span></div>
         <div style="display:flex; justify-content:space-between; font-weight:bold; font-size: 14px;"><span>TOTAL:</span><span id="rec-total"></span></div>
         <hr style="margin: 8px 0; border: dashed 1px #000;">
-        <div style="text-align:center; margin-top:10px;">¡Gracias por elegirnos! ¡Vuelve pronto! 🛍️</div>
+        <div style="text-align:center; margin-top:10px;">¡Gracias por su compra!</div>
       </div>
       <div style="margin-top: 10px; display:flex; gap:10px;">
         <button class="btn btn-primary" style="flex:1;" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Recibo</button>
@@ -1153,9 +1193,10 @@
       clientes: [{ id: '1', cedula: '2222222222', nombre: 'Cliente General', correo: 'cliente@general.com', telefono: '3000000000', puntos: 0, deuda: 0 }],
       proveedores: [],
       usuarios: [
-        { id: '1', nombre: 'Administrador Principal', user: 'admin', pass: 'admin123', rol: 'Administrador' }
+        { id: '1', nombre: 'Administrador Principal', user: 'admin', passwordHash: '6IEx62JM16BpOa8dWatJr4GVPNLmC7YS4XcTH+3mLPk=', passwordSalt: 'c3VwZXJNSVgtYWRtaW4tc2FsdC0yMDI2', rol: 'Administrador' }
       ],
       ventas: [],
+      ventasEliminadas: [],
       compras: [],
       config: { nombre: 'SUPERMERCADO PRO', nit: '900.123.456-1', iva: 19 },
       alegra: { email: '', token: '', active: false },
@@ -1163,9 +1204,16 @@
     };
 
     DB.cierres = Array.isArray(DB.cierres) ? DB.cierres : [];
+    DB.ventasEliminadas = Array.isArray(DB.ventasEliminadas) ? DB.ventasEliminadas : [];
 
     let currentUser = null;
-    const SESSION_KEY = 'super_mix_session_user';
+    const SESSION_KEY = 'super_mix_session_secure';
+    const SECURITY_LOG_KEY = 'super_mix_security_log_v1';
+    const SESSION_TIMEOUT_MS = 20 * 60 * 1000;
+    const MAX_SECURITY_LOGS = 300;
+    let securityTimer = null;
+    let securityListenersStarted = false;
+    let lastActivityAt = Date.now();
     let cart = [];
     let salesChart = null;
     let supabaseReady = false;
@@ -1268,8 +1316,10 @@
           DB.proveedores = Array.isArray(DB.proveedores) ? DB.proveedores : [];
           DB.usuarios = Array.isArray(DB.usuarios) ? DB.usuarios : [];
           DB.ventas = Array.isArray(DB.ventas) ? DB.ventas : [];
+          DB.ventasEliminadas = Array.isArray(DB.ventasEliminadas) ? DB.ventasEliminadas : [];
           DB.compras = Array.isArray(DB.compras) ? DB.compras : [];
           DB.cierres = Array.isArray(DB.cierres) ? DB.cierres : [];
+    DB.ventasEliminadas = Array.isArray(DB.ventasEliminadas) ? DB.ventasEliminadas : [];
           localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
           supabaseReady = true;
           setSupabaseStatus('Conectado a Supabase. Datos sincronizados.', true);
@@ -1317,6 +1367,130 @@
       } finally {
         guardadoSupabaseEnCurso = false;
       }
+    }
+
+    // ================= SEGURIDAD LOCAL =================
+    async function derivePasswordHash(password, saltBase64) {
+      if (!window.crypto?.subtle) throw new Error('El navegador no soporta cifrado seguro.');
+      const encoder = new TextEncoder();
+      const salt = saltBase64 ? Uint8Array.from(atob(saltBase64), c => c.charCodeAt(0)) : crypto.getRandomValues(new Uint8Array(16));
+      const key = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
+      const bits = await crypto.subtle.deriveBits({name:'PBKDF2', salt, iterations:120000, hash:'SHA-256'}, key, 256);
+      const hash = btoa(String.fromCharCode(...new Uint8Array(bits)));
+      const saltOut = btoa(String.fromCharCode(...salt));
+      return { hash, salt: saltOut };
+    }
+
+    async function passwordMatches(user, password) {
+      if (!user) return false;
+      if (user.passwordHash && user.passwordSalt) {
+        const result = await derivePasswordHash(password, user.passwordSalt);
+        return result.hash === user.passwordHash;
+      }
+      // Compatibilidad: convierte usuarios antiguos almacenados en texto plano a PBKDF2 al iniciar sesión.
+      return typeof user.pass === 'string' && user.pass === password;
+    }
+
+    async function secureUserPassword(user, password) {
+      const record = await derivePasswordHash(password);
+      user.passwordHash = record.hash;
+      user.passwordSalt = record.salt;
+      delete user.pass;
+      return user;
+    }
+
+    function securityLog(action, detail='') {
+      try {
+        const logs = JSON.parse(localStorage.getItem(SECURITY_LOG_KEY) || '[]');
+        logs.push({
+          fechaHora: new Date().toISOString(),
+          usuario: currentUser?.user || currentUser?.nombre || 'sistema',
+          accion: action,
+          detalle
+        });
+        localStorage.setItem(SECURITY_LOG_KEY, JSON.stringify(logs.slice(-MAX_SECURITY_LOGS)));
+      } catch (_) {}
+    }
+
+    function requireLogin() {
+      if (!currentUser) {
+        alert('Sesión no iniciada.');
+        return false;
+      }
+      return true;
+    }
+
+    function requireAdmin() {
+      if (!currentUser) {
+        alert('Sesión no iniciada.');
+        return false;
+      }
+      if (currentUser.rol !== 'Administrador') {
+        alert('Acceso denegado. Esta acción requiere permisos de Administrador.');
+        securityLog('Acceso denegado', 'Acción administrativa bloqueada');
+        return false;
+      }
+      return true;
+    }
+
+    function touchSecurityActivity() {
+      if (!currentUser) return;
+      lastActivityAt = Date.now();
+      const session = { userId: currentUser.id, issuedAt: Date.now(), expiresAt: Date.now() + SESSION_TIMEOUT_MS };
+      try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch (_) {}
+    }
+
+    function startSecurityMonitor() {
+      clearInterval(securityTimer);
+      lastActivityAt = Date.now();
+      if (!securityListenersStarted) {
+        ['click','keydown','mousemove','touchstart','scroll'].forEach(evt => {
+          document.addEventListener(evt, touchSecurityActivity, {passive:true});
+        });
+        securityListenersStarted = true;
+      }
+      securityTimer = setInterval(() => {
+        if (currentUser && Date.now() - lastActivityAt >= SESSION_TIMEOUT_MS) {
+          securityLog('Sesión vencida', 'Cierre automático por inactividad');
+          alert('La sesión se cerró por 20 minutos de inactividad.');
+          logout(true);
+        }
+      }, 30000);
+    }
+
+    function clearSecuritySession() {
+      try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
+      clearInterval(securityTimer);
+      securityTimer = null;
+    }
+
+    function openChangePasswordModal() {
+      if (!requireLogin()) return;
+      document.getElementById('sec-pass-actual').value = '';
+      document.getElementById('sec-pass-nueva').value = '';
+      document.getElementById('sec-pass-confirmar').value = '';
+      document.getElementById('modal-cambiar-password').classList.add('active');
+    }
+
+    function passwordPolicyValid(password) {
+      return typeof password === 'string' && password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /\d/.test(password);
+    }
+
+    async function cambiarMiPassword() {
+      if (!requireLogin()) return;
+      const actual = document.getElementById('sec-pass-actual').value;
+      const nueva = document.getElementById('sec-pass-nueva').value;
+      const confirmar = document.getElementById('sec-pass-confirmar').value;
+      if (!await passwordMatches(currentUser, actual)) return alert('La contraseña actual no es correcta.');
+      if (!passwordPolicyValid(nueva)) return alert('La nueva contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.');
+      if (nueva !== confirmar) return alert('Las nuevas contraseñas no coinciden.');
+      await secureUserPassword(currentUser, nueva);
+      const idx = DB.usuarios.findIndex(u => String(u.id) === String(currentUser.id));
+      if (idx >= 0) DB.usuarios[idx] = currentUser;
+      securityLog('Cambio de contraseña', 'Contraseña actualizada correctamente');
+      await saveDB();
+      closeModals();
+      alert('Contraseña actualizada correctamente.');
     }
 
     function formatCOP(monto) {
@@ -1411,11 +1585,14 @@
     }
 
     // INICIO Y LOGOUT
-    function iniciarSesionUI(user, guardarSesion = true) {
+    async function iniciarSesionUI(user, guardarSesion = true) {
       currentUser = user;
       if (guardarSesion) {
-        localStorage.setItem(SESSION_KEY, JSON.stringify({ user: user.user }));
+        try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ userId: user.id, issuedAt: Date.now(), expiresAt: Date.now() + SESSION_TIMEOUT_MS })); } catch (_) {}
       }
+      touchSecurityActivity();
+      startSecurityMonitor();
+      securityLog('Inicio de sesión', `Usuario ${user.user} (${user.rol})`);
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('active-user-name').textContent = currentUser.nombre;
       document.getElementById('active-user-role').textContent = currentUser.rol;
@@ -1428,33 +1605,40 @@
       }
     }
 
-    // La sesión NO se restaura automáticamente al recargar la página.
-    // Cada vez que se abre/refresca el sistema se solicita nuevamente el login.
     function restaurarSesion() {
       currentUser = null;
-      localStorage.removeItem(SESSION_KEY);
-
+      clearSecuritySession();
       const loginScreen = document.getElementById('login-screen');
       if (loginScreen) loginScreen.style.display = 'flex';
-
       const loginUser = document.getElementById('login-user');
       const loginPass = document.getElementById('login-pass');
       if (loginUser) loginUser.value = '';
       if (loginPass) loginPass.value = '';
     }
 
-    function handleLogin(e) {
+    async function handleLogin(e) {
       e.preventDefault();
       const uInput = document.getElementById('login-user').value.trim();
-      const pInput = document.getElementById('login-pass').value.trim();
-      const found = DB.usuarios.find(u => u.user === uInput && u.pass === pInput);
-      if (found) iniciarSesionUI(found, true);
-      else alert('Usuario o contraseña incorrectos.');
+      const pInput = document.getElementById('login-pass').value;
+      const found = DB.usuarios.find(u => String(u.user || '').toLowerCase() === uInput.toLowerCase());
+      if (!found || !(await passwordMatches(found, pInput))) {
+        securityLog('Inicio de sesión fallido', `Usuario ${uInput || '(vacío)'}`);
+        alert('Usuario o contraseña incorrectos.');
+        return;
+      }
+      // Migración segura de usuarios antiguos.
+      if (!found.passwordHash) {
+        await secureUserPassword(found, pInput);
+        await saveDB();
+      }
+      document.getElementById('login-pass').value = '';
+      await iniciarSesionUI(found, true);
     }
 
-    function logout() {
+    function logout(auto=false) {
+      if (currentUser) securityLog(auto ? 'Cierre automático' : 'Cierre de sesión', auto ? 'Inactividad' : 'Usuario solicitó salir');
       currentUser = null;
-      localStorage.removeItem(SESSION_KEY);
+      clearSecuritySession();
       document.getElementById('login-user').value = '';
       document.getElementById('login-pass').value = '';
       document.getElementById('login-screen').style.display = 'flex';
@@ -1518,17 +1702,23 @@
     }
 
     // REINICIO DE VENTAS SOLO ADMIN
-    function resetSalesToZero() {
-      if (!currentUser || currentUser.rol !== 'Administrador') {
-        return alert('Acceso Denegado. Solo el Administrador puede reiniciar las ventas.');
-      }
-
+    async function resetSalesToZero() {
+      if (!requireAdmin()) return;
       const confirmPass = prompt("ACCIÓN CRÍTICA: Ingrese su contraseña de Administrador para reiniciar todas las ventas a $ 0:");
-      if (confirmPass === currentUser.pass) {
+      if (confirmPass === null) return;
+      if (await passwordMatches(currentUser, confirmPass)) {
+        const ventasReinicio = Array.isArray(DB.ventas) ? DB.ventas : [];
+        if (ventasReinicio.length) {
+          const fechaEliminacion = new Date().toISOString();
+          DB.ventasEliminadas = Array.isArray(DB.ventasEliminadas) ? DB.ventasEliminadas : [];
+          DB.ventasEliminadas.push(...ventasReinicio.map(v => ({ ...v, eliminadoAt: fechaEliminacion, eliminadoPor: currentUser.nombre || currentUser.user || 'Administrador', motivoEliminacion: 'Reinicio de ventas a $ 0 COP' })));
+        }
         DB.ventas = [];
-        saveDB();
-        alert('Ventas reiniciadas a $ 0 COP con éxito.');
-      } else if (confirmPass !== null) {
+        securityLog('Reinicio de ventas', `Se archivaron ${ventasReinicio.length} facturas`);
+        await saveDB();
+        alert('Ventas reiniciadas a $ 0 COP con éxito. Las facturas anteriores quedaron en “Facturas eliminadas”.');
+      } else {
+        securityLog('Intento fallido de acción crítica', 'Contraseña de administrador incorrecta');
         alert('Contraseña incorrecta. Operación cancelada.');
       }
     }
@@ -2110,7 +2300,7 @@
       openReceiptModal(venta);
     }
 
-    function openReceiptModal(venta) {
+    function openReceiptModal(venta, esEliminada = false) {
       document.getElementById('rec-empresa').textContent = DB.config.nombre;
       document.getElementById('rec-nit').textContent = "NIT: " + DB.config.nit;
       document.getElementById('rec-id').textContent = venta.id;
@@ -2118,7 +2308,7 @@
       document.getElementById('rec-fecha').textContent = venta.fecha;
       document.getElementById('rec-cliente').textContent = venta.cliente;
       document.getElementById('rec-metodo').textContent = venta.metodo;
-      document.getElementById('rec-alegra-info').textContent = venta.alegraStatus || '';
+      document.getElementById('rec-alegra-info').textContent = (esEliminada ? '⚠ FACTURA ELIMINADA · ' : '') + (venta.alegraStatus || '');
       document.getElementById('rec-iva-rate').textContent = venta.ivaRate !== undefined ? venta.ivaRate : DB.config.iva;
       
       document.getElementById('rec-items').innerHTML = venta.items.map(i => `
@@ -2150,55 +2340,76 @@
     }
 
     function openUsuarioModal() {
+      if (!requireAdmin()) return;
       document.getElementById('mu-title').textContent = 'Crear Nuevo Usuario';
       document.getElementById('mu-id').value = '';
       document.getElementById('mu-nombre').value = '';
       document.getElementById('mu-user').value = '';
       document.getElementById('mu-pass').value = '';
+      document.getElementById('mu-pass').placeholder = 'Mínimo 8 caracteres';
+      document.getElementById('mu-rol').value = 'Cajero';
       document.getElementById('modal-usuario').classList.add('active');
     }
 
-    function saveUsuario() {
+    async function saveUsuario() {
+      if (!requireAdmin()) return;
       const id = document.getElementById('mu-id').value;
-      const data = {
-        id: id || Date.now().toString(),
-        nombre: document.getElementById('mu-nombre').value.trim(),
-        user: document.getElementById('mu-user').value.trim(),
-        pass: document.getElementById('mu-pass').value.trim(),
-        rol: document.getElementById('mu-rol').value
-      };
+      const nombre = document.getElementById('mu-nombre').value.trim();
+      const user = document.getElementById('mu-user').value.trim();
+      const pass = document.getElementById('mu-pass').value;
+      const rol = document.getElementById('mu-rol').value;
+      if (!nombre || !user) return alert('Por favor llene nombre y usuario.');
+      if (!/^[A-Za-z0-9._-]{3,30}$/.test(user)) return alert('El usuario debe tener 3-30 caracteres y solo letras, números, punto, guion o guion bajo.');
 
-      if (!data.nombre || !data.user || !data.pass) return alert('Por favor llene todos los campos');
+      const repetido = DB.usuarios.find(u => String(u.user || '').toLowerCase() === user.toLowerCase() && String(u.id) !== String(id));
+      if (repetido) return alert('Ese nombre de usuario ya existe.');
 
       if (id) {
-        const idx = DB.usuarios.findIndex(u => u.id === id);
+        const idx = DB.usuarios.findIndex(u => String(u.id) === String(id));
+        if (idx < 0) return alert('Usuario no encontrado.');
+        const anterior = DB.usuarios[idx];
+        if (anterior.id === currentUser.id && rol !== 'Administrador') return alert('No puede quitarse a sí mismo el rol de Administrador.');
+        const data = { ...anterior, id, nombre, user, rol };
+        if (pass) {
+          if (!passwordPolicyValid(pass)) return alert('La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.');
+          await secureUserPassword(data, pass);
+        }
         DB.usuarios[idx] = data;
+        if (String(currentUser.id) === String(id)) { currentUser = data; document.getElementById('active-user-name').textContent = data.nombre; document.getElementById('active-user-role').textContent = data.rol; }
       } else {
+        if (!passwordPolicyValid(pass)) return alert('La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.');
+        const data = { id: Date.now().toString(), nombre, user, rol };
+        await secureUserPassword(data, pass);
         DB.usuarios.push(data);
       }
-      closeModals(); saveDB();
+      securityLog(id ? 'Edición de usuario' : 'Creación de usuario', `Usuario ${user}`);
+      closeModals();
+      await saveDB();
     }
 
     function editUsuario(id) {
+      if (!requireAdmin()) return;
       const u = DB.usuarios.find(x => x.id === id);
+      if (!u) return alert('Usuario no encontrado.');
       document.getElementById('mu-title').textContent = 'Editar Usuario';
       document.getElementById('mu-id').value = u.id;
       document.getElementById('mu-nombre').value = u.nombre;
       document.getElementById('mu-user').value = u.user;
-      document.getElementById('mu-pass').value = u.pass;
+      document.getElementById('mu-pass').value = '';
+      document.getElementById('mu-pass').placeholder = 'Déjalo vacío para conservar la actual';
       document.getElementById('mu-rol').value = u.rol;
       document.getElementById('modal-usuario').classList.add('active');
     }
 
     function deleteUsuario(id) {
+      if (!requireAdmin()) return;
       const usuario = DB.usuarios.find(u => String(u.id) === String(id));
       if (!usuario) return alert('Usuario no encontrado.');
       if (currentUser && String(currentUser.id) === String(id)) return alert('No puede eliminar el usuario con el que está conectado.');
-      if (usuario.rol === 'Administrador' && DB.usuarios.filter(u => u.rol === 'Administrador').length <= 1) {
-        return alert('Debe existir al menos un Administrador en el sistema.');
-      }
-      if(confirm(`¿Desea eliminar al usuario "${usuario.nombre}"?`)) {
+      if (usuario.rol === 'Administrador' && DB.usuarios.filter(u => u.rol === 'Administrador').length <= 1) return alert('Debe existir al menos un Administrador en el sistema.');
+      if (confirm(`¿Desea eliminar al usuario "${usuario.nombre}"?`)) {
         DB.usuarios = DB.usuarios.filter(u => String(u.id) !== String(id));
+        securityLog('Eliminación de usuario', `Usuario ${usuario.user}`);
         saveDB();
       }
     }
@@ -2717,6 +2928,7 @@ function handleBarcodeCompra(e) {
       renderProductosVencidos();
       renderProductosIngresadosPorMes();
       renderVentasDelDia();
+      renderFacturasEliminadas();
     }
 
     function renderVentasDelDia() {
@@ -2957,9 +3169,79 @@ function handleBarcodeCompra(e) {
         if (cliente) cliente.deuda = Math.max(0, (Number(cliente.deuda) || 0) - (Number(venta.total) || 0));
       }
 
+      // Guardar una copia completa en el historial antes de quitarla del listado activo.
+      DB.ventasEliminadas = Array.isArray(DB.ventasEliminadas) ? DB.ventasEliminadas : [];
+      DB.ventasEliminadas.push({
+        ...venta,
+        eliminadoAt: new Date().toISOString(),
+        eliminadoPor: currentUser.nombre || currentUser.user || 'Administrador',
+        motivoEliminacion: 'Eliminación manual'
+      });
+
       DB.ventas = (DB.ventas || []).filter(v => String(v.id) !== String(id));
       saveDB();
-      alert(`La factura ${venta.id} fue eliminada y el inventario/deuda se actualizaron.`);
+      alert(`La factura ${venta.id} fue eliminada y quedó disponible en “Facturas eliminadas”. El inventario/deuda se actualizaron.`);
+    }
+
+    function renderFacturasEliminadas() {
+      const tbody = document.getElementById('tbl-facturas-eliminadas');
+      if (!tbody) return;
+      const busqueda = (document.getElementById('rep-eliminadas-search')?.value || '').trim().toLowerCase();
+      const eliminadas = (DB.ventasEliminadas || []).slice().reverse().filter(v => ventaCoincideBusqueda(v, busqueda));
+
+      tbody.innerHTML = eliminadas.length ? eliminadas.map(v => `
+        <tr>
+          <td><b>${escapeHtml(v.id || '')}</b><br><span class="badge badge-danger">Eliminada</span></td>
+          <td>${escapeHtml(v.fecha || '')}</td>
+          <td>${escapeHtml(formatearFechaHora(v.eliminadoAt))}</td>
+          <td>${escapeHtml(v.eliminadoPor || 'Administrador')}</td>
+          <td>${escapeHtml(v.cliente || 'Consumidor final')}</td>
+          <td class="product-list-inline">${escapeHtml(getSaleProductNames(v) || 'Sin productos')}</td>
+          <td>${escapeHtml(v.metodo || '')}</td>
+          <td><b>${formatCOP(Number(v.total) || 0)}</b></td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-sm btn-secondary" onclick="verFacturaEliminadaPorId('${String(v.id || '').replace(/'/g, "\'")}')" title="Ver factura eliminada"><i class="fa-solid fa-eye"></i></button>
+          </td>
+        </tr>
+      `).join('') : `<tr><td colspan="9" class="empty-report"><i class="fa-solid fa-box-archive" style="font-size:2rem;"></i><br><br>No hay facturas eliminadas.</td></tr>`;
+    }
+
+    function limpiarBusquedaFacturasEliminadas() {
+      const el = document.getElementById('rep-eliminadas-search');
+      if (el) { el.value = ''; renderFacturasEliminadas(); el.focus(); }
+    }
+
+    function verFacturaEliminadaPorId(id) {
+      const venta = (DB.ventasEliminadas || []).find(v => String(v.id) === String(id));
+      if (!venta) return alert('La factura eliminada no existe en el historial.');
+      openReceiptModal(venta, true);
+    }
+
+    function formatearFechaHora(valor) {
+      if (!valor) return 'N/A';
+      const fecha = new Date(valor);
+      if (Number.isNaN(fecha.getTime())) return String(valor);
+      return fecha.toLocaleString('es-CO');
+    }
+
+    function exportFacturasEliminadasExcel() {
+      const data = (DB.ventasEliminadas || []).map(v => ({
+        'Factura ID': v.id,
+        'Fecha venta': v.fecha,
+        'Eliminada el': formatearFechaHora(v.eliminadoAt),
+        'Eliminada por': v.eliminadoPor || '',
+        'Motivo': v.motivoEliminacion || '',
+        'Cliente': v.cliente || 'Consumidor final',
+        'Productos': getSaleProductNames(v),
+        'Método Pago': v.metodo || '',
+        'Subtotal COP': Number(v.subtotal) || 0,
+        'Valor IVA COP': Number(v.iva) || 0,
+        'Total COP': Number(v.total) || 0
+      }));
+      const ws = XLSX.utils.json_to_sheet(data.length ? data : [{ 'Factura ID':'', 'Motivo':'No hay facturas eliminadas' }]);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Facturas Eliminadas');
+      XLSX.writeFile(wb, 'Facturas_Eliminadas.xlsx');
     }
 
     function getVentasDeFechaCierre(fecha) {
@@ -3067,6 +3349,7 @@ function handleBarcodeCompra(e) {
       if (!confirm(`¿Registrar el cierre de ventas?\n\n${mensaje}\n\nEl cierre será guardado como resumen histórico.`)) return;
 
       DB.cierres = Array.isArray(DB.cierres) ? DB.cierres : [];
+    DB.ventasEliminadas = Array.isArray(DB.ventasEliminadas) ? DB.ventasEliminadas : [];
       DB.cierres.push({
         id: 'CIE-' + Date.now().toString().slice(-6),
         fecha,
@@ -3128,11 +3411,15 @@ function handleBarcodeCompra(e) {
     }
 
     function saveAlegraConfig() {
+      const tokenInput = document.getElementById('cfg-alegra-token');
+      const tokenIngresado = tokenInput.value.trim();
       DB.alegra = {
         email: document.getElementById('cfg-alegra-email').value.trim(),
-        token: document.getElementById('cfg-alegra-token').value.trim(),
+        token: tokenIngresado || DB.alegra?.token || '',
         active: document.getElementById('cfg-alegra-active').value === 'true'
       };
+      tokenInput.value = '';
+      securityLog('Configuración Alegra actualizada', DB.alegra.active ? 'Integración activada' : 'Integración desactivada');
       saveDB();
       alert('Configuración de Facturación Electrónica Alegra guardada con éxito.');
     }
@@ -3149,7 +3436,8 @@ function handleBarcodeCompra(e) {
 
     if (DB.alegra) {
       document.getElementById('cfg-alegra-email').value = DB.alegra.email || '';
-      document.getElementById('cfg-alegra-token').value = DB.alegra.token || '';
+      document.getElementById('cfg-alegra-token').value = '';
+      document.getElementById('cfg-alegra-token').placeholder = DB.alegra.token ? 'Token guardado (no se muestra)' : 'Token generado en Alegra';
       document.getElementById('cfg-alegra-active').value = DB.alegra.active ? 'true' : 'false';
     }
 
@@ -3196,6 +3484,20 @@ function handleBarcodeCompra(e) {
     window.addEventListener('resize', () => {
       if (window.innerWidth > 900) closeMobileMenu();
     });
+
+    // Refuerzo de permisos para llamadas directas a funciones críticas.
+    (function instalarProteccionesCriticas(){
+      const nombres = ['saveProduct','deleteProduct','saveCategory','saveCompra','eliminarCompra','saveProveedor','deleteProveedor','saveCliente','deleteCliente','saveAbono','saveConfig','openCategoryModal','openCompraModal','openProveedorModal','openClienteModal','eliminarFactura','registrarCierreVentas','saveAlegraConfig'];
+      nombres.forEach(nombre => {
+        const original = window[nombre];
+        if (typeof original !== 'function') return;
+        window[nombre] = function(...args) {
+          if (!requireAdmin()) return;
+          securityLog('Acción administrativa', nombre);
+          return original.apply(this, args);
+        };
+      });
+    })();
 
     // Cargar datos desde Supabase al abrir el sistema.
     cargarDBSupabase();
