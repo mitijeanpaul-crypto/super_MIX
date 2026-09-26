@@ -382,7 +382,7 @@
       <li class="nav-item admin-only" onclick="showSection('clientes', this)"><i class="fa-solid fa-user-group nav-icon"></i><span>Clientes</span></li>
       <li class="nav-item admin-only" onclick="showSection('usuarios', this)"><i class="fa-solid fa-user-shield nav-icon"></i><span>Usuarios</span></li>
       <li class="nav-item admin-only" onclick="showSection('reportes', this)"><i class="fa-solid fa-chart-column nav-icon"></i><span>Reportes</span></li>
-      <li class="nav-item admin-only" onclick="showSection('cierres', this)"><i class="fa-solid fa-lock nav-icon"></i><span>Cierres de Ventas</span></li>
+      <li class="nav-item admin-only" onclick="abrirCierresVentas(this)"><i class="fa-solid fa-lock nav-icon"></i><span>Cierres de Ventas</span></li>
       <li class="nav-item admin-only" onclick="showSection('configuracion', this)"><i class="fa-solid fa-sliders nav-icon"></i><span>Configuración &amp; Alegra</span></li>
       <li class="nav-item admin-only" onclick="showSection('creditos', this)"><i class="fa-solid fa-money-bill-transfer nav-icon"></i><span>Créditos / Abonos</span></li>
     </ul>
@@ -858,9 +858,10 @@
         </div>
 
         <div class="report-filters" style="margin-bottom:1rem;">
-          <input type="date" id="cierre-fecha" class="form-control" onchange="renderCierreVentas()">
-          <button type="button" class="btn btn-primary" onclick="renderCierreVentas()"><i class="fa-solid fa-rotate"></i> Revisar</button>
-          <button type="button" class="btn btn-success" onclick="registrarCierreVentas()"><i class="fa-solid fa-lock"></i> Registrar Cierre</button>
+          <input type="date" id="cierre-fecha" class="form-control" onchange="this.dataset.manual='1'; renderCierreVentas()" title="Selecciona la fecha de la jornada">
+          <button type="button" class="btn btn-secondary" onclick="seleccionarHoyCierre()"><i class="fa-solid fa-calendar-day"></i> Hoy</button>
+          <button type="button" class="btn btn-primary" onclick="revisarCierreVentas()"><i class="fa-solid fa-eye"></i> Revisar ventas</button>
+          <button type="button" class="btn btn-success" id="btn-registrar-cierre" onclick="registrarCierreVentas()"><i class="fa-solid fa-lock"></i> Registrar Cierre</button>
         </div>
 
         <div class="metrics-grid" style="margin-bottom:0;">
@@ -900,12 +901,39 @@
         </div>
         <div class="table-container">
           <table>
-            <thead><tr><th>Fecha</th><th>Facturas</th><th>Unidades</th><th>Total COP</th><th>Efectivo</th><th>Nequi / Daviplata</th><th>Tarjeta</th><th>Crédito</th><th>Cerrado por</th><th>Fecha/Hora Cierre</th></tr></thead>
+            <thead><tr><th>Fecha</th><th>Facturas</th><th>Unidades</th><th>Total COP</th><th>Efectivo</th><th>Nequi / Daviplata</th><th>Tarjeta</th><th>Crédito</th><th>Cerrado por</th><th>Fecha/Hora Cierre</th><th>Acción</th></tr></thead>
             <tbody id="tbl-historial-cierres"></tbody>
           </table>
         </div>
       </div>
     </section>
+
+    <!-- MODAL DETALLE DE CIERRE -->
+    <div id="modal-cierre-detalle" class="modal-overlay">
+      <div class="modal-card" style="max-width:900px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:1rem;">
+          <div>
+            <h3><i class="fa-solid fa-file-invoice-dollar"></i> Detalle del Cierre</h3>
+            <p id="cierre-detalle-subtitulo" style="font-size:.82rem; color:var(--text-muted); margin-top:.25rem;"></p>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="closeCierreDetalle()"><i class="fa-solid fa-xmark"></i> Cerrar</button>
+        </div>
+        <div class="metrics-grid" style="margin-bottom:1rem;">
+          <div class="card metric-card"><div class="metric-icon" style="background:#dbeafe; color:#2563eb"><i class="fa-solid fa-receipt"></i></div><div><div style="font-size:.8rem;color:var(--text-muted);">Facturas</div><div class="metric-val" id="detalle-cierre-facturas">0</div></div></div>
+          <div class="card metric-card"><div class="metric-icon" style="background:#dcfce7; color:#16a34a"><i class="fa-solid fa-boxes-stacked"></i></div><div><div style="font-size:.8rem;color:var(--text-muted);">Unidades</div><div class="metric-val" id="detalle-cierre-unidades">0</div></div></div>
+          <div class="card metric-card"><div class="metric-icon" style="background:#fef3c7; color:#d97706"><i class="fa-solid fa-cash-register"></i></div><div><div style="font-size:.8rem;color:var(--text-muted);">Total</div><div class="metric-val" id="detalle-cierre-total">$ 0</div></div></div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Factura</th><th>Productos</th><th>Cliente</th><th>Método</th><th>Estado</th><th>Total COP</th></tr></thead>
+            <tbody id="tbl-detalle-cierre"></tbody>
+          </table>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:1rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeCierreDetalle()">Cerrar</button>
+        </div>
+      </div>
+    </div>
 
     <!-- CONFIGURACIÓN & ALEGRA -->
     <section id="sec-configuracion" class="content-section admin-only">
@@ -3269,11 +3297,59 @@ function handleBarcodeCompra(e) {
       return (DB.cierres || []).find(c => String(c.fecha) === String(fecha));
     }
 
+    function abrirCierresVentas(navItem) {
+      const fechaEl = document.getElementById('cierre-fecha');
+      if (fechaEl) {
+        fechaEl.value = getLocalDateISO();
+        fechaEl.dataset.manual = '0';
+      }
+      showSection('cierres', navItem);
+      renderCierreVentas();
+    }
+
+    function seleccionarHoyCierre() {
+      const fechaEl = document.getElementById('cierre-fecha');
+      if (fechaEl) {
+        fechaEl.value = getLocalDateISO();
+        fechaEl.dataset.manual = '0';
+      }
+      renderCierreVentas();
+    }
+
+    function revisarVentasDeFechaCierre(fecha) {
+      const ventas = getVentasDeFechaCierre(fecha);
+      const detalleBody = document.getElementById('tbl-detalle-cierre');
+      if (!detalleBody) return;
+      const unidades = ventas.reduce((a, v) => a + (v.items || []).reduce((s, i) => s + (Number(i.qty) || 0), 0), 0);
+      const total = ventas.reduce((a, v) => a + (Number(v.total) || 0), 0);
+      const subtitulo = document.getElementById('cierre-detalle-subtitulo');
+      const facturasEl = document.getElementById('detalle-cierre-facturas');
+      const unidadesEl = document.getElementById('detalle-cierre-unidades');
+      const totalEl = document.getElementById('detalle-cierre-total');
+      if (subtitulo) subtitulo.textContent = `Fecha: ${fecha} · Vista previa de ventas · Cierre aún no registrado`;
+      if (facturasEl) facturasEl.textContent = ventas.length;
+      if (unidadesEl) unidadesEl.textContent = unidades;
+      if (totalEl) totalEl.textContent = formatCOP(total);
+      detalleBody.innerHTML = ventas.length ? ventas.map(v => {
+        const productos = getSaleProductNames(v);
+        return `<tr>
+          <td><b>${escapeHtml(v.id || '')}</b></td>
+          <td>${escapeHtml(productos || 'Sin detalle')}</td>
+          <td>${escapeHtml(v.cliente || 'Consumidor final')}</td>
+          <td>${escapeHtml(v.metodo || '')}</td>
+          <td><span class="badge badge-success">Activa</span></td>
+          <td><b>${formatCOP(Number(v.total) || 0)}</b></td>
+        </tr>`;
+      }).join('') : '<tr><td colspan="6" class="empty-report">No hay ventas para esta fecha.</td></tr>';
+      document.getElementById('modal-cierre-detalle')?.classList.add('active');
+    }
+
     function renderCierreVentas() {
       const fechaEl = document.getElementById('cierre-fecha');
       if (!fechaEl) return;
       if (!fechaEl.value) fechaEl.value = getLocalDateISO();
       const fecha = fechaEl.value;
+      fechaEl.dataset.manual = fechaEl.dataset.manual || '0';
       const ventas = getVentasDeFechaCierre(fecha);
       const total = ventas.reduce((a, v) => a + (Number(v.total) || 0), 0);
       const unidades = ventas.reduce((a, v) => a + (v.items || []).reduce((s, i) => s + (Number(i.qty) || 0), 0), 0);
@@ -3290,6 +3366,13 @@ function handleBarcodeCompra(e) {
       if (estado) {
         estado.textContent = cierre ? 'Cerrado' : 'Abierto';
         estado.style.color = cierre ? 'var(--success)' : 'var(--warning)';
+      }
+      const btnRegistrar = document.getElementById('btn-registrar-cierre');
+      if (btnRegistrar) {
+        btnRegistrar.disabled = !!cierre;
+        btnRegistrar.innerHTML = cierre
+          ? '<i class="fa-solid fa-circle-check"></i> Cierre registrado'
+          : '<i class="fa-solid fa-lock"></i> Registrar Cierre';
       }
 
       const tbody = document.getElementById('tbl-cierre-metodos');
@@ -3316,9 +3399,90 @@ function handleBarcodeCompra(e) {
             <td>${formatCOP(Number(c.metodos?.Crédito?.total) || 0)}</td>
             <td>${escapeHtml(c.cerradoPor || '')}</td>
             <td>${escapeHtml(c.fechaHora ? new Date(c.fechaHora).toLocaleString('es-CO') : '')}</td>
+            <td>
+              <button type="button" class="btn btn-sm btn-primary" onclick="verCierrePorId('${String(c.id || '').replace(/'/g, "\'")}')" title="Revisar cierre">
+                <i class="fa-solid fa-eye"></i> Revisar
+              </button>
+            </td>
           </tr>
-        `).join('') : `<tr><td colspan="10" class="empty-report">No hay cierres registrados.</td></tr>`;
+        `).join('') : `<tr><td colspan="11" class="empty-report">No hay cierres registrados.</td></tr>`;
       }
+    }
+
+    function getVentasDeCierre(cierre) {
+      if (!cierre) return [];
+      const ids = Array.isArray(cierre.ventaIds) ? cierre.ventaIds.map(String) : [];
+      const active = (DB.ventas || []).filter(v => {
+        if (ids.length) return ids.includes(String(v.id));
+        return String(v.fecha || '') === String(cierre.fecha || '');
+      });
+      const deleted = (DB.ventasEliminadas || []).filter(v => ids.length
+        ? ids.includes(String(v.id))
+        : String(v.fecha || '') === String(cierre.fecha || '')
+      );
+      const all = [...active, ...deleted];
+      const seen = new Set();
+      return all.filter(v => {
+        const key = String(v.id || '');
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    function revisarCierreVentas() {
+      renderCierreVentas();
+      const fecha = document.getElementById('cierre-fecha')?.value || getLocalDateISO();
+      const cierre = getCierreRegistrado(fecha);
+      if (cierre) {
+        verCierrePorId(cierre.id);
+      } else {
+        revisarVentasDeFechaCierre(fecha);
+      }
+    }
+
+    function verCierrePorId(id) {
+      const cierre = (DB.cierres || []).find(c => String(c.id) === String(id));
+      if (!cierre) return alert('No se encontró el cierre seleccionado.');
+
+      const ventas = getVentasDeCierre(cierre);
+      const detalleBody = document.getElementById('tbl-detalle-cierre');
+      const subtitulo = document.getElementById('cierre-detalle-subtitulo');
+      const facturasEl = document.getElementById('detalle-cierre-facturas');
+      const unidadesEl = document.getElementById('detalle-cierre-unidades');
+      const totalEl = document.getElementById('detalle-cierre-total');
+      if (!detalleBody) return;
+
+      const unidades = ventas.reduce((a, v) => a + (v.items || []).reduce((s, i) => s + (Number(i.qty) || 0), 0), 0);
+      const total = Number(cierre.total) || 0;
+      if (subtitulo) {
+        subtitulo.textContent = `Fecha: ${cierre.fecha || '--'} · Cierre: ${cierre.id || '--'} · Cerrado por: ${cierre.cerradoPor || '--'}`;
+      }
+      if (facturasEl) facturasEl.textContent = Number(cierre.facturas) || ventas.length;
+      if (unidadesEl) unidadesEl.textContent = Number(cierre.unidades) || unidades;
+      if (totalEl) totalEl.textContent = formatCOP(total);
+
+      detalleBody.innerHTML = ventas.length ? ventas.map(v => {
+        const eliminada = Boolean(v.eliminada || v.motivoEliminacion);
+        const productos = getSaleProductNames(v);
+        const estado = eliminada
+          ? '<span class="badge badge-danger">Eliminada</span>'
+          : '<span class="badge badge-success">Activa</span>';
+        return `<tr>
+          <td><b>${escapeHtml(v.id || '')}</b></td>
+          <td>${escapeHtml(productos || 'Sin detalle')}</td>
+          <td>${escapeHtml(v.cliente || 'Consumidor final')}</td>
+          <td>${escapeHtml(v.metodo || '')}</td>
+          <td>${estado}</td>
+          <td><b>${formatCOP(Number(v.total) || 0)}</b></td>
+        </tr>`;
+      }).join('') : '<tr><td colspan="6" class="empty-report">No hay facturas asociadas a este cierre.</td></tr>';
+
+      document.getElementById('modal-cierre-detalle')?.classList.add('active');
+    }
+
+    function closeCierreDetalle() {
+      document.getElementById('modal-cierre-detalle')?.classList.remove('active');
     }
 
     function registrarCierreVentas() {
@@ -3358,6 +3522,7 @@ function handleBarcodeCompra(e) {
         unidades,
         total,
         metodos,
+        ventaIds: ventas.map(v => v.id).filter(Boolean),
         cerradoPor: currentUser.nombre,
         fechaHora: new Date().toISOString()
       });
