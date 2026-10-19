@@ -431,7 +431,7 @@
         <div class="card metric-card">
           <div class="metric-icon" style="background:#fee2e2; color:#dc2626"><i class="fa-solid fa-triangle-exclamation"></i></div>
           <div>
-            <div style="font-size:0.85rem; color:var(--text-muted);">Vencidos</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">Vencidos / ≤ 20 días</div>
             <div class="metric-val" id="dash-vencidos">0</div>
           </div>
         </div>
@@ -482,6 +482,8 @@
       <input type="file" id="productos-excel-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="importProductsExcel(event)">
       <button class="btn btn-secondary" onclick="openCategoryModal()"><i class="fa-solid fa-tags"></i> Nueva Categoría</button>
       <button class="btn btn-primary" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Registrar Producto</button>
+      <button class="btn btn-success" onclick="abrirCompraDesdeProductos()"><i class="fa-solid fa-cart-plus"></i> Registrar Compra</button>
+      <button class="btn btn-secondary" onclick="abrirProveedorDesdeProductos()"><i class="fa-solid fa-truck-fast"></i> Nuevo Proveedor</button>
     </div>
   </div>
 
@@ -1073,6 +1075,7 @@
       <div class="form-group"><label>Código de Barras</label><input type="text" id="mp-codigo" class="form-control"></div>
       <div class="form-group"><label>Nombre del Producto</label><input type="text" id="mp-nombre" class="form-control"></div>
       <div class="form-group"><label>Categoría</label><select id="mp-categoria" class="form-control"></select></div>
+      <div class="form-group"><label>Proveedor del producto</label><div style="display:flex;gap:8px;align-items:center;"><select id="mp-proveedor" class="form-control" style="flex:1;"><option value="">Sin proveedor asignado</option></select><button type="button" class="btn btn-secondary" onclick="abrirProveedorDesdeProducto()" title="Registrar proveedor"><i class="fa-solid fa-plus"></i> Nuevo</button></div><small style="color:var(--text-muted);">Seleccione el proveedor que suministra este producto o registre uno nuevo.</small></div>
       <div class="form-group"><label>Fecha de Vencimiento (Alerta 20 Días)</label><input type="date" id="mp-vencimiento" class="form-control"></div>
       <div class="form-group"><label>Precio de Venta COP</label><input type="number" id="mp-precio" class="form-control"></div>
       <div class="form-group"><label>Costo de Compra COP</label><input type="number" id="mp-costo" class="form-control"></div>
@@ -2106,6 +2109,44 @@
       `}).join('');
     }
 
+    // Accesos rápidos desde la misma pantalla de Productos.
+    // La compra y el proveedor utilizan los formularios existentes para mantener
+    // las validaciones y el guardado que ya tiene el sistema.
+    function abrirCompraDesdeProductos() {
+      if (!DB.proveedores || DB.proveedores.length === 0) {
+        if (confirm('Todavía no hay proveedores. ¿Desea registrar uno ahora?')) {
+          openProveedorModal();
+        }
+        return;
+      }
+      if (!DB.productos || DB.productos.length === 0) {
+        alert('Primero registre y guarde al menos un producto.');
+        openProductModal();
+        return;
+      }
+      openCompraModal();
+    }
+
+    function abrirProveedorDesdeProductos() {
+      openProveedorModal();
+    }
+
+    function cargarProveedoresProducto(proveedorActual = '') {
+      const select = document.getElementById('mp-proveedor');
+      if (!select) return;
+      const proveedores = DB.proveedores || [];
+      select.innerHTML = '<option value="">Sin proveedor asignado</option>' + proveedores.map(p =>
+        `<option value="${String(p.id)}">${(p.empresa || p.nombre || 'Proveedor')} - ${p.nit || 'Sin NIT'}</option>`
+      ).join('');
+      select.value = proveedores.some(p => String(p.id) === String(proveedorActual)) ? String(proveedorActual) : '';
+    }
+
+    function abrirProveedorDesdeProducto() {
+      // Los datos ya escritos en el formulario de producto se conservan al abrir
+      // el formulario de proveedor. Después de guardarlo, podrá seleccionarse aquí.
+      openProveedorModal();
+    }
+
     function openProductModal() {
       document.getElementById('modal-prod-title').textContent = 'Registrar Producto';
       document.getElementById('mp-id').value = '';
@@ -2117,6 +2158,7 @@
       document.getElementById('mp-stock').value = '';
       document.getElementById('mp-min').value = '5';
       renderCategoryDropdowns('');
+      cargarProveedoresProducto('');
       document.getElementById('modal-producto').classList.add('active');
     }
 
@@ -2125,6 +2167,8 @@
       const codigo = document.getElementById('mp-codigo').value.trim();
       const nombre = document.getElementById('mp-nombre').value.trim();
       const categoria = document.getElementById('mp-categoria').value.trim();
+      const proveedorId = document.getElementById('mp-proveedor')?.value || '';
+      const proveedorSeleccionado = (DB.proveedores || []).find(p => String(p.id) === String(proveedorId));
 
       if (!codigo || !nombre || !categoria) {
         return alert('Código, nombre y categoría son obligatorios.');
@@ -2136,6 +2180,8 @@
         codigo,
         nombre,
         categoria,
+        proveedorId: proveedorSeleccionado ? String(proveedorSeleccionado.id) : '',
+        proveedorNombre: proveedorSeleccionado ? (proveedorSeleccionado.empresa || proveedorSeleccionado.nombre || '') : '',
         fechaIngreso: existenteProducto?.fechaIngreso || getLocalDateISO(),
         vencimiento: document.getElementById('mp-vencimiento').value,
         precio: Math.max(0, parseFloat(document.getElementById('mp-precio').value) || 0),
@@ -2169,6 +2215,7 @@
       // Reconstruir el selector y conservar exactamente la categoría del producto.
       if (p.categoria && !DB.categorias.includes(p.categoria)) DB.categorias.push(p.categoria);
       renderCategoryDropdowns(p.categoria || '');
+      cargarProveedoresProducto(p.proveedorId || '');
       document.getElementById('mp-vencimiento').value = p.vencimiento || '';
       document.getElementById('mp-precio').value = p.precio ?? 0;
       document.getElementById('mp-costo').value = p.costo ?? 0;
@@ -2541,14 +2588,50 @@
       const id = document.getElementById('mprov-id').value;
       const data = {
         id: id || Date.now().toString(),
-        nit: document.getElementById('mprov-nit').value,
-        nombre: document.getElementById('mprov-nombre').value,
-        empresa: document.getElementById('mprov-empresa').value,
-        telefono: document.getElementById('mprov-telefono').value
+        nit: document.getElementById('mprov-nit').value.trim(),
+        nombre: document.getElementById('mprov-nombre').value.trim(),
+        empresa: document.getElementById('mprov-empresa').value.trim(),
+        telefono: document.getElementById('mprov-telefono').value.trim()
       };
-      if (id) DB.proveedores[DB.proveedores.findIndex(p => p.id === id)] = data;
-      else DB.proveedores.push(data);
-      closeModals(); saveDB();
+      if (!data.nit || !data.nombre) {
+        return alert('El NIT y el nombre del proveedor son obligatorios.');
+      }
+      if (id) {
+        const idx = DB.proveedores.findIndex(p => String(p.id) === String(id));
+        if (idx < 0) return alert('El proveedor que intenta editar ya no existe.');
+        DB.proveedores[idx] = data;
+      } else {
+        DB.proveedores.push(data);
+      }
+
+      // Si el proveedor se creó desde el formulario de producto, conservar
+      // los datos escritos y volver a ese formulario con el nuevo proveedor seleccionado.
+      const productoModal = document.getElementById('modal-producto');
+      const productoAbierto = productoModal && productoModal.classList.contains('active');
+      const camposProducto = ['mp-id','mp-codigo','mp-nombre','mp-categoria','mp-vencimiento','mp-precio','mp-costo','mp-stock','mp-min'];
+      const valoresProducto = {};
+      if (productoAbierto) {
+        camposProducto.forEach(campo => {
+          const elemento = document.getElementById(campo);
+          if (elemento) valoresProducto[campo] = elemento.value;
+        });
+      }
+
+      closeModals();
+      saveDB();
+      if (productoAbierto) {
+        document.getElementById('modal-prod-title').textContent = valoresProducto['mp-id'] ? 'Editar Producto' : 'Registrar Producto';
+        if (valoresProducto['mp-categoria'] && !DB.categorias.includes(valoresProducto['mp-categoria'])) DB.categorias.push(valoresProducto['mp-categoria']);
+        renderCategoryDropdowns(valoresProducto['mp-categoria'] || '');
+        camposProducto.forEach(campo => {
+          if (campo !== 'mp-categoria' && valoresProducto[campo] !== undefined) {
+            const elemento = document.getElementById(campo);
+            if (elemento) elemento.value = valoresProducto[campo];
+          }
+        });
+        cargarProveedoresProducto(data.id);
+        productoModal.classList.add('active');
+      }
     }
 
     function editProveedor(id) {
