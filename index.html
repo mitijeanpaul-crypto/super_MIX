@@ -17,8 +17,8 @@
       --primary: #2563eb;
       --primary-dark: #1d4ed8;
       --secondary: #64748b;
-      --success: #16a34a;
-      --warning: #d97706;
+      --success: #ecf8f0;
+      --warning: #ede9e3;
       --danger: #dc2626;
       --alegra: #00b0ff;
       --bg-dark: #0f172a;
@@ -100,14 +100,14 @@
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
     .btn-secondary { background: var(--secondary); color: white; }
-    .btn-excel { background: #107c41; color: white; }
-    .btn-excel:hover { background: #0b592e; }
+    .btn-excel { background: #f2f6f4; color: white; }
+    .btn-excel:hover { background: #e9ecea; }
     .btn-alegra { background: #0077ff; color: white; }
     .btn-alegra:hover { background: #0055cc; }
     .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
 
     .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-    .badge-success { background: #dcfce7; color: #15803d; }
+    .badge-success { background: #dcfce7; color: #e4f0e8; }
     .badge-warning { background: #fef3c7; color: #b45309; }
     .badge-danger { background: #fee2e2; color: #b91c1c; }
     .badge-secondary { background: #f1f5f9; color: #475569; }
@@ -260,6 +260,51 @@
     /* Evita desbordamientos por textos largos */
     h1, h2, h3, h4, p, label, td, th, span, b { overflow-wrap: anywhere; }
     button, input, select { touch-action: manipulation; }
+
+    /* FONDO RENOVADO: limpio, moderno y con degradados suaves */
+    body {
+      background: linear-gradient(135deg, #eef4ff 0%, #f8fbff 48%, #eaf7ff 100%);
+    }
+    .main-content {
+      background:
+        radial-gradient(ellipse at 8% 0%, rgba(96, 165, 250, .13), transparent 34%),
+        radial-gradient(ellipse at 92% 82%, rgba(45, 212, 191, .09), transparent 32%),
+        linear-gradient(145deg, #f7faff 0%, #f2f7fc 52%, #f8fbff 100%);
+    }
+    header {
+      background: rgba(255, 255, 255, .92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(203, 213, 225, .75);
+      box-shadow: 0 4px 18px rgba(30, 64, 175, .035);
+    }
+    .content-section { min-height: 100%; }
+    .card, .table-container, .cart-summary, .modal-card {
+      border-color: rgba(203, 213, 225, .78);
+      box-shadow: 0 8px 24px rgba(30, 64, 175, .055), 0 1px 3px rgba(15, 23, 42, .035);
+    }
+    .card, .table-container, .cart-summary {
+      transition: box-shadow .22s ease, border-color .22s ease, transform .22s ease;
+    }
+    .card:hover {
+      border-color: rgba(147, 197, 253, .85);
+      box-shadow: 0 12px 28px rgba(30, 64, 175, .085);
+    }
+    .pos-container { isolation: isolate; }
+    .cart-summary { background: rgba(255, 255, 255, .96); }
+    .table-container { background: rgba(255, 255, 255, .97); }
+    .form-control {
+      background-color: #fff;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, .13);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .card, .table-container, .cart-summary, .form-control { transition: none; }
+    }
+
   </style>
     <link rel="icon" type="image/png" href="super_mix_favicon.png">
 <style>
@@ -346,16 +391,16 @@
    Solo mejora la presentación; conserva funciones y flujos.
    ========================================================= */
 :root {
-  --primary: #167a52;
-  --primary-dark: #105f40;
+  --primary: #e6f4ee;
+  --primary-dark: #cdf2e3;
   --secondary: #62736a;
-  --success: #18845a;
-  --warning: #9a741b;
+  --success: #d7f1e7;
+  --warning: #eaf1ee;
   --danger: #c54747;
-  --alegra: #167a52;
+  --alegra: #c3e7d8;
   --bg-dark: #172820;
   --bg-main: #f3f6f4;
-  --text-main: #27372f;
+  --text-main: #f6fbf9;
   --text-muted: #718078;
   --border: #e1e8e3;
   --sidebar-width: 264px;
@@ -371,7 +416,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 button, input, select, textarea { font: inherit; }
-::selection { background: #cdebd9; color: #174d36; }
+::selection { background: #cdebd9; color: #e1f2ea; }
 :focus-visible { outline: 3px solid rgba(22, 122, 82, .25); outline-offset: 2px; }
 
 /* Navegación lateral */
@@ -398,7 +443,7 @@ button, input, select, textarea { font: inherit; }
   height: 38px;
   border-radius: 12px;
   color: #fff;
-  background: #19845a;
+  background: #e3efea;
   box-shadow: 0 6px 16px rgba(0,0,0,.17);
 }
 .brand .brand-cart { display: none; }
@@ -424,7 +469,7 @@ button, input, select, textarea { font: inherit; }
 .nav-item:hover .nav-icon { color: #d2f2de; }
 .nav-item.active {
   color: #fff;
-  background: linear-gradient(100deg, rgba(32,139,91,.98), rgba(27,116,77,.94));
+  background: linear-gradient(100deg, rgba(233, 242, 238, 0.98), rgba(27,116,77,.94));
   border-color: rgba(183, 238, 205, .12);
   box-shadow: 0 5px 14px rgba(7, 30, 18, .2);
 }
@@ -612,7 +657,7 @@ small { line-height: 1.5; }
   margin-bottom: 1rem !important;
   border-radius: 18px;
   color: #fff !important;
-  background: #167a52;
+  background: #e3f5ee;
   box-shadow: 0 8px 20px rgba(22,122,82,.22);
 }
 #login-screen .login-card h2 { color: #21392b; font-size: 1.55rem; letter-spacing: -.04em; }
@@ -807,6 +852,82 @@ small { line-height: 1.5; }
     #login-screen .login-card { border-radius: 20px; padding: 2rem 1.25rem; }
   }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; } }
+
+
+/* SUPER MIX — fondo azul con ondas luminosas inspirado en la referencia */
+:root {
+  --primary: #1673f9;
+  --primary-dark: #0756c9;
+  --secondary: #64748b;
+  --success: #16a34a;
+  --warning: #06d90a;
+  --danger: #dc2626;
+  --bg-dark: #063b83;
+  --bg-main: #eaf4ff;
+  --text-main: #17365f;
+  --text-muted: #6480a4;
+  --border: #d7e7fb;
+}
+body {
+  background: linear-gradient(125deg, #1678e8 0%, #4c8df5 38%, #22b9cf 72%, #e7f5ff 100%);
+  color: var(--text-main);
+}
+.sidebar {
+  background: linear-gradient(180deg, rgba(5,66,145,.98) 0%, rgba(4,48,108,.99) 58%, rgba(0,105,174,.97) 100%);
+  border-right: 1px solid rgba(255,255,255,.2);
+  box-shadow: 8px 0 30px rgba(0,54,130,.15);
+}
+.brand { background: rgba(255,255,255,.06); }
+.brand > i {
+  background: linear-gradient(135deg, #f7f9f9, #fbfcfc);
+  color: #2b83e6;
+}
+.nav-item { color: #d6e8ff; }
+.nav-item .nav-icon { color: #b7d8ff; }
+.nav-item.active {
+  background: linear-gradient(105deg, #3188ff, #2368ed);
+  border-color: rgba(255,255,255,.22);
+  box-shadow: 0 8px 22px rgba(0,31,110,.28);
+}
+.main-content {
+  position: relative;
+  isolation: isolate;
+  background-color: #eaf4ff;
+  background-image:
+    radial-gradient(ellipse at 78% 0%, rgba(35,205,220,.25), transparent 38%),
+    radial-gradient(ellipse at 15% 25%, rgba(69,143,255,.24), transparent 45%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 900 600'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.62' stroke-width='1.1'%3E%3Cpath d='M-100 80 C150 -120 280 330 520 120 S760 -60 1000 90'/%3E%3Cpath d='M-100 92 C150 -108 280 342 520 132 S760 -48 1000 102'/%3E%3Cpath d='M-100 104 C150 -96 280 354 520 144 S760 -36 1000 114'/%3E%3Cpath d='M-100 116 C150 -84 280 366 520 156 S760 -24 1000 126'/%3E%3Cpath d='M-100 128 C150 -72 280 378 520 168 S760 -12 1000 138'/%3E%3Cpath d='M-100 140 C150 -60 280 390 520 180 S760 0 1000 150'/%3E%3Cpath d='M-100 420 C120 250 260 700 510 460 S780 300 1000 450'/%3E%3Cpath d='M-100 432 C120 262 260 712 510 472 S780 312 1000 462'/%3E%3Cpath d='M-100 444 C120 274 260 724 510 484 S780 324 1000 474'/%3E%3Cpath d='M-100 456 C120 286 260 736 510 496 S780 336 1000 486'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: auto, auto, cover;
+  background-position: center, center, center;
+  background-attachment: fixed;
+}
+header {
+  color: #fff;
+  background: linear-gradient(105deg, rgba(9,91,194,.96), rgba(30,151,218,.94) 60%, rgba(39,187,201,.92));
+  border-bottom: 1px solid rgba(255,255,255,.28);
+  box-shadow: 0 5px 20px rgba(0,60,140,.12);
+}
+header h2, .user-info b { color: #fff; }
+header .text-muted, header small, header .text-secondary { color: rgba(255,255,255,.82) !important; }
+.content-section { position: relative; }
+.card, .table-container, .cart-summary {
+  background: rgba(255,255,255,.94);
+  border-color: rgba(193,218,249,.9);
+  box-shadow: 0 8px 26px rgba(27,83,155,.09);
+  backdrop-filter: blur(8px);
+}
+.card { border-radius: 16px; }
+button, .btn, .mobile-menu-toggle {
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+button:hover, .btn:hover { filter: brightness(1.035); }
+.nav-item, .brand, .card, .table-container, .cart-summary { transition: box-shadow .2s ease, background-color .2s ease; }
+::selection { background: #c8e5ff; color: #083e82; }
+:focus-visible { outline-color: rgba(22,115,249,.35); }
+@media (max-width: 900px) {
+  .sidebar { background: linear-gradient(180deg, #064b9e, #05336f); }
+  .main-content { background-attachment: scroll; }
+}
 </style>
 
 </head>
@@ -861,7 +982,7 @@ small { line-height: 1.5; }
   <!-- MAIN CONTENT -->
   <main class="main-content">
     <header>
-      <h2 id="section-title">1. Inicio</h2>
+      <h2 id="section-title">Inicio</h2>
       <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-left:auto; margin-right:12px;">
         <div id="supabase-status" class="system-status">
         <i class="fa-solid fa-circle-check"></i>
@@ -1053,12 +1174,21 @@ small { line-height: 1.5; }
             </div>
             <div class="form-group">
               <label>Método de Pago:</label>
-              <select id="pos-metodo" class="form-control">
+              <select id="pos-metodo" class="form-control" onchange="calcularCambio()">
                 <option value="Efectivo">Efectivo</option>
                 <option value="Nequi">Nequi</option>
                 <option value="Transferencia">Transferencia Bancolombia</option>
                 <option value="Crédito">Crédito</option> 
               </select>
+            </div>
+            <div id="pos-efectivo-panel" class="form-group" style="padding:12px; border:1px solid #dbe7fb; border-radius:12px; background:#f5f8ff;">
+              <label for="pos-billete"><i class="fa-solid fa-money-bill-wave"></i> Valor del billete recibido (COP)</label>
+              <input type="number" id="pos-billete" class="form-control" min="0" step="50" placeholder="Ej. 50000" oninput="calcularCambio()" inputmode="numeric">
+              <div style="display:flex; justify-content:space-between; gap:10px; margin-top:10px; align-items:center;">
+                <span style="font-weight:650;">Cambio para entregar:</span>
+                <b id="pos-cambio" style="font-size:1.15rem; color:var(--success);">$ 0</b>
+              </div>
+              <small id="pos-cambio-ayuda" style="display:block; color:var(--text-muted); margin-top:5px;">Ingresa el valor recibido para calcular el cambio.</small>
             </div>
             <div class="form-group" style="display:flex; align-items:center; gap:8px;">
               <input type="checkbox" id="pos-emitir-alegra" checked>
@@ -2841,11 +2971,49 @@ small { line-height: 1.5; }
       document.getElementById('pos-subtotal').textContent = formatCOP(subtotal);
       document.getElementById('pos-iva').textContent = formatCOP(iva);
       document.getElementById('pos-total').textContent = formatCOP(total);
+      calcularCambio();
     }
 
     function removeFromCart(id) {
       cart = cart.filter(i => i.id !== id);
       updateCartUI();
+    }
+
+    function metodoPagoTemporal() {
+      const valor = document.getElementById('pos-billete')?.value ?? '';
+      return valor.trim() === '' ? NaN : Number(valor);
+    }
+
+    function calcularCambio() {
+      const metodo = document.getElementById('pos-metodo')?.value;
+      const panel = document.getElementById('pos-efectivo-panel');
+      const input = document.getElementById('pos-billete');
+      const cambioEl = document.getElementById('pos-cambio');
+      const ayuda = document.getElementById('pos-cambio-ayuda');
+      if (!panel || !input || !cambioEl || !ayuda) return;
+
+      const esEfectivo = metodo === 'Efectivo';
+      panel.style.display = esEfectivo ? 'block' : 'none';
+      if (!esEfectivo) return;
+
+      const totalTexto = document.getElementById('pos-total')?.textContent || '0';
+      const total = Number(totalTexto.replace(/[^0-9,-]/g, '').replace(/\./g, '').replace(',', '.')) || 0;
+      const recibido = Number(input.value);
+      if (input.value.trim() === '' || !Number.isFinite(recibido)) {
+        cambioEl.textContent = formatCOP(0);
+        ayuda.textContent = 'Ingresa el valor recibido para calcular el cambio.';
+        ayuda.style.color = 'var(--text-muted)';
+        return;
+      }
+      const diferencia = recibido - total;
+      cambioEl.textContent = formatCOP(Math.max(0, diferencia));
+      if (diferencia < 0) {
+        ayuda.textContent = 'Faltan ' + formatCOP(Math.abs(diferencia)) + ' para completar el pago.';
+        ayuda.style.color = 'var(--danger)';
+      } else {
+        ayuda.textContent = 'Pago suficiente. Entrega este cambio al cliente.';
+        ayuda.style.color = 'var(--success)';
+      }
     }
 
     async function processSale() {
@@ -2855,6 +3023,15 @@ small { line-height: 1.5; }
       const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
       const iva = subtotal * (ivaPercent / 100);
       const total = subtotal + iva;
+      const billeteInput = document.getElementById('pos-billete');
+      const recibido = metodoPagoTemporal();
+      if (document.getElementById('pos-metodo').value === 'Efectivo') {
+        if (!billeteInput || billeteInput.value.trim() === '' || !Number.isFinite(recibido) || recibido < total) {
+          calcularCambio();
+          return alert('Ingresa el valor del billete recibido. Debe ser igual o mayor al total de la venta.');
+        }
+      }
+      const cambio = document.getElementById('pos-metodo').value === 'Efectivo' ? recibido - total : 0;
       const emitirControl = document.getElementById('pos-emitir-alegra');
       const emitirAlegra = !!(DB.alegra?.active && emitirControl?.checked && DB.alegra?.email && DB.alegra?.token);
       const clienteSelect = document.getElementById('pos-cliente');
@@ -2882,6 +3059,8 @@ small { line-height: 1.5; }
         fecha: getLocalDateISO(),
         cliente: clienteNombre,
         metodo: metodo,
+        recibido: metodo === 'Efectivo' ? recibido : null,
+        cambio: cambio,
         ivaRate: ivaPercent,
         items: cart.map(item => {
           const productoActual = DB.productos.find(p => String(p.id) === String(item.id));
