@@ -1,24 +1,28 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>super MIX</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- FontAwesome -->
+  <title>Super MIX | Gestión de supermercado</title>
+  
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- SheetJS para Excel -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   
   <style>
     :root {
       --primary: #2563eb;
       --primary-dark: #1d4ed8;
       --secondary: #64748b;
-      --success: #ecf8f0;
-      --warning: #ede9e3;
+      --success: #16a34a;
+      --warning: #d97706;
       --danger: #dc2626;
       --alegra: #00b0ff;
       --bg-dark: #0f172a;
@@ -32,7 +36,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-    /* LOGIN SCREEN */
+    
     #login-screen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: var(--bg-dark); z-index: 9999;
@@ -43,7 +47,7 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center;
     }
 
-    /* SIDEBAR */
+    
     .sidebar {
       width: var(--sidebar-width); background-color: var(--bg-dark); color: white;
       display: flex; flex-direction: column; flex-shrink: 0;
@@ -62,7 +66,7 @@
     .nav-item .nav-icon { width: 22px; min-width: 22px; text-align: center; font-size: 1.05rem; }
     .nav-item span { white-space: nowrap; }
 
-    /* MAIN CONTENT */
+    
     .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     header {
       background: white; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
@@ -73,47 +77,47 @@
     .content-section { padding: 1.5rem; display: none; }
     .content-section.active { display: block; }
 
-    /* CARDS & METRICS */
+    
     .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
     .card { background: white; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .metric-card { display: flex; align-items: center; gap: 1rem; }
     .metric-icon { width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
     .metric-val { font-size: 1.4rem; font-weight: bold; margin-top: 4px; }
 
-    /* TABLES */
+    
     .table-container { background: white; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
     th, td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); }
     th { background-color: #f8fafc; color: var(--text-muted); font-weight: 600; }
     tr:hover { background-color: #f1f5f9; }
 
-    /* POS CONTAINER */
+    
     .pos-container { display: grid; grid-template-columns: 2fr 1.2fr; gap: 1.5rem; height: calc(100vh - 120px); }
     .cart-summary { background: white; border-radius: 8px; border: 1px solid var(--border); display: flex; flex-direction: column; padding: 1rem; }
     .cart-items { flex: 1; overflow-y: auto; margin: 1rem 0; }
     .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
 
-    /* BUTTONS & BADGES */
+    
     .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-dark); }
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
     .btn-secondary { background: var(--secondary); color: white; }
-    .btn-excel { background: #f2f6f4; color: white; }
-    .btn-excel:hover { background: #e9ecea; }
+    .btn-excel { background: #107c41; color: white; }
+    .btn-excel:hover { background: #0b592e; }
     .btn-alegra { background: #0077ff; color: white; }
     .btn-alegra:hover { background: #0055cc; }
     .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
 
     .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-    .badge-success { background: #dcfce7; color: #e4f0e8; }
+    .badge-success { background: #dcfce7; color: #15803d; }
     .badge-warning { background: #fef3c7; color: #b45309; }
     .badge-danger { background: #fee2e2; color: #b91c1c; }
     .badge-secondary { background: #f1f5f9; color: #475569; }
     .badge-alegra { background: #e0f2fe; color: #0284c7; }
 
-    /* MODALS */
+    
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal-overlay.active { display: flex; }
     .modal-card { background: white; border-radius: 8px; width: 100%; max-width: 500px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; }
@@ -123,14 +127,86 @@
 
     .receipt-modal { width: 340px; background: white; padding: 15px; font-family: 'Courier New', Courier, monospace; font-size: 12px; }
 
+    
+    @page {
+      size: 58mm auto;
+      margin: 2mm;
+    }
     @media print {
-      body * { visibility: hidden; }
-      #print-area, #print-area * { visibility: visible; }
-      #print-area { position: absolute; left: 0; top: 0; width: 80mm; }
+      html, body {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        background: #fff !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      body * { visibility: hidden !important; }
+      
+      #modal-recibo {
+        display: block !important;
+        position: static !important;
+        inset: auto !important;
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+      }
+      #modal-recibo > div {
+        display: block !important;
+        width: auto !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+      #print-area, #print-area * { visibility: visible !important; }
+      #print-area {
+        display: block !important;
+        position: static !important;
+        box-sizing: border-box !important;
+        width: 54mm !important;
+        max-width: 54mm !important;
+        min-width: 0 !important;
+        height: auto !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        color: #000 !important;
+        font-family: 'Courier New', Courier, monospace !important;
+        font-size: 10pt !important;
+        line-height: 1.3 !important;
+        overflow-wrap: anywhere !important;
+        break-inside: avoid;
+      }
+      #print-area h3 { margin: 0 0 2mm !important; font-size: 10pt !important; }
+      #print-area * { box-sizing: border-box !important; }
+      #print-area div[style*="justify-content:space-between"] { gap: 2mm !important; }
+      #print-area span { min-width: 0 !important; overflow-wrap: anywhere !important; }
+      #print-area span[id^="rec-"] { text-align: right !important; }
+      #print-area hr { border: 0 !important; border-top: 1px dashed #000 !important; }
+      #print-area img { max-width: 100% !important; }
+      #print-area button, #modal-recibo button { display: none !important; }
+      #print-area table { width: 100% !important; min-width: 0 !important; font-size: 8pt !important; table-layout: fixed !important; }
+      #print-area th, #print-area td { padding: 1mm 0 !important; }
+      #print-area span, #print-area div { max-width: 100% !important; }
     }
 
 
-    /* LOGIN LIMPIO Y RESPONSIVE */
+    
     #login-screen {
       position: fixed; inset: 0; z-index: 9999;
       display: flex; align-items: center; justify-content: center;
@@ -144,9 +220,7 @@
     #login-screen .login-card > i { font-size: 2.5rem !important; margin-bottom: 1rem !important; }
     #login-screen .login-card .btn-primary { min-height: 48px; border-radius: 10px; font-weight: 700; }
 
-    /* =========================================================
-       RESPONSIVE FINAL - CELULAR, TABLET Y COMPUTADOR
-       ========================================================= */
+    
     html { width: 100%; min-width: 0; min-height: 100%; -webkit-text-size-adjust: 100%; }
     body { width: 100%; min-width: 0; min-height: 100vh; min-height: 100dvh; }
     .main-content { min-width: 0; width: 100%; }
@@ -159,7 +233,7 @@
     .modal-card { max-width: min(500px, calc(100vw - 2rem)); }
     .mobile-menu-toggle, .sidebar-backdrop { display: none; }
 
-    /* Pantallas medianas / tablets */
+    
     @media (max-width: 1100px) {
       :root { --sidebar-width: 220px; }
       .content-section { padding: 1.25rem; }
@@ -169,7 +243,7 @@
       #sec-configuracion > div { grid-template-columns: 1fr !important; }
     }
 
-    /* Tablet y teléfonos */
+    
     @media (max-width: 900px) {
       body { display: block; overflow: hidden; }
       .sidebar { position: fixed; z-index: 10001; left: 0; top: 0; bottom: 0; width: min(82vw, 300px); height: 100dvh; transform: translateX(-105%); transition: transform .25s ease; box-shadow: 8px 0 25px rgba(0,0,0,.22); }
@@ -257,11 +331,11 @@
       .cart-summary { padding: .7rem; }
     }
 
-    /* Evita desbordamientos por textos largos */
+    
     h1, h2, h3, h4, p, label, td, th, span, b { overflow-wrap: anywhere; }
     button, input, select { touch-action: manipulation; }
 
-    /* FONDO RENOVADO: limpio, moderno y con degradados suaves */
+    
     body {
       background: linear-gradient(135deg, #eef4ff 0%, #f8fbff 48%, #eaf7ff 100%);
     }
@@ -308,7 +382,7 @@
   </style>
     <link rel="icon" type="image/png" href="super_mix_favicon.png">
 <style>
-    /* Indicador de conexión del sistema */
+    
     .system-status {
       display: inline-flex;
       align-items: center;
@@ -344,7 +418,7 @@
     .product-list-inline { max-width:420px; white-space:normal !important; line-height:1.35; }
     .empty-report { text-align:center; padding:2rem !important; color:var(--text-muted); }
 
-    /* REPORTES Y FILTROS */
+    
     .report-filters {
       display:flex;
       gap:8px;
@@ -384,23 +458,21 @@
       color:var(--text-muted);
     }
 </style>
+
 <style id="super-mix-professional-theme">
 
-/* =========================================================
-   SUPER MIX · Tema visual profesional
-   Solo mejora la presentación; conserva funciones y flujos.
-   ========================================================= */
+
 :root {
-  --primary: #e6f4ee;
-  --primary-dark: #cdf2e3;
+  --primary: #167a52;
+  --primary-dark: #105f40;
   --secondary: #62736a;
-  --success: #d7f1e7;
-  --warning: #eaf1ee;
+  --success: #18845a;
+  --warning: #9a741b;
   --danger: #c54747;
-  --alegra: #c3e7d8;
+  --alegra: #167a52;
   --bg-dark: #172820;
   --bg-main: #f3f6f4;
-  --text-main: #f6fbf9;
+  --text-main: #27372f;
   --text-muted: #718078;
   --border: #e1e8e3;
   --sidebar-width: 264px;
@@ -416,10 +488,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 button, input, select, textarea { font: inherit; }
-::selection { background: #cdebd9; color: #e1f2ea; }
+::selection { background: #cdebd9; color: #174d36; }
 :focus-visible { outline: 3px solid rgba(22, 122, 82, .25); outline-offset: 2px; }
 
-/* Navegación lateral */
+
 .sidebar {
   background: linear-gradient(180deg, #1b3026 0%, #14251d 100%);
   color: #f6faf7;
@@ -443,7 +515,7 @@ button, input, select, textarea { font: inherit; }
   height: 38px;
   border-radius: 12px;
   color: #fff;
-  background: #e3efea;
+  background: #19845a;
   box-shadow: 0 6px 16px rgba(0,0,0,.17);
 }
 .brand .brand-cart { display: none; }
@@ -469,13 +541,13 @@ button, input, select, textarea { font: inherit; }
 .nav-item:hover .nav-icon { color: #d2f2de; }
 .nav-item.active {
   color: #fff;
-  background: linear-gradient(100deg, rgba(233, 242, 238, 0.98), rgba(27,116,77,.94));
+  background: linear-gradient(100deg, rgba(32,139,91,.98), rgba(27,116,77,.94));
   border-color: rgba(183, 238, 205, .12);
   box-shadow: 0 5px 14px rgba(7, 30, 18, .2);
 }
 .nav-item.active .nav-icon { color: #e5ffed; }
 
-/* Barra superior e área central */
+
 .main-content { background: var(--bg-main); }
 header {
   position: sticky;
@@ -500,7 +572,7 @@ header h2 {
 .user-info b { color: #2d4035; font-size: .9rem; }
 .content-section { padding: 1.6rem; }
 
-/* Tarjetas, indicadores y resúmenes */
+
 .card, .table-container, .cart-summary {
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -531,7 +603,7 @@ header h2 {
 }
 .metric-val { color: #263b2e; font-size: 1.55rem; font-weight: 780; letter-spacing: -.045em; }
 
-/* Ajustar tonos inline antiguos a la nueva identidad visual */
+
 [style*="background:#dbeafe"], [style*="background: #dbeafe"],
 [style*="background-color:#dbeafe"], [style*="background-color: #dbeafe"] {
   background: #e5f4eb !important;
@@ -546,7 +618,7 @@ header h2 {
 }
 [style*="color:#d97706"], [style*="color: #d97706"] { color: #8a6a18 !important; }
 
-/* Botones consistentes */
+
 .btn {
   min-height: 36px;
   padding: .58rem .92rem;
@@ -573,7 +645,7 @@ header h2 {
 .btn-alegra:hover { background: #105f40; }
 .btn-sm { min-height: 30px; padding: .35rem .58rem; border-radius: 7px; font-size: .78rem; }
 
-/* Tablas más limpias y legibles */
+
 .table-container { overflow: auto; }
 table { font-size: .87rem; }
 th, td { padding: .88rem 1rem; border-bottom-color: #eaf0ec; }
@@ -596,7 +668,7 @@ tbody tr:last-child td { border-bottom: 0; }
 .badge-secondary { background: #edf1ee; color: #52635a; }
 .badge-alegra { background: #e6f3ec; color: #167a52; }
 
-/* Campos y formularios */
+
 .form-group { margin-bottom: 1.1rem; }
 .form-group label { margin-bottom: .42rem; color: #3c5044; font-size: .82rem; font-weight: 700; }
 .form-control {
@@ -614,7 +686,7 @@ tbody tr:last-child td { border-bottom: 0; }
 .form-control:focus { outline: 0; border-color: #3b9b6e; box-shadow: 0 0 0 3px rgba(22, 122, 82, .12); }
 small { line-height: 1.5; }
 
-/* Modales más cuidados */
+
 .modal-overlay { background: rgba(17, 34, 24, .52); backdrop-filter: blur(5px); padding: 1rem; }
 .modal-card {
   border: 1px solid rgba(255,255,255,.75);
@@ -626,7 +698,7 @@ small { line-height: 1.5; }
 .modal-card h3 { color: #24392c; font-size: 1.12rem; font-weight: 780; letter-spacing: -.025em; margin-bottom: .8rem; }
 @keyframes superMixModalIn { from { opacity: 0; transform: translateY(7px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-/* Inicio de sesión */
+
 #login-screen {
   background:
     radial-gradient(ellipse at 10% 10%, rgba(50, 135, 88, .23), transparent 42%),
@@ -657,14 +729,14 @@ small { line-height: 1.5; }
   margin-bottom: 1rem !important;
   border-radius: 18px;
   color: #fff !important;
-  background: #e3f5ee;
+  background: #167a52;
   box-shadow: 0 8px 20px rgba(22,122,82,.22);
 }
 #login-screen .login-card h2 { color: #21392b; font-size: 1.55rem; letter-spacing: -.04em; }
 #login-screen .login-card p { line-height: 1.5; }
 #login-screen .login-card .btn { min-height: 46px; margin-top: .25rem; }
 
-/* Estado de conexión Supabase sin acentos azules */
+
 .system-status {
   padding: 8px 12px;
   border-color: #cce7d6;
@@ -677,18 +749,18 @@ small { line-height: 1.5; }
 .system-status i { color: #18845a; }
 .system-status-error { background: #fff0f0; border-color: #f2caca; color: #ad3535; }
 
-/* Panel de venta */
+
 .pos-container { gap: 1.2rem; }
 .cart-summary { padding: 1.2rem; }
 .cart-item { padding: .78rem 0; border-bottom-color: #e7eee9; }
 
-/* Scrollbars discretas */
+
 * { scrollbar-width: thin; scrollbar-color: #c9d7ce transparent; }
 *::-webkit-scrollbar { width: 9px; height: 9px; }
 *::-webkit-scrollbar-thumb { background: #c9d7ce; border: 2px solid transparent; border-radius: 999px; background-clip: padding-box; }
 *::-webkit-scrollbar-thumb:hover { background: #9fb6a6; border: 2px solid transparent; background-clip: padding-box; }
 
-/* Responsive: priorizar espacio y legibilidad */
+
 @media (min-width: 1400px) {
   .content-section { padding: 1.9rem 2rem; }
   .metrics-grid { gap: 1.15rem; }
@@ -714,6 +786,7 @@ small { line-height: 1.5; }
 }
 
 </style>
+
 <style id="super-mix-blue-gradient-theme">
   :root {
     --primary: #2563eb;
@@ -854,13 +927,13 @@ small { line-height: 1.5; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; } }
 
 
-/* SUPER MIX — fondo azul con ondas luminosas inspirado en la referencia */
+
 :root {
   --primary: #1673f9;
   --primary-dark: #0756c9;
   --secondary: #64748b;
   --success: #16a34a;
-  --warning: #06d90a;
+  --warning: #d97706;
   --danger: #dc2626;
   --bg-dark: #063b83;
   --bg-main: #eaf4ff;
@@ -879,8 +952,8 @@ body {
 }
 .brand { background: rgba(255,255,255,.06); }
 .brand > i {
-  background: linear-gradient(135deg, #f7f9f9, #fbfcfc);
-  color: #2b83e6;
+  background: linear-gradient(135deg, #ffcf45, #ff9f1c);
+  color: #064b9b;
 }
 .nav-item { color: #d6e8ff; }
 .nav-item .nav-icon { color: #b7d8ff; }
@@ -930,15 +1003,273 @@ button:hover, .btn:hover { filter: brightness(1.035); }
 }
 </style>
 
+
+<style id="super-mix-logo-electric-blue">
+
+.brand > i {
+  background: linear-gradient(135deg, #3b8cff 0%, #1673f9 55%, #0756c9 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 5px 16px rgba(22,115,249,.35);
+}
+.brand .brand-cart { color: #ffffff !important; }
+</style>
+
+<style id="super-mix-login-cart-electric-blue">
+
+#login-screen .login-card > i {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #3b8cff 0%, #1673f9 55%, #0756c9 100%) !important;
+  box-shadow: 0 8px 22px rgba(22, 115, 249, .32) !important;
+}
+#login-screen .login-card::before {
+  background: linear-gradient(90deg, #0756c9, #3b8cff, #38bdf8) !important;
+}
+</style>
+
+<style id="super-mix-resumen-financiero-logico">
+#sec-reportes #rep-costo-vendido, #sec-reportes #rep-utilidad, #sec-reportes #rep-ventas, #sec-reportes #rep-compras { overflow-wrap:anywhere; }
+#sec-reportes .metric-card small { display:block; margin-top:.4rem; color:var(--text-muted); line-height:1.4; }
+@media(max-width:520px){ #sec-reportes .metrics-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:.65rem !important; } #sec-reportes .metrics-grid .metric-card { min-width:0; padding:.85rem; } #sec-reportes .metrics-grid .metric-val { font-size:1.1rem; } }
+</style>
+
+
+
+<style id="super-mix-ajuste-tamano-letra-resumen-financiero">
+
+#sec-reportes .metrics-grid .metric-card { padding: .8rem .9rem !important; gap: .45rem; }
+#sec-reportes .metrics-grid .metric-label { font-size: .78rem !important; font-weight: 650; line-height: 1.3 !important; }
+#sec-reportes .metrics-grid .metric-val { font-size: clamp(.88rem, 1.25vw, 1.12rem) !important; font-weight: 700; letter-spacing: -.02em; line-height: 1.25 !important; margin-top: .35rem; }
+#sec-reportes .metrics-grid .metric-card small { font-size: .7rem !important; line-height: 1.35 !important; }
+@media (max-width: 520px) {
+  #sec-reportes .metrics-grid .metric-label { font-size: .73rem !important; }
+  #sec-reportes .metrics-grid .metric-val { font-size: .88rem !important; }
+  #sec-reportes .metrics-grid .metric-card small { font-size: .66rem !important; }
+}
+</style>
+
+
+
+<style id="super-mix-correccion-numeros-horizontales">
+
+#sec-reportes .metrics-grid .metric-card {
+  display: flex !important; flex-direction: column !important; align-items: flex-start !important;
+  justify-content: flex-start !important; gap: .35rem !important; width: 100%; min-width: 0;
+}
+#sec-reportes .metrics-grid .metric-card > .metric-label,
+#sec-reportes .metrics-grid .metric-card > .metric-val,
+#sec-reportes .metrics-grid .metric-card > small {
+  display: block !important; width: 100%; max-width: 100%; min-width: 0;
+  box-sizing: border-box; text-align: left;
+}
+#sec-reportes .metrics-grid .metric-card > .metric-val {
+  white-space: nowrap !important; overflow-wrap: normal !important; word-break: normal !important;
+  font-size: clamp(.78rem, 1.05vw, 1.08rem) !important; letter-spacing: -.025em;
+  font-variant-numeric: tabular-nums; line-height: 1.3 !important;
+}
+@media (max-width: 600px) {
+  #sec-reportes .metrics-grid .metric-card > .metric-val { font-size: clamp(.68rem, 2.5vw, .88rem) !important; letter-spacing: -.035em; }
+}
+</style>
+
+
+<style id="super-mix-carrito-logo-compacto">
+/* Reduce el icono del carrito del logotipo sin cambiar el resto de la interfaz. */
+.sidebar .brand > i {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  font-size: 0.95rem !important;
+  border-radius: 9px !important;
+  flex: 0 0 30px !important;
+}
+.sidebar .brand {
+  gap: 0.6rem !important;
+}
+@media (max-width: 900px) {
+  .sidebar .brand > i {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    font-size: 0.88rem !important;
+    flex-basis: 28px !important;
+  }
+}
+</style>
+
+<style id="super-mix-cart-compact">
+/* Carrito compacto: ocultar detalles de IVA y subtotal en la vista, manteniendo sus valores internos para los cálculos. */
+#sec-ventas .cart-extra-tax-rate,
+#sec-ventas .cart-extra-subtotal,
+#sec-ventas .cart-extra-iva{display:none!important;}
+#sec-ventas .cart-summary{padding:.65rem!important;gap:.35rem;min-width:0}
+#sec-ventas .cart-summary h3{font-size:.92rem!important;line-height:1.2;margin:0 0 .25rem!important}
+#sec-ventas .cart-items{margin:.35rem 0!important;max-height:230px;min-height:35px}
+#sec-ventas .cart-item{padding:.35rem 0!important;gap:.35rem;font-size:.78rem;line-height:1.2}
+#sec-ventas .cart-item b{font-size:.78rem!important;font-weight:600;line-height:1.2}
+#sec-ventas .cart-item small{font-size:.68rem!important;line-height:1.1}
+#sec-ventas .cart-item > div:last-child{gap:3px!important;align-items:center}
+#sec-ventas .cart-item .btn{min-width:25px;min-height:25px;padding:2px 6px!important;font-size:.72rem!important;line-height:1}
+#sec-ventas .cart-summary span,#sec-ventas .cart-summary label{font-size:.76rem!important}
+#sec-ventas .cart-summary #pos-subtotal,#sec-ventas .cart-summary #pos-iva{font-size:.78rem!important}
+#sec-ventas .cart-summary #pos-total{font-size:.95rem!important;white-space:nowrap}
+#sec-ventas .cart-summary .form-group{margin-bottom:.45rem!important}
+#sec-ventas .cart-summary .form-control{min-height:32px;padding:.35rem .5rem;font-size:.8rem}
+#sec-ventas .cart-summary .btn{padding:.45rem .6rem;font-size:.78rem}
+@media(max-width:900px){#sec-ventas .cart-items{max-height:190px}#sec-ventas .cart-summary{padding:.55rem!important}}
+@media(max-width:480px){#sec-ventas .cart-item{font-size:.72rem}#sec-ventas .cart-item b{font-size:.74rem!important}#sec-ventas .cart-summary #pos-total{font-size:.9rem!important}}
+</style>
+
+
+<style id="super-mix-carrito-ajuste-contenido">
+/* Carrito compacto: el cuadro se adapta a sus campos sin dejar grandes espacios vacíos. */
+#sec-ventas .pos-container{
+  grid-template-columns:minmax(0,1.8fr) minmax(285px,.82fr)!important;
+  gap:1rem!important;height:auto!important;min-height:0!important;align-items:start!important;
+}
+#sec-ventas .pos-container > div:first-child{min-width:0;}
+#sec-ventas .pos-container > div:first-child .table-container{max-height:calc(100vh - 205px)!important;}
+#sec-ventas .cart-summary{
+  box-sizing:border-box;width:100%;min-width:0;height:fit-content;max-height:calc(100vh - 145px);
+  padding:.75rem!important;gap:0;overflow-y:auto;position:sticky;top:12px;
+}
+#sec-ventas .cart-summary h3{font-size:1rem!important;line-height:1.2;margin:0!important;padding:0 0 .45rem!important;}
+#sec-ventas .cart-items{flex:0 1 auto;min-height:54px;max-height:210px;overflow-y:auto;margin:.25rem 0 .55rem!important;}
+#sec-ventas .cart-summary > div[style*="border-top"]{padding-top:.55rem!important;}
+#sec-ventas .cart-summary .form-group{margin-bottom:.5rem!important;}
+#sec-ventas .cart-summary .form-control{min-width:0;box-sizing:border-box;min-height:30px;padding:.32rem .45rem!important;font-size:.78rem!important;}
+#sec-ventas #pos-cliente-search{min-width:0!important;width:100%;}
+#sec-ventas .cart-summary .btn{min-height:30px;padding:.38rem .5rem!important;font-size:.76rem!important;}
+#sec-ventas #pos-efectivo-panel{padding:8px!important;border-radius:8px!important;}
+#sec-ventas #pos-efectivo-panel label{line-height:1.25;display:block;margin-bottom:.3rem;}
+#sec-ventas #pos-cambio{font-size:.95rem!important;}
+#sec-ventas #pos-total{font-size:1rem!important;}
+#sec-ventas .cart-summary button[onclick="processSale()"]{padding:.58rem!important;min-height:38px!important;}
+@media(max-width:900px){
+  #sec-ventas .pos-container{grid-template-columns:minmax(0,1fr)!important;height:auto!important;}
+  #sec-ventas .cart-summary{position:static;max-height:none;}
+  #sec-ventas .cart-items{max-height:180px;}
+  #sec-ventas .pos-container > div:first-child .table-container{max-height:360px!important;}
+}
+@media(max-width:480px){
+  #sec-ventas .cart-summary{padding:.6rem!important;}
+  #sec-ventas .cart-summary h3{font-size:.92rem!important;}
+  #sec-ventas .cart-item{gap:6px;}
+  #sec-ventas .cart-summary .form-group{margin-bottom:.4rem!important;}
+  #sec-ventas .cart-summary .btn{font-size:.72rem!important;}
+}
+</style>
+
+
+<style id="super-mix-carrito-diseno-premium">
+/* Presentación visual del carrito: solo CSS, sin modificar cálculos ni eventos. */
+#sec-ventas .cart-summary{
+  background:linear-gradient(180deg,#ffffff 0%,#f7faff 100%)!important;
+  border:1px solid #d7e5fb!important;border-radius:16px!important;
+  box-shadow:0 12px 30px rgba(21,67,130,.12),0 2px 6px rgba(21,67,130,.05)!important;
+  padding:.8rem!important;gap:.45rem!important;overflow-x:hidden;
+}
+#sec-ventas .cart-summary h3{
+  display:flex;align-items:center;gap:.55rem;color:#fff!important;
+  background:linear-gradient(120deg,#123b82 0%,#1769d2 55%,#36a5ff 100%);
+  border-radius:11px;padding:.72rem .8rem!important;margin:0 0 .35rem!important;
+  font-size:.98rem!important;font-weight:750;letter-spacing:.01em;
+  box-shadow:0 5px 12px rgba(23,105,210,.18);
+}
+#sec-ventas .cart-summary h3::before{
+  content:"";display:inline-block;width:24px;height:24px;flex:0 0 24px;border-radius:7px;
+  background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);
+}
+#sec-ventas .cart-items{
+  background:#fff;border:1px solid #e1eaf7;border-radius:11px;
+  padding:0 .6rem!important;min-height:56px!important;
+  box-shadow:inset 0 1px 2px rgba(20,55,100,.025);
+}
+#sec-ventas .cart-item{
+  display:flex;align-items:center!important;justify-content:space-between;
+  gap:.55rem!important;padding:.62rem .1rem!important;
+  border-bottom:1px solid #e9eff8!important;line-height:1.3!important;
+}
+#sec-ventas .cart-item:last-child{border-bottom:0!important}
+#sec-ventas .cart-item>div:first-child{min-width:0;flex:1;overflow-wrap:anywhere}
+#sec-ventas .cart-item>div:first-child b{display:inline-block;color:#1a2d49;font-size:.8rem!important;font-weight:700!important;margin-bottom:2px}
+#sec-ventas .cart-item>div:first-child small{display:inline-block;color:#637590!important;font-size:.72rem!important}
+#sec-ventas .cart-item>div:last-child{flex-wrap:nowrap;gap:4px!important;white-space:nowrap}
+#sec-ventas .cart-item>div:last-child span{min-width:20px;text-align:center;color:#203d67;font-size:.8rem!important}
+#sec-ventas .cart-item .btn{border-radius:7px!important;box-shadow:none!important;transition:transform .15s ease,filter .15s ease}
+#sec-ventas .cart-item .btn:hover{filter:brightness(.96);transform:translateY(-1px)}
+#sec-ventas .cart-item .btn.btn-primary{background:linear-gradient(135deg,#2679e8,#1554b4)!important;border-color:transparent!important}
+#sec-ventas .cart-item .btn.btn-danger{background:#fff1f2!important;color:#c6283d!important;border:1px solid #ffd5da!important}
+#sec-ventas .cart-summary>div[style*="border-top"]{border-top:1px solid #dce7f6!important;padding-top:.7rem!important}
+#sec-ventas .cart-summary>div[style*="font-size:1.2rem"]{
+  align-items:center;background:linear-gradient(120deg,#102f68 0%,#1559b8 65%,#1688e9 100%);
+  color:#fff!important;border-radius:12px;padding:.8rem .85rem!important;
+  margin:.2rem 0 .8rem!important;font-size:.92rem!important;
+  box-shadow:0 7px 15px rgba(21,89,184,.2);
+}
+#sec-ventas .cart-summary>div[style*="font-size:1.2rem"] span{color:#e7f1ff!important;font-size:.82rem!important;font-weight:650}
+#sec-ventas .cart-summary #pos-total{color:#fff!important;font-size:1.15rem!important;font-weight:800!important;letter-spacing:.01em}
+#sec-ventas .cart-summary .form-group{margin-bottom:.62rem!important}
+#sec-ventas .cart-summary .form-group>label{display:block;color:#344967;font-size:.76rem!important;font-weight:700;margin-bottom:.3rem}
+#sec-ventas .cart-summary .form-control{
+  background:#fff;border:1px solid #d5e1f1!important;border-radius:8px!important;
+  color:#20334f;box-shadow:inset 0 1px 2px rgba(25,60,110,.025);
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+#sec-ventas .cart-summary .form-control:focus{border-color:#4389e8!important;box-shadow:0 0 0 3px rgba(49,126,225,.12)!important;outline:none}
+#sec-ventas #pos-efectivo-panel{background:linear-gradient(145deg,#f2f7ff,#e8f2ff)!important;border:1px solid #cbdffb!important;border-radius:11px!important}
+#sec-ventas #pos-efectivo-panel label{color:#24436f;font-size:.75rem!important;font-weight:700}
+#sec-ventas #pos-cambio{color:#087a50!important;font-weight:800}
+#sec-ventas .cart-summary button[onclick="processSale()"]{
+  border:0!important;border-radius:10px!important;
+  background:linear-gradient(115deg,#0b8c58 0%,#11a96d 55%,#28c98a 100%)!important;
+  color:#fff!important;font-weight:800!important;letter-spacing:.01em;
+  box-shadow:0 7px 15px rgba(13,153,94,.22)!important;
+  transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
+}
+#sec-ventas .cart-summary button[onclick="processSale()"]:hover{filter:brightness(1.03);transform:translateY(-1px);box-shadow:0 9px 18px rgba(13,153,94,.28)!important}
+#sec-ventas .cart-summary button[onclick="processSale()"]:active{transform:translateY(0)}
+@media(max-width:900px){
+  #sec-ventas .cart-summary{border-radius:14px!important;box-shadow:0 8px 20px rgba(21,67,130,.09)!important}
+  #sec-ventas .cart-summary>div[style*="font-size:1.2rem"]{margin-bottom:.65rem!important}
+}
+@media(max-width:480px){
+  #sec-ventas .cart-summary{padding:.62rem!important}
+  #sec-ventas .cart-summary h3{padding:.62rem .7rem!important;font-size:.92rem!important}
+  #sec-ventas .cart-items{padding:0 .45rem!important}
+  #sec-ventas .cart-item{gap:.35rem!important;padding:.55rem 0!important}
+  #sec-ventas .cart-item>div:first-child b{font-size:.75rem!important}
+  #sec-ventas .cart-item>div:last-child{gap:3px!important}
+  #sec-ventas .cart-summary #pos-total{font-size:1.05rem!important}
+}
+@media(prefers-reduced-motion:reduce){#sec-ventas .cart-summary *{transition:none!important}}
+</style>
+
+
+<style id="super-mix-total-visible-fix">
+#sec-ventas .cart-summary > div[style*="font-size:1.2rem"] {
+  display:flex !important; visibility:visible !important; opacity:1 !important;
+  min-height:48px !important; box-sizing:border-box !important;
+  background:linear-gradient(120deg,#e8f1ff,#d8e9ff) !important;
+  border:1px solid #9dbff0 !important; border-radius:10px !important;
+  padding:10px 12px !important; align-items:center !important;
+}
+#sec-ventas .cart-summary > div[style*="font-size:1.2rem"] span,
+#sec-ventas .cart-summary #pos-total {
+  color:#123b82 !important; visibility:visible !important; opacity:1 !important;
+  display:inline-block !important; font-weight:800 !important;
+}
+#sec-ventas .cart-summary #pos-total { min-width:72px; text-align:right; white-space:nowrap !important; }
+</style>
+
 </head>
 <body>
 
-  <!-- LOGIN -->
+  
   <div id="login-screen">
     <div class="login-card">
       <i class="fa-solid fa-cart-shopping" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
       <h2 style="margin-bottom: 0.5rem;">Iniciar Sesión</h2>
-      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Ingresa tus credenciales para acceder</p>
+      
       <form onsubmit="handleLogin(event)">
         <div class="form-group" style="text-align: left;">
           <label>Usuario</label>
@@ -953,14 +1284,14 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     </div>
   </div>
 
-  <!-- BOTÓN MENÚ MÓVIL -->
+  
   <button id="mobile-menu-toggle" class="mobile-menu-toggle" type="button"
           aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()">
     <i class="fa-solid fa-bars"></i>
   </button>
   <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="closeMobileMenu()"></div>
 
-  <!-- SIDEBAR -->
+  
   <aside class="sidebar">
     <div class="brand"><i class="fa-solid fa-cart-shopping"></i><span>super MIX</span><span class="brand-cart">🛒</span></div>
     <ul class="nav-list">
@@ -979,10 +1310,10 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     </ul>
   </aside>
 
-  <!-- MAIN CONTENT -->
+  
   <main class="main-content">
     <header>
-      <h2 id="section-title">Inicio</h2>
+      <h2 id="section-title">1. Inicio</h2>
       <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-left:auto; margin-right:12px;">
         <div id="supabase-status" class="system-status">
         <i class="fa-solid fa-circle-check"></i>
@@ -1002,8 +1333,9 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </header>
 
-    <!-- DASHBOARD -->
-    <section id="sec-dashboard" class="content-section admin-only active">
+    
+    
+<section id="sec-dashboard" class="content-section admin-only active">
       <div class="metrics-grid">
         <div class="card metric-card">
           <div class="metric-icon" style="background:#dbeafe; color:#2563eb"><i class="fa-solid fa-hand-holding-dollar"></i></div>
@@ -1022,7 +1354,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         <div class="card metric-card">
           <div class="metric-icon" style="background:#fee2e2; color:#dc2626"><i class="fa-solid fa-triangle-exclamation"></i></div>
           <div>
-            <div style="font-size:0.85rem; color:var(--text-muted);">Vencidos</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">Vencidos / ≤ 20 días</div>
             <div class="metric-val" id="dash-vencidos">0</div>
           </div>
         </div>
@@ -1037,7 +1369,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       <div class="card" style="margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
         <div>
           <h3><i class="fa-solid fa-calendar-xmark"></i> Control de vencimientos</h3>
-          <p style="font-size:.85rem;color:var(--text-muted);margin-top:.25rem;">Consulta productos vencidos y los que vencen en los próximos 20 días.</p>
+          
         </div>
         <button class="btn btn-danger" type="button" onclick="irAProductosPorVencer()">
           <i class="fa-solid fa-triangle-exclamation"></i> Ver productos por vencer
@@ -1058,9 +1390,10 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </section>
 
-    <!-- PRODUCTOS -->
-    <section id="sec-productos" class="content-section admin-only">
-  <!-- BARRA SUPERIOR CON STICKY AGREGADO -->
+    
+    
+<section id="sec-productos" class="content-section admin-only">
+  
   <div style="position: sticky; top: 0; z-index: 10; background-color: #ffffff; padding: 10px 0; display:flex; justify-content:space-between; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
     <div style="display:flex; gap:10px; flex:1;">
       <input type="text" id="prod-search" class="form-control" style="width: 250px;" placeholder="🔍 Buscar por nombre o código..." oninput="renderProducts()">
@@ -1090,13 +1423,22 @@ button:hover, .btn:hover { filter: brightness(1.035); }
   </div>
 </section>
 
-    <!-- INVENTARIO -->
-    <section id="sec-inventario" class="content-section admin-only">
+    
+    
+<section id="sec-inventario" class="content-section admin-only">
       <div class="card" style="margin-bottom: 1rem; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
         <button class="btn btn-excel" onclick="exportInventoryExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Inventario</button>
       </div>
 
-      <!-- BÚSQUEDA EXCLUSIVA DE INVENTARIOS -->
+      
+      <div class="inventory-kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1rem;">
+        <div class="card inventory-kpi"><small>Productos registrados</small><strong id="inv-kpi-total">0</strong></div>
+        <div class="card inventory-kpi"><small>Stock bajo o agotado</small><strong id="inv-kpi-bajo" style="color:#dc2626">0</strong></div>
+        <div class="card inventory-kpi"><small>Vencidos</small><strong id="inv-kpi-vencidos" style="color:#dc2626">0</strong></div>
+        <div class="card inventory-kpi"><small>Por vencer (20 días)</small><strong id="inv-kpi-por-vencer" style="color:#b45309">0</strong></div>
+      </div>
+
+      
       <div class="card" style="margin-bottom:1rem;">
         <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
           <input
@@ -1107,7 +1449,13 @@ button:hover, .btn:hover { filter: brightness(1.035); }
             autocomplete="off"
             oninput="renderInventario()"
             onkeydown="if(event.key==='Enter'){event.preventDefault();renderInventario();}"
-            style="flex:1; min-width:250px;">
+            style="flex:1; min-width:220px;">
+          <select id="inv-status-filter" class="form-control" style="min-width:180px;max-width:240px" onchange="renderInventario()" aria-label="Filtrar inventario por estado">
+            <option value="">Todos los productos</option>
+            <option value="bajo">Stock bajo o agotado</option>
+            <option value="vencido">Productos vencidos</option>
+            <option value="por-vencer">Por vencer en 20 días</option>
+          </select>
           <button type="button" class="btn btn-primary" onclick="renderInventario()">
             <i class="fa-solid fa-magnifying-glass"></i> Buscar
           </button>
@@ -1128,8 +1476,9 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </section>
 
-    <!-- VENTAS / POS -->
-    <section id="sec-ventas" class="content-section">
+    
+    
+<section id="sec-ventas" class="content-section">
       <div class="pos-container">
         <div>
           <div style="display:flex; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
@@ -1147,17 +1496,17 @@ button:hover, .btn:hover { filter: brightness(1.035); }
           </div>
         </div>
         <div class="cart-summary">
-          <h3>Carrito de Compra</h3>
+          <h3>Carrito</h3>
           <div class="cart-items" id="cart-list"></div>
           <div style="border-top:1px solid var(--border); padding-top:1rem;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; align-items:center;">
+            <div class="cart-extra-tax-rate" style="display:flex; justify-content:space-between; margin-bottom:0.5rem; align-items:center;">
               <span>Tasa de IVA (%):</span>
               <input type="number" id="pos-iva-percent" class="form-control" style="width: 80px; text-align:right;" value="19" min="0" max="100" readonly title="Este valor se toma de Configuración de IVA">
             </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+            <div class="cart-extra-subtotal" style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
               <span>Subtotal:</span><b id="pos-subtotal">$ 0</b>
             </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+            <div class="cart-extra-iva" style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
               <span>Valor IVA:</span><b id="pos-iva">$ 0</b>
             </div>
             <div style="display:flex; justify-content:space-between; font-size:1.2rem; margin-bottom:1rem; color:var(--primary);">
@@ -1165,11 +1514,12 @@ button:hover, .btn:hover { filter: brightness(1.035); }
             </div>
             <div class="form-group">
               <label>Cliente <span style="font-weight:normal; color:var(--text-muted);">(opcional)</span>:</label>
-              <!-- NEW: Search for clients in POS -->
+              
               <div style="display:flex; gap:6px; align-items:center; margin-bottom:5px; flex-wrap:wrap;">
                 <input type="text" id="pos-cliente-search" class="form-control" placeholder="🔍 Buscar cliente..." oninput="filterPOSClientes()" style="margin-bottom:0; flex:1; min-width:220px;">
                 <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaPOSCliente()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
               </div>
+              <div id="pos-cliente-resultados" class="pos-cliente-resultados" style="display:none;max-height:180px;overflow:auto;border:1px solid var(--border-color,#ccc);border-radius:8px;margin:4px 0;background:var(--card-bg,#fff);"></div>
               <select id="pos-cliente" class="form-control"></select>
             </div>
             <div class="form-group">
@@ -1188,7 +1538,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
                 <span style="font-weight:650;">Cambio para entregar:</span>
                 <b id="pos-cambio" style="font-size:1.15rem; color:var(--success);">$ 0</b>
               </div>
-              <small id="pos-cambio-ayuda" style="display:block; color:var(--text-muted); margin-top:5px;">Ingresa el valor recibido para calcular el cambio.</small>
+              
             </div>
             <div class="form-group" style="display:flex; align-items:center; gap:8px;">
               <input type="checkbox" id="pos-emitir-alegra" checked>
@@ -1200,15 +1550,14 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </section>
 
-    <!-- COMPRAS -->
-    <section id="sec-compras" class="content-section admin-only">
+    
+    
+<section id="sec-compras" class="content-section admin-only">
       <div class="card" style="margin-bottom:1rem;">
         <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
           <div>
             <h3><i class="fa-solid fa-truck-ramp-box"></i> Gestión de Compras</h3>
-            <p style="font-size:.85rem; color:var(--text-muted); margin-top:.25rem;">
-              Registra compras a proveedores y actualiza automáticamente el inventario.
-            </p>
+            
           </div>
           <button class="btn btn-primary" onclick="openCompraModal()">
             <i class="fa-solid fa-plus"></i> Registrar Compra
@@ -1250,8 +1599,9 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </section>
 
-    <!-- PROVEEDORES -->
-    <section id="sec-proveedores" class="content-section admin-only">
+    
+    
+<section id="sec-proveedores" class="content-section admin-only">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:8px; flex-wrap:wrap;">
         <div class="search-with-actions">
           <input type="text" id="prov-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar proveedor..." oninput="renderProveedores()">
@@ -1269,8 +1619,9 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </section>
 
-    <!-- CLIENTES -->
-    <section id="sec-clientes" class="content-section admin-only">
+    
+    
+<section id="sec-clientes" class="content-section admin-only">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:8px; flex-wrap:wrap;">
         <div class="search-with-actions">
           <input type="text" id="cli-search" class="form-control" style="width:250px;" placeholder="🔍 Buscar cliente..." oninput="renderClientes()">
@@ -1288,8 +1639,9 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </section>
 
-    <!-- CRÉDITOS / ABONOS (NEW SECTION) -->
-    <section id="sec-creditos" class="content-section admin-only">
+    
+    
+<section id="sec-creditos" class="content-section admin-only">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:8px; flex-wrap:wrap;">
         <h3>Gestión de Créditos y Abonos</h3>
         <div class="search-with-actions">
@@ -1307,8 +1659,9 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </section>
 
-    <!-- USUARIOS -->
-    <section id="sec-usuarios" class="content-section admin-only">
+    
+    
+<section id="sec-usuarios" class="content-section admin-only">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <h3>Gestión de Usuarios y Personal</h3>
         <button class="btn btn-primary" onclick="openUsuarioModal()"><i class="fa-solid fa-user-plus"></i> Crear Nuevo Usuario</button>
@@ -1323,13 +1676,14 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </section>
 
-    <!-- REPORTES Y REINICIO DE VENTAS -->
-    <section id="sec-reportes" class="content-section admin-only">
+    
+    
+<section id="sec-reportes" class="content-section admin-only">
       <div class="card" style="margin-bottom:1.5rem; border-left:5px solid var(--danger);">
         <div class="report-section-title">
           <div>
             <h3 style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Control del Administrador</h3>
-            <p style="font-size:.85rem; color:var(--text-muted);">Reiniciar el historial de ventas registradas a $ 0 COP.</p>
+            
           </div>
           <button class="btn btn-danger" onclick="resetSalesToZero()"><i class="fa-solid fa-rotate-left"></i> Dejar Ventas en $ 0</button>
         </div>
@@ -1343,19 +1697,68 @@ button:hover, .btn:hover { filter: brightness(1.035); }
             <button class="btn btn-excel" onclick="exportDailySalesExcel(document.getElementById('rep-dia').value)"><i class="fa-solid fa-calendar-day"></i> Descargar Día</button>
           </div>
         </div>
-        <div style="display:flex; gap:2rem; margin-top:1rem; flex-wrap:wrap;">
-          <div>Ingresos por Ventas: <b id="rep-ventas" style="color:var(--success)">$ 0</b></div>
-          <div>Inversión en Compras: <b id="rep-compras" style="color:var(--danger)">$ 0</b></div>
-          <div>Ganancia Neta: <b id="rep-utilidad" style="color:var(--primary)">$ 0</b></div>
+        <div class="report-filters" style="display:flex;gap:.75rem;align-items:end;flex-wrap:wrap;margin:1rem 0 .5rem;">
+          <div style="min-width:170px;flex:1;"><label for="rep-fecha-desde">Desde</label><input type="date" id="rep-fecha-desde" class="form-control" onchange="renderReportes()"></div>
+          <div style="min-width:170px;flex:1;"><label for="rep-fecha-hasta">Hasta</label><input type="date" id="rep-fecha-hasta" class="form-control" onchange="renderReportes()"></div>
+          <button type="button" class="btn btn-secondary" onclick="limpiarFiltroFechasReporte()"><i class="fa-solid fa-eraser"></i> Todo el historial</button>
+        </div>
+        <p id="rep-periodo-info" style="font-size:.8rem;color:var(--text-muted);margin:.35rem 0 .8rem;">Mostrando todo el historial.</p>
+        <div class="metrics-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;margin-top:1.1rem;">
+          <div class="metric-card"><div class="metric-label">Ventas del período</div><div class="metric-val" id="rep-ventas" style="color:var(--success)">$ 0</div></div>
+          <div class="metric-card"><div class="metric-label">Costo de productos vendidos</div><div class="metric-val" id="rep-costo-vendido" style="color:var(--danger)">$ 0</div></div>
+          <div class="metric-card"><div class="metric-label">Resultado estimado de ventas</div><div class="metric-val" id="rep-utilidad" style="color:var(--primary)">$ 0</div></div>
+          <div class="metric-card"><div class="metric-label">Inversión en compras</div><div class="metric-val" id="rep-compras" style="color:var(--danger)">$ 0</div></div>
+        </div>
+        
+      </div>
+
+      
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="report-section-title">
+          <div>
+            <h3><i class="fa-solid fa-cart-flatbed"></i> Inversión en compras por proveedor</h3>
+            
+          </div>
+          <button class="btn btn-excel" onclick="exportComprasReportExcel()"><i class="fa-solid fa-file-excel"></i> Exportar compras a Excel</button>
+        </div>
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+          <div><div style="font-size:.8rem;color:var(--text-muted);">Compras registradas</div><b id="rep-compras-cantidad">0</b></div>
+          <div><div style="font-size:.8rem;color:var(--text-muted);">Unidades compradas</div><b id="rep-compras-unidades">0</b></div>
+          <div><div style="font-size:.8rem;color:var(--text-muted);">Total invertido</div><b id="rep-compras-detalle-total" style="color:var(--danger)">$ 0</b></div>
+        </div>
+        <div class="table-container" style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Fecha</th><th>Compra</th><th>Proveedor</th><th>Producto</th><th>Cantidad</th><th>Costo unitario</th><th>Subtotal</th></tr></thead>
+            <tbody id="tbl-reporte-compras"></tbody>
+          </table>
+        </div>
+        
+        <h4 style="margin:1.2rem 0 .7rem;"><i class="fa-solid fa-boxes-stacked"></i> Productos registrados por proveedor</h4>
+        <div class="table-container" style="overflow-x:auto;">
+          <table><thead><tr><th>Proveedor</th><th>Código</th><th>Producto</th><th>Stock actual</th><th>Costo unitario</th><th>Valor estimado del stock</th></tr></thead>
+          <tbody id="tbl-reporte-productos-proveedor"></tbody></table>
+        </div>
+        <h4 style="margin:1.35rem 0 .7rem;"><i class="fa-solid fa-arrows-rotate"></i> Cruce de ventas, inventario y proveedores</h4>
+        
+        <div style="display:flex;gap:1.25rem;flex-wrap:wrap;margin-bottom:.9rem;">
+          <div><small style="color:var(--text-muted)">Productos vendidos</small><br><b id="rep-cruce-productos">0</b></div>
+          <div><small style="color:var(--text-muted)">Unidades vendidas</small><br><b id="rep-cruce-unidades">0</b></div>
+          <div><small style="color:var(--text-muted)">Ingresos de productos</small><br><b id="rep-cruce-ingresos" style="color:var(--success)">$ 0</b></div>
+          <div><small style="color:var(--text-muted)">Costo estimado vendido</small><br><b id="rep-cruce-costos" style="color:var(--danger)">$ 0</b></div>
+          <div><small style="color:var(--text-muted)">Utilidad bruta estimada</small><br><b id="rep-cruce-utilidad" style="color:var(--primary)">$ 0</b></div>
+        </div>
+        <div class="table-container" style="overflow-x:auto;">
+          <table><thead><tr><th>Producto</th><th>Proveedor</th><th>Unidades vendidas</th><th>Ingresos</th><th>Costo estimado</th><th>Utilidad bruta</th><th>Stock actual</th><th>Estado</th></tr></thead>
+          <tbody id="tbl-reporte-cruce"></tbody></table>
         </div>
       </div>
 
-      <!-- VENTAS DEL DÍA -->
+      
       <div class="card" style="margin-bottom:1.5rem;">
         <div class="report-section-title">
           <div>
             <h3><i class="fa-solid fa-calendar-day"></i> Revisar ventas por día</h3>
-            <p style="font-size:.82rem; color:var(--text-muted);">Consulta, revisa y descarga las ventas de una fecha específica.</p>
+            
           </div>
           <div class="report-filters">
             <input type="date" id="rep-dia" class="form-control" onchange="renderVentasDelDia()">
@@ -1378,12 +1781,12 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         </div>
       </div>
 
-      <!-- PRODUCTOS POR VENCER -->
+      
       <div class="card" id="reporte-productos-por-vencer" style="margin-bottom:1.5rem;">
         <div class="report-section-title">
           <div>
             <h3><i class="fa-solid fa-calendar-xmark"></i> Productos por vencer</h3>
-            <p style="font-size:.82rem;color:var(--text-muted);">Productos con fecha de vencimiento dentro de los próximos 20 días, incluidos los vencidos.</p>
+            
           </div>
           <button class="btn btn-excel" type="button" onclick="exportProductosPorVencerExcel()">
             <i class="fa-solid fa-file-excel"></i> Descargar Excel
@@ -1397,12 +1800,12 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         </div>
       </div>
 
-      <!-- GANANCIAS POR MES -->
+      
       <div class="card" id="reporte-ganancias-mensuales" style="margin-bottom:1.5rem;">
         <div class="report-section-title">
           <div>
             <h3><i class="fa-solid fa-chart-line"></i> Ganancias de ventas por mes</h3>
-            <p style="font-size:.82rem;color:var(--text-muted);">Calcula la utilidad bruta con el precio y costo guardados en cada producto vendido.</p>
+            
           </div>
           <button class="btn btn-excel" type="button" onclick="exportGananciasMensualesExcel()">
             <i class="fa-solid fa-file-excel"></i> Exportar Excel
@@ -1427,7 +1830,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
             <div><div style="font-size:.85rem;color:var(--text-muted);">Ganancia bruta estimada</div><div class="metric-val" id="gan-mes-utilidad">$ 0</div></div>
           </div>
         </div>
-        <p id="gan-mes-nota" style="font-size:.82rem;color:var(--text-muted);margin-bottom:1rem;"></p>
+        
         <div class="table-container">
           <table>
             <thead><tr><th>Factura</th><th>Fecha</th><th>Productos</th><th>Ventas COP</th><th>Costo COP</th><th>Ganancia bruta COP</th></tr></thead>
@@ -1436,12 +1839,12 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         </div>
       </div>
 
-      <!-- PRODUCTOS VENCIDOS -->
+      
       <div class="card" style="margin-bottom:1.5rem;">
         <div class="report-section-title">
           <div>
             <h3><i class="fa-solid fa-triangle-exclamation"></i> Productos vencidos</h3>
-            <p style="font-size:.82rem; color:var(--text-muted);">Listado independiente de productos cuya fecha de vencimiento ya pasó.</p>
+            
           </div>
           <button class="btn btn-excel" onclick="exportExpiredProductsExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Vencidos</button>
         </div>
@@ -1453,12 +1856,12 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         </div>
       </div>
 
-      <!-- PRODUCTOS INGRESADOS POR MES -->
+      
       <div class="card" style="margin-bottom:1.5rem;">
         <div class="report-section-title">
           <div>
             <h3><i class="fa-solid fa-calendar-plus"></i> Productos ingresados por mes</h3>
-            <p style="font-size:.82rem; color:var(--text-muted);">Selecciona un mes para consultar los productos registrados durante ese período.</p>
+            
           </div>
           <button class="btn btn-excel" onclick="exportMonthlyProductsExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Mensual</button>
         </div>
@@ -1482,7 +1885,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         </div>
       </div>
 
-      <!-- HISTORIAL DE VENTAS -->
+      
       <div class="table-container">
         <div style="padding:1rem; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
           <h4>Historial de Ventas</h4>
@@ -1497,12 +1900,12 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         </table>
       </div>
 
-      <!-- FACTURAS ELIMINADAS -->
+      
       <div class="table-container" style="margin-top:1.5rem;">
         <div style="padding:1rem; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
           <div>
             <h4><i class="fa-solid fa-trash-can"></i> Facturas eliminadas</h4>
-            <p style="font-size:.82rem; color:var(--text-muted); margin-top:.25rem;">Historial de facturas retiradas del listado activo. Se conservan para consulta administrativa.</p>
+            
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
             <input type="text" id="rep-eliminadas-search" class="form-control" placeholder="🔍 Buscar factura, cliente o producto..." oninput="renderFacturasEliminadas()">
@@ -1517,13 +1920,14 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </section>
 
-    <!-- CIERRES DE VENTAS -->
-    <section id="sec-cierres" class="content-section admin-only">
+    
+    
+<section id="sec-cierres" class="content-section admin-only">
       <div class="card" style="margin-bottom:1.5rem; border-left:5px solid var(--primary);">
         <div class="report-section-title">
           <div>
             <h3><i class="fa-solid fa-lock"></i> Cierre de Ventas</h3>
-            <p style="font-size:.82rem; color:var(--text-muted);">Consolida las ventas de una fecha, separadas por método de pago, y registra quién realizó el cierre.</p>
+            
           </div>
           <button type="button" class="btn btn-excel" onclick="exportCierresVentasExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Cierres</button>
         </div>
@@ -1555,6 +1959,21 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         </div>
       </div>
 
+      <div class="card" style="margin-bottom:1.5rem; border-left:5px solid var(--success);">
+        <h3 style="margin-bottom:.4rem;"><i class="fa-solid fa-cash-register"></i> Conciliación de caja</h3>
+        
+        <div class="metrics-grid" style="margin-bottom:1rem;">
+          <div class="card metric-card"><div><div style="font-size:.82rem;color:var(--text-muted);">Efectivo esperado</div><div class="metric-val" id="cierre-efectivo-esperado">$ 0</div></div></div>
+          <div class="card metric-card"><div><div style="font-size:.82rem;color:var(--text-muted);">Billetes recibidos</div><div class="metric-val" id="cierre-efectivo-recibido">$ 0</div></div></div>
+          <div class="card metric-card"><div><div style="font-size:.82rem;color:var(--text-muted);">Cambio entregado</div><div class="metric-val" id="cierre-cambio-entregado">$ 0</div></div></div>
+        </div>
+        <div class="form-group" style="max-width:420px;">
+          <label for="cierre-efectivo-contado">Efectivo contado en caja (COP)</label>
+          <input type="number" id="cierre-efectivo-contado" class="form-control" min="0" step="50" placeholder="Escribe el efectivo contado" oninput="actualizarDiferenciaCaja()" inputmode="numeric">
+          
+        </div>
+      </div>
+
       <div class="card" style="margin-bottom:1.5rem;">
         <h3 style="margin-bottom:1rem;"><i class="fa-solid fa-money-bill-transfer"></i> Resumen por método de pago</h3>
         <div class="table-container">
@@ -1579,7 +1998,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </section>
 
-    <!-- MODAL DETALLE DE CIERRE -->
+    
     <div id="modal-cierre-detalle" class="modal-overlay">
       <div class="modal-card" style="max-width:900px;">
         <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:1rem;">
@@ -1606,8 +2025,9 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       </div>
     </div>
 
-    <!-- CONFIGURACIÓN & ALEGRA -->
-    <section id="sec-configuracion" class="content-section admin-only">
+    
+    
+<section id="sec-configuracion" class="content-section admin-only">
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem;">
         <div class="card">
           <h3><i class="fa-solid fa-store"></i> Datos del Supermercado</h3>
@@ -1628,9 +2048,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
 
         <div class="card" style="border-top: 4px solid var(--alegra);">
           <h3><i class="fa-solid fa-bolt" style="color:var(--alegra);"></i> Integración Facturación Electrónica Alegra</h3>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">
-            Conecta tu cuenta de Alegra Colombia para emitir Facturas Electrónicas directamente a la DIAN.
-          </p>
+          
           <div class="form-group">
             <label>Correo Electrónico Alegra:</label>
             <input type="email" id="cfg-alegra-email" class="form-control" placeholder="usuario@empresa.com">
@@ -1653,7 +2071,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     </section>
   </main>
 
-  <!-- MODALES -->
+  
   <div id="modal-categoria" class="modal-overlay">
     <div class="modal-card">
       <h3>Nueva Categoría</h3>
@@ -1675,7 +2093,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       <div class="form-group"><label>Código de Barras</label><input type="text" id="mp-codigo" class="form-control"></div>
       <div class="form-group"><label>Nombre del Producto</label><input type="text" id="mp-nombre" class="form-control"></div>
       <div class="form-group"><label>Categoría</label><select id="mp-categoria" class="form-control"></select></div>
-      <div class="form-group"><label>Proveedor del producto</label><div style="display:flex;gap:8px;align-items:center;"><select id="mp-proveedor" class="form-control" style="flex:1;"><option value="">Sin proveedor asignado</option></select><button type="button" class="btn btn-secondary" onclick="abrirProveedorDesdeProducto()" title="Registrar proveedor"><i class="fa-solid fa-plus"></i> Nuevo</button></div><small style="color:var(--text-muted);">Seleccione el proveedor que suministra este producto o registre uno nuevo.</small></div>
+      <div class="form-group"><label>Proveedor del producto</label><div style="display:flex;gap:8px;align-items:center;"><select id="mp-proveedor" class="form-control" style="flex:1;"><option value="">Sin proveedor asignado</option></select><button type="button" class="btn btn-secondary" onclick="abrirProveedorDesdeProducto()" title="Registrar proveedor"><i class="fa-solid fa-plus"></i> Nuevo</button></div></div>
       <div class="form-group"><label>Fecha de Vencimiento (Alerta 20 Días)</label><input type="date" id="mp-vencimiento" class="form-control"></div>
       <div class="form-group"><label>Precio de Venta COP</label><input type="number" id="mp-precio" class="form-control"></div>
       <div class="form-group"><label>Costo de Compra COP</label><input type="number" id="mp-costo" class="form-control"></div>
@@ -1703,7 +2121,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     </div>
   </div>
 
-  <!-- MODAL ABONO (NEW) -->
+  
   <div id="modal-abono" class="modal-overlay">
     <div class="modal-card">
       <h3>Registrar Abono</h3>
@@ -1751,7 +2169,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       <select id="mcop-proveedor" class="form-control"></select>
     </div>
 
-    <!-- CAMPO DE BÚSQUEDA Y CÓDIGO DE BARRAS -->
+    
     <div class="form-group">
       <label>Buscar / Escanear Producto</label>
       <div style="display:flex; gap:5px; flex-wrap:wrap;">
@@ -1822,9 +2240,28 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         <label>Rol de Acceso</label>
         <select id="mu-rol" class="form-control">
           <option value="Cajero">Cajero (Solo POS / Ventas)</option>
-          <option value="Empleado">Empleado (Solo POS / Ventas)</option>
+          <option value="Empleado">Empleado (según permisos)</option>
+          <option value="Personalizado">Personalizado (permisos seleccionables)</option>
           <option value="Administrador">Administrador (Acceso Total)</option>
         </select>
+      </div>
+      <div class="form-group" id="mu-permisos-wrap">
+        <label>Permisos por módulo</label>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;padding:12px;border:1px solid var(--border-color,#dbe3ef);border-radius:12px;">
+          <label><input type="checkbox" class="mu-permiso" value="ventas"> Ventas / POS</label>
+          <label><input type="checkbox" class="mu-permiso" value="dashboard"> Inicio</label>
+          <label><input type="checkbox" class="mu-permiso" value="productos"> Productos</label>
+          <label><input type="checkbox" class="mu-permiso" value="inventario"> Inventario</label>
+          <label><input type="checkbox" class="mu-permiso" value="compras"> Compras</label>
+          <label><input type="checkbox" class="mu-permiso" value="proveedores"> Proveedores</label>
+          <label><input type="checkbox" class="mu-permiso" value="clientes"> Clientes</label>
+          <label><input type="checkbox" class="mu-permiso" value="reportes"> Reportes</label>
+          <label><input type="checkbox" class="mu-permiso" value="cierres"> Cierres de caja</label>
+          <label><input type="checkbox" class="mu-permiso" value="creditos"> Créditos / Abonos</label>
+          <label><input type="checkbox" class="mu-permiso" value="configuracion"> Configuración</label>
+          <label><input type="checkbox" class="mu-permiso" value="usuarios"> Usuarios</label>
+        </div>
+        
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
@@ -1836,7 +2273,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
   <div id="modal-cambiar-password" class="modal-overlay">
     <div class="modal-card">
       <h3><i class="fa-solid fa-shield-halved"></i> Seguridad de la cuenta</h3>
-      <p style="font-size:.85rem; color:var(--text-muted); margin:.5rem 0 1rem;">Cambia la contraseña del usuario actualmente conectado.</p>
+      
       <div class="form-group"><label>Contraseña actual</label><input type="password" id="sec-pass-actual" class="form-control" autocomplete="current-password" required></div>
       <div class="form-group"><label>Nueva contraseña</label><input type="password" id="sec-pass-nueva" class="form-control" autocomplete="new-password" minlength="8" required></div>
       <div class="form-group"><label>Confirmar nueva contraseña</label><input type="password" id="sec-pass-confirmar" class="form-control" autocomplete="new-password" minlength="8" required></div>
@@ -1870,6 +2307,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         <div style="text-align:center; margin-top:10px;">¡Gracias por elegirnos! ¡Vuelve pronto! 🛍️</div>
       </div>
       <div style="margin-top: 10px; display:flex; gap:10px;">
+        
         <button class="btn btn-primary" style="flex:1;" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Recibo</button>
         <button class="btn btn-secondary" onclick="closeModals()">Cerrar</button>
       </div>
@@ -1877,15 +2315,14 @@ button:hover, .btn:hover { filter: brightness(1.035); }
   </div>
 
   <script>
-    // BASE DE DATOS: Supabase + respaldo local
     const SUPABASE_URL = 'https://ryasfyjicjjptwyrxqfk.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_b89wGBYJ68J1bys1uAgY9Q_M8qmFath';
     const SUPABASE_ROW_ID = 'super_mix';
 
-    const supabaseClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
+    // Permite abrir el sistema aunque la librería de Supabase no esté disponible sin internet.
+    const supabaseClient = window.supabase?.createClient
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+      : null;
 
     let DB = JSON.parse(localStorage.getItem('super_db_zero_v3')) || {
       categorias: ['Lácteos', 'Abarrotes', 'Bebidas', 'Aseo'],
@@ -1917,6 +2354,25 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     let cart = [];
     let salesChart = null;
     let supabaseReady = false;
+    const OFFLINE_PENDING_KEY = 'super_mix_pending_sync_v1';
+    let offlineSyncInProgress = false;
+
+    function hayCambiosPendientes() {
+      return localStorage.getItem(OFFLINE_PENDING_KEY) === '1';
+    }
+
+    function actualizarEstadoConexion() {
+      const el = document.getElementById('supabase-status');
+      if (!el) return;
+      if (!navigator.onLine) {
+        el.className = 'system-status system-status-error';
+        el.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i><span>Sin internet · guardado local</span>';
+      } else if (hayCambiosPendientes()) {
+        el.className = 'system-status system-status-error';
+        el.innerHTML = '<i class="fa-solid fa-rotate"></i><span>Hay cambios pendientes de sincronizar</span>';
+      }
+    }
+
 
     function setSupabaseStatus(message, ok = false) {
       const el = document.getElementById('supabase-status');
@@ -1936,6 +2392,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         `;
       }
     }
+
 
     async function probarConexionSupabase() {
       setSupabaseStatus('Probando conexión...', false);
@@ -1968,10 +2425,19 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     let sincronizacionEnCurso = false;
     let guardadoSupabaseEnCurso = false;
 
+
     async function sincronizarMovimientosSupabase() {
-      if (sincronizacionEnCurso || guardadoSupabaseEnCurso || document.hidden) return;
+      if (sincronizacionEnCurso || guardadoSupabaseEnCurso || document.hidden || !navigator.onLine) { actualizarEstadoConexion(); return; }
       sincronizacionEnCurso = true;
       try {
+        // Si existen cambios locales pendientes, se envían primero para evitar que la descarga remota los sobrescriba.
+        if (hayCambiosPendientes()) {
+          await guardarDBSupabase();
+          localStorage.removeItem(OFFLINE_PENDING_KEY);
+          supabaseReady = true;
+          setSupabaseStatus('Cambios locales sincronizados con Supabase.', true);
+          return;
+        }
         const { data, error } = await supabaseClient
           .from('app_state')
           .select('data, updated_at')
@@ -1984,7 +2450,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
           const datosRemotos = data.data;
           const remotoActualizado = data.updated_at ? new Date(data.updated_at).getTime() : 0;
 
-          // Solo reemplazamos el estado local cuando existe una versión remota.
           DB = { ...DB, ...datosRemotos };
           localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
           renderAll();
@@ -1998,8 +2463,15 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
     }
 
+
     async function cargarDBSupabase() {
       try {
+        if (!navigator.onLine) {
+          supabaseReady = false;
+          actualizarEstadoConexion();
+          renderAll(); updateCartUI(); restaurarSesion();
+          return;
+        }
         const { data, error } = await supabaseClient
           .from('app_state')
           .select('data')
@@ -2021,10 +2493,10 @@ button:hover, .btn:hover { filter: brightness(1.035); }
           DB.cierres = Array.isArray(DB.cierres) ? DB.cierres : [];
     DB.ventasEliminadas = Array.isArray(DB.ventasEliminadas) ? DB.ventasEliminadas : [];
           localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
+          localStorage.removeItem(OFFLINE_PENDING_KEY);
           supabaseReady = true;
           setSupabaseStatus('Conectado a Supabase. Datos sincronizados.', true);
         } else {
-          // Primera ejecución: subir el estado local inicial.
           await guardarDBSupabase();
           supabaseReady = true;
           setSupabaseStatus('Conectado a Supabase. Se creó el registro inicial.', true);
@@ -2040,7 +2512,9 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       restaurarSesion();
     }
 
+
     async function guardarDBSupabase() {
+      if (!navigator.onLine || !supabaseClient) throw new Error('Supabase no está disponible sin conexión.');
       const { error } = await supabaseClient
         .from('app_state')
         .upsert({
@@ -2052,24 +2526,116 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       if (error) throw error;
     }
 
+    const AUDIT_KEY = 'super_mix_audit_log_v1';
+    const AUDIT_BASELINE_KEY = 'super_mix_audit_baseline_v1';
+    const AUDIT_MAX = 1000;
+    const AUDIT_ENTITIES = {
+      productos: 'Producto', ventas: 'Venta', compras: 'Compra', proveedores: 'Proveedor',
+      clientes: 'Cliente', usuarios: 'Usuario', cierres: 'Cierre de caja'
+    };
+    function leerAuditoria() {
+      try { const x = JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]'); return Array.isArray(x) ? x : []; }
+      catch (_) { return []; }
+    }
+    function registrarEventoAuditoria(accion, entidad, registro, detalle) {
+      const logs = leerAuditoria();
+      logs.push({
+        id: 'AUD-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+        fecha: new Date().toISOString(),
+        usuario: currentUser?.nombre || currentUser?.user || 'Sesión no identificada',
+        rol: currentUser?.rol || 'No identificado', accion, entidad,
+        registro: String(registro ?? '—'), detalle: String(detalle || '').slice(0, 240)
+      });
+      try { localStorage.setItem(AUDIT_KEY, JSON.stringify(logs.slice(-AUDIT_MAX))); }
+      catch (e) { console.warn('No se pudo guardar la auditoría local:', e); }
+    }
+    function obtenerEtiquetaRegistro(item, entidad) {
+      if (!item || typeof item !== 'object') return 'Registro';
+      return item.nombre || item.empresa || item.id || item.codigo || item.cliente || item.proveedor || entidad;
+    }
+    function detectarCambiosAuditoria() {
+      const entidades = Object.keys(AUDIT_ENTITIES);
+      let previo = {};
+      try { previo = JSON.parse(localStorage.getItem(AUDIT_BASELINE_KEY) || '{}') || {}; } catch (_) {}
+      for (const clave of entidades) {
+        const actual = Array.isArray(DB[clave]) ? DB[clave] : [];
+        const anterior = Array.isArray(previo[clave]) ? previo[clave] : actual;
+        const mapaAnterior = new Map(anterior.map((x, i) => [String(x?.id ?? i), x]));
+        const mapaActual = new Map(actual.map((x, i) => [String(x?.id ?? i), x]));
+        for (const [id, item] of mapaActual) {
+          const old = mapaAnterior.get(id);
+          if (!old) registrarEventoAuditoria('CREACIÓN', AUDIT_ENTITIES[clave], obtenerEtiquetaRegistro(item, clave), 'Registro agregado');
+          else if (JSON.stringify(old) !== JSON.stringify(item)) registrarEventoAuditoria('MODIFICACIÓN', AUDIT_ENTITIES[clave], obtenerEtiquetaRegistro(item, clave), 'Se detectaron cambios en los datos');
+        }
+        for (const [id, item] of mapaAnterior) {
+          if (!mapaActual.has(id)) registrarEventoAuditoria('ELIMINACIÓN', AUDIT_ENTITIES[clave], obtenerEtiquetaRegistro(item, clave), 'Registro retirado de la lista');
+        }
+      }
+      try { localStorage.setItem(AUDIT_BASELINE_KEY, JSON.stringify(DB)); } catch (e) { console.warn('No se pudo actualizar la línea base de auditoría:', e); }
+    }
+    function exportarAuditoriaCSV() {
+      const logs = leerAuditoria();
+      if (!logs.length) return alert('Todavía no hay eventos de auditoría para exportar.');
+      const cols = ['fecha','usuario','rol','accion','entidad','registro','detalle'];
+      const csv = [cols.join(';'), ...logs.map(row => cols.map(k => '"' + String(row[k] ?? '').replace(/"/g,'""') + '"').join(';'))].join('\r\n');
+      const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob); const a = document.createElement('a');
+      a.href = url; a.download = 'Super_MIX_auditoria_' + new Date().toISOString().slice(0,10) + '.csv';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+    function renderAuditoria() {
+      const tbody = document.getElementById('sm-audit-tbody'); if (!tbody) return;
+      const filtro = (document.getElementById('sm-audit-filter')?.value || '').toLowerCase();
+      const logs = leerAuditoria().slice().reverse().filter(x => !filtro || [x.usuario,x.accion,x.entidad,x.registro,x.detalle].join(' ').toLowerCase().includes(filtro));
+      tbody.innerHTML = logs.slice(0,250).map(x => `<tr><td>${escapeHtml(new Date(x.fecha).toLocaleString())}</td><td>${escapeHtml(x.usuario)}</td><td>${escapeHtml(x.accion)}</td><td>${escapeHtml(x.entidad)}</td><td>${escapeHtml(x.registro)}</td><td>${escapeHtml(x.detalle)}</td></tr>`).join('') || '<tr><td colspan="6" style="text-align:center;padding:18px">No hay eventos que coincidan.</td></tr>';
+      const n = document.getElementById('sm-audit-count'); if (n) n.textContent = `${leerAuditoria().length} eventos guardados localmente`;
+    }
+    function limpiarAuditoriaVisible() {
+      if (!currentUser || currentUser.rol !== 'Administrador') return alert('Solo el administrador puede limpiar el registro de auditoría.');
+      if (!confirm('¿Deseas borrar el historial local de auditoría? Esta acción no se puede deshacer.')) return;
+      localStorage.removeItem(AUDIT_KEY); registrarEventoAuditoria('LIMPIEZA', 'Auditoría', 'Historial', 'Se limpió el historial local'); renderAuditoria();
+    }
+
+
     async function saveDB() {
-      localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
+      detectarCambiosAuditoria();
+      // Guardar primero en el equipo: la operación local no depende de internet.
+      try {
+        localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
+        localStorage.setItem(OFFLINE_PENDING_KEY, '1');
+      } catch (storageError) {
+        console.error('No se pudo guardar localmente:', storageError);
+        alert('No hay espacio disponible para guardar los datos localmente. Exporta una copia de seguridad antes de continuar.');
+        return;
+      }
       renderAll();
+      if (!navigator.onLine) {
+        supabaseReady = false;
+        actualizarEstadoConexion();
+        return;
+      }
       guardadoSupabaseEnCurso = true;
       try {
         await guardarDBSupabase();
+        localStorage.removeItem(OFFLINE_PENDING_KEY);
         supabaseReady = true;
         setSupabaseStatus('Guardado en Supabase correctamente.', true);
       } catch (error) {
         console.error('Error guardando en Supabase:', error);
         supabaseReady = false;
-        setSupabaseStatus('Guardado localmente. No se pudo sincronizar con Supabase.', false);
+        actualizarEstadoConexion();
       } finally {
         guardadoSupabaseEnCurso = false;
       }
     }
 
-    // ================= SEGURIDAD LOCAL =================
+    window.addEventListener('offline', actualizarEstadoConexion);
+    window.addEventListener('online', () => {
+      actualizarEstadoConexion();
+      if (hayCambiosPendientes()) sincronizarMovimientosSupabase();
+      else probarConexionSupabase();
+    });
+
     async function derivePasswordHash(password, saltBase64) {
       if (!window.crypto?.subtle) throw new Error('El navegador no soporta cifrado seguro.');
       const encoder = new TextEncoder();
@@ -2081,15 +2647,16 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       return { hash, salt: saltOut };
     }
 
+
     async function passwordMatches(user, password) {
       if (!user) return false;
       if (user.passwordHash && user.passwordSalt) {
         const result = await derivePasswordHash(password, user.passwordSalt);
         return result.hash === user.passwordHash;
       }
-      // Compatibilidad: convierte usuarios antiguos almacenados en texto plano a PBKDF2 al iniciar sesión.
       return typeof user.pass === 'string' && user.pass === password;
     }
+
 
     async function secureUserPassword(user, password) {
       const record = await derivePasswordHash(password);
@@ -2112,6 +2679,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       } catch (_) {}
     }
 
+
     function requireLogin() {
       if (!currentUser) {
         alert('Sesión no iniciada.');
@@ -2119,6 +2687,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
       return true;
     }
+
 
     function requireAdmin() {
       if (!currentUser) {
@@ -2133,12 +2702,14 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       return true;
     }
 
+
     function touchSecurityActivity() {
       if (!currentUser) return;
       lastActivityAt = Date.now();
       const session = { userId: currentUser.id, issuedAt: Date.now(), expiresAt: Date.now() + SESSION_TIMEOUT_MS };
       try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch (_) {}
     }
+
 
     function startSecurityMonitor() {
       clearInterval(securityTimer);
@@ -2157,6 +2728,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         }
       }, 30000);
     }
+
 
     function clearSecuritySession() {
       try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
@@ -2284,7 +2856,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       return { label: 'Vigente', class: 'badge-success', diffDays };
     }
 
-    // INICIO Y LOGOUT
     async function iniciarSesionUI(user, guardarSesion = true) {
       currentUser = user;
       if (guardarSesion) {
@@ -2299,7 +2870,13 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       applyRolePermissions();
       renderAll();
       if (currentUser.rol !== 'Administrador') {
-        showSection('ventas', document.getElementById('nav-pos'));
+        const primerModulo = obtenerPermisosUsuario(currentUser)[0];
+        if (primerModulo) {
+          const nav = document.querySelector(`.nav-item[onclick*="showSection('${primerModulo}'"]`) || (primerModulo === 'ventas' ? document.getElementById('nav-pos') : null);
+          showSection(primerModulo, nav);
+        } else {
+          alert('Tu usuario no tiene módulos habilitados. Solicita al administrador que configure tus permisos.');
+        }
       } else {
         showSection('dashboard', document.querySelector('.nav-item.admin-only'));
       }
@@ -2316,6 +2893,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       if (loginPass) loginPass.value = '';
     }
 
+
     async function handleLogin(e) {
       e.preventDefault();
       const uInput = document.getElementById('login-user').value.trim();
@@ -2326,7 +2904,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         alert('Usuario o contraseña incorrectos.');
         return;
       }
-      // Migración segura de usuarios antiguos.
       if (!found.passwordHash) {
         await secureUserPassword(found, pInput);
         await saveDB();
@@ -2334,6 +2911,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('login-pass').value = '';
       await iniciarSesionUI(found, true);
     }
+
 
     function logout(auto=false) {
       if (currentUser) securityLog(auto ? 'Cierre automático' : 'Cierre de sesión', auto ? 'Inactividad' : 'Usuario solicitó salir');
@@ -2344,28 +2922,42 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('login-screen').style.display = 'flex';
     }
 
+
     function applyRolePermissions() {
       const isAdmin = currentUser && currentUser.rol === 'Administrador';
-      document.querySelectorAll('.admin-only').forEach(el => {
-        if (isAdmin) el.classList.remove('disabled');
-        else el.classList.add('disabled');
+      document.querySelectorAll('.nav-item').forEach(el => {
+        const match = el.getAttribute('onclick')?.match(/showSection\('([^']+)'/);
+        let modulo = match?.[1];
+        if (el.id === 'nav-pos') modulo = 'ventas';
+        if (el.getAttribute('onclick')?.includes('abrirCierresVentas')) modulo = 'cierres';
+        const allowed = isAdmin || (modulo && tienePermiso(modulo));
+        el.style.display = allowed ? '' : 'none';
+      });
+      document.querySelectorAll('.content-section').forEach(el => {
+        const modulo = el.id.replace(/^sec-/, '');
+        const allowed = isAdmin || tienePermiso(modulo);
+        el.dataset.permitido = allowed ? '1' : '0';
+        if (!allowed) el.classList.remove('active');
+      });
+      document.querySelectorAll('.admin-only:not(.nav-item):not(.content-section)').forEach(el => {
+        if (isAdmin) el.style.display = '';
       });
     }
 
     let seccionActual = 'dashboard';
 
+
     function showSection(secId, element) {
       if (!currentUser) return;
 
-      if (currentUser.rol !== 'Administrador' && secId !== 'ventas') {
-        alert('Acceso restringido solo para Administradores');
+      const section = document.getElementById(`sec-${secId}`);
+      if (!section) return;
+      if (!tienePermiso(secId)) {
+        alert('No tienes permiso para acceder a este módulo. Solicita al administrador que ajuste tu perfil.');
+        securityLog('Acceso denegado', `Módulo solicitado: ${secId}`);
         return;
       }
 
-      const section = document.getElementById(`sec-${secId}`);
-      if (!section) return;
-
-      // Cambiar realmente la sección visible.
       document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
@@ -2389,8 +2981,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         usuarios: '8. Usuarios',
         reportes: '9. Reportes',
         configuracion: '10. Configuración & Alegra',
-        cierres: '10. Cierres de Ventas',
-        configuracion: '11. Configuración & Alegra',
+        cierres: '11. Cierres de Ventas',
         creditos: '12. Créditos / Abonos'
       };
       const title = document.getElementById('section-title');
@@ -2401,7 +2992,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('active'));
     }
 
-    // REINICIO DE VENTAS SOLO ADMIN
     async function resetSalesToZero() {
       if (!requireAdmin()) return;
       const confirmPass = prompt("ACCIÓN CRÍTICA: Ingrese su contraseña de Administrador para reiniciar todas las ventas a $ 0:");
@@ -2423,7 +3013,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
     }
 
-    // API ALEGRA INTEGRACIÓN
     async function emitAlegraInvoice(venta) {
       if (!DB.alegra || !DB.alegra.active || !DB.alegra.email || !DB.alegra.token) {
         return { success: false, message: 'Alegra no está configurado o desactivado.' };
@@ -2432,7 +3021,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       const authHeader = 'Basic ' + btoa(`${DB.alegra.email}:${DB.alegra.token}`);
       const clienteObj = DB.clientes.find(c => c.nombre === venta.cliente) || DB.clientes[0];
 
-      // Formato JSON que requiere Alegra para Facturación
       const alegraPayload = {
         date: venta.fecha,
         dueDate: venta.fecha,
@@ -2476,7 +3064,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
     }
 
-    // IMPORTACIÓN / EXPORTACIÓN EXCEL
     function importProductsExcel(event) {
       const file = event.target.files?.[0];
       if (!file) return;
@@ -2527,7 +3114,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       reader.readAsArrayBuffer(file);
     }
 
-    // EXPORTACIÓN EXCEL
     function exportProductsExcel() {
       const data = DB.productos.map(p => ({
         'Código': p.codigo,
@@ -2546,6 +3132,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       XLSX.writeFile(wb, "Productos_Supermercado.xlsx");
     }
 
+
     function exportInventoryExcel() {
       const data = DB.productos.map(p => ({
         'Código': p.codigo,
@@ -2562,8 +3149,14 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       XLSX.writeFile(wb, "Reporte_Inventario.xlsx");
     }
 
+
     function exportSalesReportExcel() {
-      const data = DB.ventas.map(v => ({
+      if (typeof XLSX === 'undefined') return alert('No se pudo cargar el módulo de Excel.');
+      const desde = document.getElementById('rep-fecha-desde')?.value || '';
+      const hasta = document.getElementById('rep-fecha-hasta')?.value || '';
+      if (desde && hasta && desde > hasta) return alert('La fecha “Desde” no puede ser posterior a “Hasta”.');
+      const ventasExportar = obtenerVentasFiltradasReporte();
+      const data = ventasExportar.map(v => ({
         'Factura ID': v.id,
         'Atendido Por': v.cajero,
         'Fecha': v.fecha,
@@ -2578,26 +3171,27 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       const ws = XLSX.utils.json_to_sheet(data);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Ventas");
-      XLSX.writeFile(wb, "Reporte_Ventas.xlsx");
+      XLSX.writeFile(wb, `Reporte_Ventas_${desde || 'inicio'}_${hasta || 'actualidad'}.xlsx`);
     }
 
-    // RENDERIZADOS
     function renderAll() {
       renderCategoryDropdowns();
-      if (currentUser && currentUser.rol === 'Administrador') {
-        renderDashboard();
-        renderProducts();
-        renderInventario();
-        renderCompras();
-        renderProveedores();
-        renderClientes();
-        renderCreditos(); // NEW render call for debts
-        renderUsuarios();
-        renderReportes();
-        renderCierreVentas();
+      if (currentUser) {
+        if (tienePermiso('dashboard')) renderDashboard();
+        if (tienePermiso('productos')) renderProducts();
+        if (tienePermiso('inventario')) renderInventario();
+        if (tienePermiso('compras')) renderCompras();
+        if (tienePermiso('proveedores')) renderProveedores();
+        if (tienePermiso('clientes')) renderClientes();
+        if (tienePermiso('creditos')) renderCreditos();
+        if (tienePermiso('usuarios')) renderUsuarios();
+        if (tienePermiso('reportes')) renderReportes();
+        if (tienePermiso('cierres')) renderCierreVentas();
       }
-      renderPOS();
-      renderPOSClientes();
+      if (tienePermiso('ventas')) {
+        renderPOS();
+        renderPOSClientes();
+      }
     }
 
     function renderCategoryDropdowns(selectedCategory = null) {
@@ -2646,6 +3240,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
     }
 
+
     function renderDashboard() {
       const hoy = getLocalDateISO();
       const ventasHoy = DB.ventas.filter(v => v.fecha === hoy).reduce((acc, v) => acc + v.total, 0);
@@ -2686,6 +3281,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       tbody.innerHTML = lista.length ? lista.map(i => `<tr><td><b>${escapeHtml(i.nombre)}</b></td><td>${escapeHtml(i.codigo)}</td><td>${i.qty}</td></tr>`).join('') : `<tr><td colspan="3" style="text-align:center;padding:1rem;">No hay ventas registradas.</td></tr>`;
     }
 
+
     function renderProducts() {
       const search = document.getElementById('prod-search')?.value.toLowerCase() || '';
       const catFilter = document.getElementById('prod-cat-filter')?.value || '';
@@ -2709,9 +3305,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       `}).join('');
     }
 
-    // Accesos rápidos desde la misma pantalla de Productos.
-    // La compra y el proveedor utilizan los formularios existentes para mantener
-    // las validaciones y el guardado que ya tiene el sistema.
     function abrirCompraDesdeProductos() {
       if (!DB.proveedores || DB.proveedores.length === 0) {
         if (confirm('Todavía no hay proveedores. ¿Desea registrar uno ahora?')) {
@@ -2742,8 +3335,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     }
 
     function abrirProveedorDesdeProducto() {
-      // Los datos ya escritos en el formulario de producto se conservan al abrir
-      // el formulario de proveedor. Después de guardarlo, podrá seleccionarse aquí.
       openProveedorModal();
     }
 
@@ -2761,6 +3352,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       cargarProveedoresProducto('');
       document.getElementById('modal-producto').classList.add('active');
     }
+
 
     function saveProduct() {
       const id = document.getElementById('mp-id').value.trim();
@@ -2812,7 +3404,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('mp-id').value = p.id;
       document.getElementById('mp-codigo').value = p.codigo || '';
       document.getElementById('mp-nombre').value = p.nombre || '';
-      // Reconstruir el selector y conservar exactamente la categoría del producto.
       if (p.categoria && !DB.categorias.includes(p.categoria)) DB.categorias.push(p.categoria);
       renderCategoryDropdowns(p.categoria || '');
       cargarProveedoresProducto(p.proveedorId || '');
@@ -2823,6 +3414,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('mp-min').value = p.minStock ?? 5;
       document.getElementById('modal-producto').classList.add('active');
     }
+
 
     function deleteProduct(id) {
       const producto = DB.productos.find(p => String(p.id) === String(id));
@@ -2835,147 +3427,289 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
     }
 
+
     function renderInventario() {
       const tbody = document.getElementById('tbl-inventario');
       if (!tbody) return;
-
-      // La búsqueda existe únicamente dentro de Inventarios.
+      const productos = Array.isArray(DB.productos) ? DB.productos : [];
       const input = document.getElementById('inv-search');
       const busqueda = (input?.value || '').trim().toLowerCase();
+      const filtro = document.getElementById('inv-status-filter')?.value || '';
+      const hoy = getLocalDateISO();
+      const estadoVenc = p => getVencimientoStatus(p.vencimiento);
+      const esVencido = p => Boolean(p.vencimiento) && estadoVenc(p).diffDays < 0;
+      const esPorVencer = p => Boolean(p.vencimiento) && estadoVenc(p).diffDays >= 0 && estadoVenc(p).diffDays <= 20;
+      const esBajo = p => (Number(p.stock)||0) <= (Number(p.minStock)||0);
 
-      const productosFiltrados = (DB.productos || []).filter(p => {
+      const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+      setText('inv-kpi-total', productos.length);
+      setText('inv-kpi-bajo', productos.filter(esBajo).length);
+      setText('inv-kpi-vencidos', productos.filter(esVencido).length);
+      setText('inv-kpi-por-vencer', productos.filter(esPorVencer).length);
+
+      const productosFiltrados = productos.filter(p => {
         const nombre = String(p.nombre || '').toLowerCase();
         const codigo = String(p.codigo || '').toLowerCase();
-        return !busqueda || nombre.includes(busqueda) || codigo.includes(busqueda);
+        const coincideTexto = !busqueda || nombre.includes(busqueda) || codigo.includes(busqueda);
+        const coincideEstado = !filtro || (filtro === 'bajo' && esBajo(p)) || (filtro === 'vencido' && esVencido(p)) || (filtro === 'por-vencer' && esPorVencer(p));
+        return coincideTexto && coincideEstado;
       });
 
       tbody.innerHTML = productosFiltrados.map(p => {
-        const vencStatus = getVencimientoStatus(p.vencimiento);
+        const vencStatus = estadoVenc(p);
         const stock = Number(p.stock) || 0;
         const minStock = Number(p.minStock) || 0;
-
-        return `
-        <tr>
-          <td><b>${p.codigo || ''}</b></td>
-          <td><b>${p.nombre || ''}</b></td>
-          <td>${p.categoria || ''}</td>
-          <td>${p.vencimiento || 'No registrada'}</td>
-          <td><span class="badge ${vencStatus.class}">${vencStatus.label}</span></td>
+        const stockBajo = stock <= minStock;
+        return `<tr>
+          <td><b>${escapeHtml(p.codigo || '')}</b></td>
+          <td><b>${escapeHtml(p.nombre || '')}</b></td>
+          <td>${escapeHtml(p.categoria || '')}</td>
+          <td>${escapeHtml(p.vencimiento || 'No registrada')}</td>
+          <td><span class="badge ${vencStatus.class}">${escapeHtml(vencStatus.label)}</span></td>
           <td><b>${stock}</b></td>
-          <td><span class="badge ${stock <= minStock ? 'badge-danger' : 'badge-success'}">${stock <= minStock ? 'Bajo Stock' : 'Suficiente'}</span></td>
-        </tr>
-      `}).join('');
-
+          <td><span class="badge ${stockBajo ? 'badge-danger' : 'badge-success'}">${stockBajo ? 'Bajo Stock' : 'Suficiente'}</span></td>
+        </tr>`;
+      }).join('');
       if (!productosFiltrados.length) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align:center; padding:2rem;">
-              <i class="fa-solid fa-magnifying-glass" style="font-size:2rem;"></i>
-              <br><br><b>No se encontraron productos</b>
-              <br><small>Verifica el nombre o código de barras.</small>
-            </td>
-          </tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;"><i class="fa-solid fa-magnifying-glass" style="font-size:2rem;"></i><br><br><b>No se encontraron productos</b></td></tr>`;
       }
     }
 
-    // POS & IVA MODIFICABLE
     function renderPOS() {
-      const search = document.getElementById('pos-search')?.value.toLowerCase() || '';
+      const search = String(document.getElementById('pos-search')?.value || '').trim().toLocaleLowerCase('es-CO');
       const tbody = document.getElementById('tbl-pos-products');
-      const filtered = DB.productos.filter(p => p.nombre.toLowerCase().includes(search) || p.codigo.includes(search));
-
+      if (!tbody) return;
+      const productos = Array.isArray(DB?.productos) ? DB.productos : [];
+      const filtered = productos.filter(p =>
+        String(p?.nombre || '').toLocaleLowerCase('es-CO').includes(search) ||
+        String(p?.codigo ?? '').toLocaleLowerCase('es-CO').includes(search)
+      );
       tbody.innerHTML = filtered.map(p => `
         <tr>
-          <td>${p.codigo}</td><td>${p.nombre}</td><td>${p.vencimiento || 'N/A'}</td>
-          <td>${formatCOP(p.precio)}</td><td>${p.stock}</td>
-          <td><button class="btn btn-sm btn-primary" onclick="addToCart('${p.id}')">+</button></td>
+          <td>${escapeHtml(String(p.codigo ?? ''))}</td><td>${escapeHtml(String(p.nombre || 'Producto sin nombre'))}</td><td>${escapeHtml(String(p.vencimiento || 'N/A'))}</td>
+          <td>${formatCOP(numeroPOS(p.precio))}</td><td>${Number(p.stock) || 0}</td>
+          <td><button type="button" class="btn btn-sm btn-primary" onclick="addToCart('${String(p.id).replace(/'/g, '&#39;')}')" ${Number(p.stock) <= 0 ? 'disabled' : ''}>+</button></td>
         </tr>
       `).join('');
+      if (!filtered.length) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1.2rem;">No se encontraron productos.</td></tr>';
     }
 
-    // NEW FUNCTION: render pos clients separately for the search filter feature
-    function renderPOSClientes() {
-      const search = document.getElementById('pos-cliente-search')?.value.toLowerCase() || '';
-      const cliSelect = document.getElementById('pos-cliente');
-      if (cliSelect) {
-        const filtered = DB.clientes.filter(c =>
-          (c.nombre || '').toLowerCase().includes(search) ||
-          String(c.cedula || '').includes(search)
-        );
+    function numeroPOS(valor) {
+      if (typeof valor === 'number') return Number.isFinite(valor) ? valor : 0;
+      let texto = String(valor ?? '').trim().replace(/[^0-9,.-]/g, '');
+      if (!texto) return 0;
+      if (texto.includes(',') && texto.includes('.')) {
+        texto = texto.lastIndexOf(',') > texto.lastIndexOf('.')
+          ? texto.replace(/\./g, '').replace(',', '.')
+          : texto.replace(/,/g, '');
+      } else if (texto.includes(',')) {
+        texto = /,\d{1,2}$/.test(texto) ? texto.replace(',', '.') : texto.replace(/,/g, '');
+      } else if (/\.\d{3}$/.test(texto)) {
+        texto = texto.replace(/\./g, '');
+      }
+      const n = Number(texto);
+      return Number.isFinite(n) ? n : 0;
+    }
 
-        cliSelect.innerHTML =
-          '<option value="Consumidor final">Consumidor final (sin cliente registrado)</option>' +
-          filtered.map(c => `<option value="${c.nombre}">${c.nombre} (${c.cedula})</option>`).join('');
+    function renderPOSClientes() {
+      const searchInput = document.getElementById('pos-cliente-search');
+      const cliSelect = document.getElementById('pos-cliente');
+      const resultados = document.getElementById('pos-cliente-resultados');
+      if (!cliSelect) return;
+
+      const normalize = value => String(value ?? '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase('es-CO').trim();
+      const search = normalize(searchInput?.value);
+      const selectedBefore = cliSelect.value || 'Consumidor final';
+      const clientes = Array.isArray(DB?.clientes) ? DB.clientes : [];
+      const filtered = clientes.filter(c => {
+        const fields = [c?.nombre, c?.cedula, c?.documento, c?.identificacion, c?.telefono, c?.celular, c?.correo, c?.email];
+        return !search || fields.some(value => normalize(value).includes(search));
+      });
+      const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[char]);
+
+      cliSelect.innerHTML = '<option value="Consumidor final">Consumidor final</option>' + filtered.map(c => {
+        const nombre = String(c?.nombre || 'Cliente sin nombre');
+        const documento = String(c?.cedula || c?.documento || c?.identificacion || 'Sin documento');
+        return `<option value="${escapeHTML(nombre)}">${escapeHTML(nombre)} (${escapeHTML(documento)})</option>`;
+      }).join('');
+      if ([...cliSelect.options].some(option => option.value === selectedBefore)) cliSelect.value = selectedBefore;
+      else cliSelect.value = 'Consumidor final';
+
+      if (resultados) {
+        if (search) {
+          resultados.style.display = 'block';
+          resultados.innerHTML = filtered.length
+            ? filtered.slice(0, 30).map(c => {
+                const nombre = String(c?.nombre || 'Cliente sin nombre');
+                const documento = String(c?.cedula || c?.documento || c?.identificacion || 'Sin documento');
+                return `<button type="button" class="pos-cliente-resultado" data-cliente="${escapeHTML(nombre)}" style="display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-bottom:1px solid var(--border-color,#eee);background:transparent;color:inherit;cursor:pointer;">${escapeHTML(nombre)} <small style="opacity:.75">· ${escapeHTML(documento)} · ${escapeHTML(c?.telefono || c?.celular || '')}</small></button>`;
+              }).join('')
+            : '<div style="padding:10px 12px;">No se encontraron clientes</div>';
+        } else {
+          resultados.style.display = 'none';
+          resultados.innerHTML = '';
+        }
       }
     }
 
-    function filterPOSClientes() {
-      renderPOSClientes();
+    function filterPOSClientes() { renderPOSClientes(); }
+
+    function seleccionarClientePOS(nombre) {
+      const select = document.getElementById('pos-cliente');
+      const busqueda = document.getElementById('pos-cliente-search');
+      const resultados = document.getElementById('pos-cliente-resultados');
+      if (select && [...select.options].some(option => option.value === nombre)) select.value = nombre;
+      if (busqueda) busqueda.value = nombre === 'Consumidor final' ? '' : nombre;
+      if (resultados) { resultados.style.display = 'none'; resultados.innerHTML = ''; }
     }
+
+    document.addEventListener('click', function(event) {
+      const boton = event.target.closest('#pos-cliente-resultados [data-cliente]');
+      if (boton) seleccionarClientePOS(boton.getAttribute('data-cliente'));
+      else if (!event.target.closest('#pos-cliente-search') && !event.target.closest('#pos-cliente-resultados')) {
+        const resultados = document.getElementById('pos-cliente-resultados');
+        if (resultados) resultados.style.display = 'none';
+      }
+    });
 
     function handlePOSBarcode(e) {
-      if (e.key === 'Enter') {
-        const code = e.target.value.trim();
-        const prod = DB.productos.find(p => p.codigo === code);
-        if (prod) { addToCart(prod.id); e.target.value = ''; } 
-        else { alert('Producto no encontrado'); }
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+
+      const input = e.target;
+      const code = String(input.value || '').trim();
+      if (!code) {
+        input.value = '';
+        input.focus();
+        return;
       }
+
+      // Comparar códigos como texto para conservar ceros iniciales y evitar diferencias de tipo.
+      const productos = Array.isArray(DB?.productos) ? DB.productos : [];
+      const normalizarCodigo = valor => String(valor ?? '').trim().toLocaleLowerCase('es-CO');
+      const prod = productos.find(p => normalizarCodigo(p.codigo) === normalizarCodigo(code));
+
+      // Vaciar siempre el campo tras procesar el escaneo, para permitir leer otro código enseguida.
+      input.value = '';
+      if (prod) {
+        addToCart(prod.id);
+      } else {
+        alert('Producto no encontrado. Verifica el código e intenta nuevamente.');
+      }
+
+      input.focus();
     }
+
 
     function addToCart(id) {
-      const prod = DB.productos.find(p => p.id === id);
-      if (prod.stock <= 0) return alert('Producto sin stock disponible');
-      
-      const item = cart.find(x => x.id === id);
-      if (item) {
-        if (item.qty < prod.stock) item.qty++;
-        else alert('Alcanzado el límite del stock actual');
-      } else {
-        cart.push({ ...prod, qty: 1 });
+      try {
+        const productos = Array.isArray(DB?.productos) ? DB.productos : [];
+        const prod = productos.find(p => String(p?.id) === String(id));
+        if (!prod) {
+          alert('No se encontró el producto seleccionado. Actualiza la lista e inténtalo de nuevo.');
+          return;
+        }
+        const stock = Number(prod.stock) || 0;
+        if (stock <= 0) {
+          alert('Producto sin stock disponible');
+          return;
+        }
+        if (!Array.isArray(cart)) cart = [];
+        const existente = cart.find(x => String(x.id) === String(id));
+        if (existente) {
+          const cantidadActual = Math.max(0, Number(existente.qty) || 0);
+          if (cantidadActual >= stock) {
+            alert('Alcanzado el límite del stock actual');
+            return;
+          }
+          existente.qty = cantidadActual + 1;
+          existente.precio = numeroPOS(existente.precio ?? prod.precio);
+        } else {
+          const precio = numeroPOS(prod.precio ?? prod.precioVenta ?? prod.precio_venta ?? 0);
+          cart.push({ ...prod, precio, qty: 1 });
+        }
+        updateCartUI();
+      } catch (error) {
+        console.error('Error al agregar producto al carrito:', error);
+        alert('No se pudo agregar el producto. Revisa el precio y los datos del producto.');
       }
-      updateCartUI();
     }
+    window.addToCart = addToCart;
 
     function decreaseQty(id) {
-      const item = cart.find(x => x.id === id);
+      const item = cart.find(x => String(x.id) === String(id));
       if (!item) return;
       if (item.qty > 1) item.qty--;
       else removeFromCart(id);
       updateCartUI();
     }
 
+
     function getConfiguredIva() {
       const iva = parseFloat(DB.config?.iva);
       return Number.isFinite(iva) && iva >= 0 && iva <= 100 ? iva : 19;
     }
 
+
     function updateCartUI() {
+      if (!Array.isArray(cart)) cart = [];
       const list = document.getElementById('cart-list');
-      list.innerHTML = cart.map(item => `
-        <div class="cart-item">
-          <div><b>${item.nombre}</b><br><small style="color:var(--text-muted);">${formatCOP(item.precio)}</small></div>
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <button class="btn btn-sm btn-secondary" onclick="decreaseQty('${item.id}')">-</button>
-            <span style="font-weight: bold;">${item.qty}</span>
-            <button class="btn btn-sm btn-primary" onclick="addToCart('${item.id}')">+</button>
-            <button class="btn btn-sm btn-danger" onclick="removeFromCart('${item.id}')"><i class="fa-solid fa-trash"></i></button>
-          </div>
-        </div>
-      `).join('');
-
+      let subtotal = 0;
+      if (list) {
+        list.innerHTML = cart.map(item => {
+          const precio = Math.max(0, numeroPOS(item.precio ?? item.precioVenta ?? item.precio_venta ?? 0));
+          const cantidad = Math.max(0, Number.parseFloat(item.qty) || 0);
+          const importe = precio * cantidad;
+          subtotal += importe;
+          return `
+            <div class="cart-item">
+              <div style="min-width:0;flex:1;">
+                <b>${escapeHtml(String(item.nombre || 'Producto sin nombre'))}</b><br>
+                <small style="color:var(--text-muted);">${formatCOP(precio)} c/u</small><br>
+                <small><b>Importe: ${formatCOP(importe)}</b></small>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="decreaseQty('${String(item.id)}')">-</button>
+                <span style="font-weight:bold;min-width:18px;text-align:center;">${cantidad}</span>
+                <button type="button" class="btn btn-sm btn-primary" onclick="addToCart('${String(item.id)}')">+</button>
+                <button type="button" class="btn btn-sm btn-danger" onclick="removeFromCart('${String(item.id)}')"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>`;
+        }).join('') || '<div style="padding:12px;text-align:center;color:var(--text-muted);">Agrega productos para iniciar la venta.</div>';
+      } else {
+        cart.forEach(item => {
+          subtotal += Math.max(0, numeroPOS(item.precio ?? item.precioVenta ?? item.precio_venta ?? 0)) * Math.max(0, Number.parseFloat(item.qty) || 0);
+        });
+      }
       const ivaPercent = getConfiguredIva();
-      const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
-      const iva = subtotal * (ivaPercent / 100);
+      const iva = Math.round(subtotal * ivaPercent) / 100;
       const total = subtotal + iva;
-
-      document.getElementById('pos-subtotal').textContent = formatCOP(subtotal);
-      document.getElementById('pos-iva').textContent = formatCOP(iva);
-      document.getElementById('pos-total').textContent = formatCOP(total);
-      calcularCambio();
+      const setMoney = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = formatCOP(Number.isFinite(value) ? value : 0);
+      };
+      setMoney('pos-subtotal', subtotal);
+      setMoney('pos-iva', iva);
+      setMoney('pos-total', total);
+      const totalEl = document.getElementById('pos-total');
+      if (totalEl) {
+        totalEl.style.setProperty('color', '#123b82', 'important');
+        totalEl.style.setProperty('display', 'inline-block', 'important');
+        totalEl.style.setProperty('visibility', 'visible', 'important');
+        totalEl.style.setProperty('opacity', '1', 'important');
+      }
+      const ivaInput = document.getElementById('pos-iva-percent');
+      if (ivaInput) ivaInput.value = String(ivaPercent);
+      if (typeof calcularCambio === 'function') calcularCambio();
     }
+    window.updateCartUI = updateCartUI;
 
     function removeFromCart(id) {
-      cart = cart.filter(i => i.id !== id);
+      cart = cart.filter(i => String(i.id) !== String(id));
       updateCartUI();
     }
 
@@ -2984,43 +3718,49 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       return valor.trim() === '' ? NaN : Number(valor);
     }
 
+
     function calcularCambio() {
       const metodo = document.getElementById('pos-metodo')?.value;
       const panel = document.getElementById('pos-efectivo-panel');
       const input = document.getElementById('pos-billete');
       const cambioEl = document.getElementById('pos-cambio');
       const ayuda = document.getElementById('pos-cambio-ayuda');
-      if (!panel || !input || !cambioEl || !ayuda) return;
+      if (!panel || !input || !cambioEl) return;
 
       const esEfectivo = metodo === 'Efectivo';
       panel.style.display = esEfectivo ? 'block' : 'none';
       if (!esEfectivo) return;
 
-      const totalTexto = document.getElementById('pos-total')?.textContent || '0';
-      const total = Number(totalTexto.replace(/[^0-9,-]/g, '').replace(/\./g, '').replace(',', '.')) || 0;
-      const recibido = Number(input.value);
-      if (input.value.trim() === '' || !Number.isFinite(recibido)) {
+      const subtotal = cart.reduce((acumulado, item) => acumulado + numeroPOS(item.precio) * Math.max(0, Number(item.qty) || 0), 0);
+      const total = subtotal + Math.round(subtotal * getConfiguredIva()) / 100;
+      const recibido = numeroPOS(input.value);
+      if (String(input.value ?? '').trim() === '' || !Number.isFinite(recibido)) {
         cambioEl.textContent = formatCOP(0);
-        ayuda.textContent = 'Ingresa el valor recibido para calcular el cambio.';
-        ayuda.style.color = 'var(--text-muted)';
+        if (ayuda) {
+          ayuda.textContent = 'Ingresa el valor recibido para calcular el cambio.';
+          ayuda.style.color = 'var(--text-muted)';
+        }
         return;
       }
       const diferencia = recibido - total;
       cambioEl.textContent = formatCOP(Math.max(0, diferencia));
-      if (diferencia < 0) {
-        ayuda.textContent = 'Faltan ' + formatCOP(Math.abs(diferencia)) + ' para completar el pago.';
-        ayuda.style.color = 'var(--danger)';
-      } else {
-        ayuda.textContent = 'Pago suficiente. Entrega este cambio al cliente.';
-        ayuda.style.color = 'var(--success)';
+      if (ayuda) {
+        if (diferencia < 0) {
+          ayuda.textContent = 'Faltan ' + formatCOP(Math.abs(diferencia)) + ' para completar el pago.';
+          ayuda.style.color = 'var(--danger)';
+        } else {
+          ayuda.textContent = 'Pago suficiente. Entrega este cambio al cliente.';
+          ayuda.style.color = 'var(--success)';
+        }
       }
     }
 
-    async function processSale() {
+
+    async function processSaleBase() {
       if (cart.length === 0) return alert('El carrito está vacío');
 
       const ivaPercent = getConfiguredIva();
-      const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
+      const subtotal = cart.reduce((acc, i) => acc + numeroPOS(i.precio) * Math.max(0, Number(i.qty) || 0), 0);
       const iva = subtotal * (ivaPercent / 100);
       const total = subtotal + iva;
       const billeteInput = document.getElementById('pos-billete');
@@ -3038,7 +3778,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       const clienteNombre = clienteSelect?.value || 'Consumidor final';
       const metodo = document.getElementById('pos-metodo').value;
 
-      // Verificar stock real antes de finalizar la venta.
       for (const item of cart) {
         const productoActual = DB.productos.find(p => String(p.id) === String(item.id));
         if (!productoActual) return alert(`El producto "${item.nombre}" ya no existe.`);
@@ -3047,7 +3786,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         }
       }
 
-      // Una venta a crédito necesita un cliente registrado para poder asociar la deuda.
       const targetCliente = DB.clientes.find(c => c.nombre === clienteNombre);
       if (metodo === 'Crédito' && !targetCliente) {
         return alert('Para vender a crédito debe seleccionar un cliente registrado.');
@@ -3069,7 +3807,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         alegraStatus: 'Sin Emitir'
       };
 
-      // NEW FEATURE: Add to debt if payment method is "Crédito"
       if (metodo === 'Crédito' && targetCliente) {
         targetCliente.deuda = (targetCliente.deuda || 0) + total;
       }
@@ -3086,8 +3823,8 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
 
       cart.forEach(item => {
-        const p = DB.productos.find(x => x.id === item.id);
-        if (p) p.stock -= item.qty;
+        const p = DB.productos.find(x => String(x.id) === String(item.id));
+        if (p) p.stock = Math.max(0, (Number(p.stock) || 0) - (Number(item.qty) || 0));
       });
 
       DB.ventas.push(venta);
@@ -3096,6 +3833,35 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       saveDB();
       openReceiptModal(venta);
     }
+
+    let ventaEnProceso = false;
+    async function processSale() {
+      if (ventaEnProceso) {
+        return alert('La venta ya se está procesando. Espera a que termine para evitar duplicados.');
+      }
+      ventaEnProceso = true;
+      const boton = document.querySelector('button[onclick="processSale()"]');
+      const textoOriginal = boton ? boton.innerHTML : '';
+      if (boton) {
+        boton.disabled = true;
+        boton.setAttribute('aria-busy', 'true');
+        boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando venta…';
+      }
+      try {
+        await processSaleBase();
+      } catch (error) {
+        console.error('No se pudo completar la venta:', error);
+        alert('Ocurrió un error al procesar la venta. Revisa el estado antes de intentarlo de nuevo.');
+      } finally {
+        ventaEnProceso = false;
+        if (boton) {
+          boton.disabled = false;
+          boton.removeAttribute('aria-busy');
+          boton.innerHTML = textoOriginal;
+        }
+      }
+    }
+
 
     function openReceiptModal(venta, esEliminada = false) {
       document.getElementById('rec-empresa').textContent = DB.config.nombre;
@@ -3121,7 +3887,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('modal-recibo').classList.add('active');
     }
 
-    // USUARIOS
     function renderUsuarios() {
       const tbody = document.getElementById('tbl-usuarios');
       tbody.innerHTML = DB.usuarios.map(u => `
@@ -3136,6 +3901,42 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       `).join('');
     }
 
+
+    const PERMISOS_MODULOS = ['dashboard','productos','inventario','ventas','compras','proveedores','clientes','usuarios','reportes','cierres','configuracion','creditos'];
+    function permisosBasePorRol(rol) {
+      if (rol === 'Administrador') return [...PERMISOS_MODULOS];
+      if (rol === 'Personalizado') return [];
+      return ['ventas'];
+    }
+    function obtenerPermisosUsuario(user=currentUser) {
+      if (!user) return [];
+      if (user.rol === 'Administrador') return [...PERMISOS_MODULOS];
+      const guardados = Array.isArray(user.permisos) ? user.permisos.filter(p => PERMISOS_MODULOS.includes(p)) : null;
+      return guardados || permisosBasePorRol(user.rol);
+    }
+    function tienePermiso(modulo, user=currentUser) {
+      return !!user && (user.rol === 'Administrador' || obtenerPermisosUsuario(user).includes(modulo));
+    }
+    function actualizarChecksPermisos(permisos) {
+      document.querySelectorAll('.mu-permiso').forEach(ch => { ch.checked = permisos.includes(ch.value); });
+      const rol = document.getElementById('mu-rol')?.value;
+      document.querySelectorAll('.mu-permiso').forEach(ch => { ch.disabled = rol === 'Administrador'; });
+    }
+    function permisosDesdeModal() {
+      const rol = document.getElementById('mu-rol').value;
+      if (rol === 'Administrador') return [...PERMISOS_MODULOS];
+      if (rol !== 'Personalizado') return permisosBasePorRol(rol);
+      return [...document.querySelectorAll('.mu-permiso:checked')].map(ch => ch.value);
+    }
+    document.addEventListener('change', (e) => {
+      if (e.target?.id === 'mu-rol') {
+        const rol = e.target.value;
+        if (rol === 'Administrador') actualizarChecksPermisos([...PERMISOS_MODULOS]);
+        else if (rol === 'Personalizado') actualizarChecksPermisos([]);
+        else actualizarChecksPermisos(permisosBasePorRol(rol));
+      }
+    });
+
     function openUsuarioModal() {
       if (!requireAdmin()) return;
       document.getElementById('mu-title').textContent = 'Crear Nuevo Usuario';
@@ -3145,6 +3946,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('mu-pass').value = '';
       document.getElementById('mu-pass').placeholder = 'Mínimo 8 caracteres';
       document.getElementById('mu-rol').value = 'Cajero';
+      actualizarChecksPermisos(permisosBasePorRol('Cajero'));
       document.getElementById('modal-usuario').classList.add('active');
     }
 
@@ -3166,16 +3968,16 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         if (idx < 0) return alert('Usuario no encontrado.');
         const anterior = DB.usuarios[idx];
         if (anterior.id === currentUser.id && rol !== 'Administrador') return alert('No puede quitarse a sí mismo el rol de Administrador.');
-        const data = { ...anterior, id, nombre, user, rol };
+        const data = { ...anterior, id, nombre, user, rol, permisos: permisosDesdeModal() };
         if (pass) {
           if (!passwordPolicyValid(pass)) return alert('La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.');
           await secureUserPassword(data, pass);
         }
         DB.usuarios[idx] = data;
-        if (String(currentUser.id) === String(id)) { currentUser = data; document.getElementById('active-user-name').textContent = data.nombre; document.getElementById('active-user-role').textContent = data.rol; }
+        if (String(currentUser.id) === String(id)) { currentUser = data; document.getElementById('active-user-name').textContent = data.nombre; document.getElementById('active-user-role').textContent = data.rol; applyRolePermissions(); }
       } else {
         if (!passwordPolicyValid(pass)) return alert('La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.');
-        const data = { id: Date.now().toString(), nombre, user, rol };
+        const data = { id: Date.now().toString(), nombre, user, rol, permisos: permisosDesdeModal() };
         await secureUserPassword(data, pass);
         DB.usuarios.push(data);
       }
@@ -3195,6 +3997,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('mu-pass').value = '';
       document.getElementById('mu-pass').placeholder = 'Déjalo vacío para conservar la actual';
       document.getElementById('mu-rol').value = u.rol;
+      actualizarChecksPermisos(obtenerPermisosUsuario(u));
       document.getElementById('modal-usuario').classList.add('active');
     }
 
@@ -3211,7 +4014,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
     }
 
-    // PROVEEDORES
     function renderProveedores() {
       const search = document.getElementById('prov-search')?.value.toLowerCase() || '';
       const tbody = document.getElementById('tbl-proveedores');
@@ -3233,6 +4035,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('modal-proveedor').classList.add('active');
     }
 
+
     function saveProveedor() {
       const id = document.getElementById('mprov-id').value;
       const data = {
@@ -3253,8 +4056,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         DB.proveedores.push(data);
       }
 
-      // Si el proveedor se creó desde el formulario de producto, conservar
-      // los datos escritos y volver a ese formulario con el nuevo proveedor seleccionado.
       const productoModal = document.getElementById('modal-producto');
       const productoAbierto = productoModal && productoModal.classList.contains('active');
       const camposProducto = ['mp-id','mp-codigo','mp-nombre','mp-categoria','mp-vencimiento','mp-precio','mp-costo','mp-stock','mp-min'];
@@ -3302,7 +4103,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
     }
 
-    // CLIENTES
     function renderClientes() {
       const search = document.getElementById('cli-search')?.value.toLowerCase() || '';
       const tbody = document.getElementById('tbl-clientes');
@@ -3325,6 +4125,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('modal-cliente').classList.add('active');
     }
 
+
     function saveCliente() {
       const id = document.getElementById('mc-id').value;
       const data = {
@@ -3337,7 +4138,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         deuda: 0 // New clients start with zero debt
       };
       
-      // Preserve existing debt if editing
       if (id) {
         const idx = DB.clientes.findIndex(c => c.id === id);
         data.deuda = DB.clientes[idx].deuda || 0; 
@@ -3368,11 +4168,9 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
     }
 
-    // CRÉDITOS & ABONOS (NEW FUNCTIONALITY)
     function renderCreditos() {
       const search = document.getElementById('cred-search')?.value.toLowerCase() || '';
       const tbody = document.getElementById('tbl-creditos');
-      // Filters only clients with debt > 0
       const deudores = DB.clientes.filter(c => (c.deuda || 0) > 0 && (c.nombre.toLowerCase().includes(search) || c.cedula.includes(search)));
 
       tbody.innerHTML = deudores.map(c => `
@@ -3396,6 +4194,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('modal-abono').classList.add('active');
     }
 
+
     function saveAbono() {
       const id = document.getElementById('mab-id').value;
       const monto = parseFloat(document.getElementById('mab-monto').value);
@@ -3417,8 +4216,8 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       alert(`Se ha registrado un abono de ${formatCOP(monto)} exitosamente.`);
     }
 
-    // COMPRAS
     let compraItems = [];
+
 
     function renderCompras() {
       const tbody = document.getElementById('tbl-compras');
@@ -3469,8 +4268,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       const prov = document.getElementById('mcop-proveedor');
       const prod = document.getElementById('mcop-producto');
 
-      // Recargar los selectores desde el inventario vigente cada vez que se abre Compras.
-      // Así, cualquier proveedor o producto recién registrado queda disponible inmediatamente.
       prov.innerHTML = DB.proveedores.map(p =>
         `<option value="${String(p.id)}">${escapeHtml(p.empresa || p.nombre || 'Proveedor')} - ${escapeHtml(p.nit || 'Sin NIT')}</option>`
       ).join('');
@@ -3480,7 +4277,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       ).join('');
 
       const selectedProduct = DB.productos[0];
-      // Si el primer producto ya tiene proveedor asignado, seleccionarlo automáticamente.
       if (selectedProduct?.proveedorId && DB.proveedores.some(p => String(p.id) === String(selectedProduct.proveedorId))) {
         prov.value = String(selectedProduct.proveedorId);
       }
@@ -3501,8 +4297,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       const proveedorId = String(provSelect.value || '');
       const productos = Array.isArray(DB.productos) ? DB.productos : [];
       const asignados = productos.filter(p => String(p.proveedorId || '') === proveedorId);
-      // Si el proveedor tiene productos vinculados, priorizar esos productos.
-      // Si aún no se ha vinculado ningún producto, mantener todo el catálogo disponible.
       const lista = asignados.length ? asignados : productos;
       const anterior = String(prodSelect.value || '');
       prodSelect.innerHTML = lista.map(p =>
@@ -3535,10 +4329,8 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     });
   }
 
-  // Si tienes una función para repintar la tabla del modal y refrescar el total:
   if (typeof renderCompraItems === 'function') renderCompraItems();
 
-  // Reset del buscador para registrar el siguiente producto inmediatamente
   const inputBuscar = document.getElementById('mcop-buscar');
   if (inputBuscar) {
     inputBuscar.value = '';
@@ -3547,7 +4339,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
   }
 }
 
-// FUNCIONES DE BÚSQUEDA Y LECTOR DE CÓDIGO DE BARRAS
 function actualizarCostoCompra() {
   const selectProd = document.getElementById('mcop-producto');
   const inputCosto = document.getElementById('mcop-costo');
@@ -3633,6 +4424,7 @@ function handleBarcodeCompra(e) {
       totalEl.textContent = formatCOP(total);
     }
 
+
     function saveCompra() {
       if (!compraItems.length) return alert('Agregue al menos un producto a la compra.');
 
@@ -3642,21 +4434,24 @@ function handleBarcodeCompra(e) {
 
       const total = compraItems.reduce((acc, i) => acc + (i.qty * i.costo), 0);
 
-      // Actualizar stock y costo de los productos.
       compraItems.forEach(item => {
         const producto = DB.productos.find(p => String(p.id) === String(item.productoId));
         if (producto) {
           producto.stock = (Number(producto.stock) || 0) + item.qty;
           producto.costo = item.costo;
+          producto.proveedorId = proveedorObj.id;
+          producto.proveedorNombre = proveedorObj.empresa || proveedorObj.nombre || 'Proveedor';
+          item.codigo = item.codigo || producto.codigo || '';
+          item.nombre = item.nombre || producto.nombre || 'Producto';
         }
       });
 
       const compra = {
         id: 'COM-' + Date.now().toString().slice(-6),
-        proveedor: proveedorObj.empresa || proveedorObj.nombre,
+        proveedor: proveedorObj.empresa || proveedorObj.nombre || 'Proveedor',
         proveedorId: proveedorObj.id,
         fecha: getLocalDateISO(),
-        items: compraItems.map(i => ({...i})),
+        items: compraItems.map(i => ({...i, subtotal: (Number(i.qty)||0) * (Number(i.costo)||0)})),
         total: total
       };
 
@@ -3684,7 +4479,6 @@ function handleBarcodeCompra(e) {
       );
     }
 
-    // ELIMINAR COMPRA Y DESHACER SU EFECTO EN EL INVENTARIO
     function eliminarCompra(id) {
       if (!currentUser || currentUser.rol !== 'Administrador') {
         return alert('Acceso Denegado. Solo el Administrador puede eliminar compras.');
@@ -3707,7 +4501,6 @@ function handleBarcodeCompra(e) {
 
       if (!confirmar) return;
 
-      // Revertir las cantidades que esta compra había agregado al inventario.
       for (const item of (compra.items || [])) {
         const producto = DB.productos.find(p => p.id === item.productoId);
         if (producto) {
@@ -3718,10 +4511,8 @@ function handleBarcodeCompra(e) {
         }
       }
 
-      // Eliminar únicamente la compra seleccionada.
       DB.compras = DB.compras.filter(c => c.id !== id);
 
-      // Recuperar el costo de la compra restante más reciente de cada producto afectado.
       const productosAfectados = new Set((compra.items || []).map(item => item.productoId));
       productosAfectados.forEach(productoId => {
         const producto = DB.productos.find(p => p.id === productoId);
@@ -3740,7 +4531,6 @@ function handleBarcodeCompra(e) {
       alert(`La compra ${compra.id} fue eliminada correctamente y el inventario fue actualizado.`);
     }
 
-    // REPORTES
     function getSaleProductNames(venta) {
       return (venta.items || []).map(i => `${i.nombre || 'Sin nombre'} x${Number(i.qty) || 0}`).join(' · ');
     }
@@ -3782,6 +4572,7 @@ function handleBarcodeCompra(e) {
       setTimeout(() => document.getElementById('reporte-productos-por-vencer')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
     }
 
+
     function renderProductosPorVencer() {
       const tbody = document.getElementById('tbl-productos-por-vencer');
       if (!tbody) return [];
@@ -3815,6 +4606,7 @@ function handleBarcodeCompra(e) {
       XLSX.writeFile(wb, 'Productos_Por_Vencer.xlsx');
     }
 
+
     function obtenerGananciaVenta(venta) {
       const items = Array.isArray(venta.items) ? venta.items : [];
       let costo = 0;
@@ -3822,7 +4614,6 @@ function handleBarcodeCompra(e) {
       items.forEach(item => {
         const cantidad = Number(item.qty) || 0;
         const precio = Number(item.precio) || 0;
-        // Las ventas antiguas no guardaban costo; se usa el costo actual del producto como estimación.
         const productoActual = (DB.productos || []).find(p => String(p.id) === String(item.id) || String(p.codigo) === String(item.codigo));
         const costoUnitario = item.costo !== undefined && item.costo !== null
           ? Number(item.costo) || 0
@@ -3833,12 +4624,14 @@ function handleBarcodeCompra(e) {
       return { costo, ingresoProductos, ganancia: ingresoProductos - costo };
     }
 
+
     function consultarGananciasMensuales() {
       const input = document.getElementById('ganancias-mes-select');
       if (!input) return;
       if (!input.value) input.value = getLocalDateISO().slice(0, 7);
       return renderGananciasMensuales();
     }
+
 
     function renderGananciasMensuales() {
       const input = document.getElementById('ganancias-mes-select');
@@ -3856,10 +4649,6 @@ function handleBarcodeCompra(e) {
       document.getElementById('gan-mes-ventas').textContent = formatCOP(totalVentas);
       document.getElementById('gan-mes-costos').textContent = formatCOP(totalCostos);
       document.getElementById('gan-mes-utilidad').textContent = formatCOP(totalGanancia);
-      const ventasAntiguas = ventasMes.some(v => (v.items || []).some(i => i.costo === undefined || i.costo === null));
-      document.getElementById('gan-mes-nota').textContent = ventasAntiguas
-        ? 'Nota: algunas facturas antiguas no guardaron el costo histórico; para esos productos se utiliza el costo actual del inventario. La ganancia es una estimación bruta y no descuenta gastos operativos ni impuestos.'
-        : 'La ganancia bruta se calcula como (precio de venta − costo unitario) × unidades. No descuenta gastos operativos ni impuestos.';
       const tbody = document.getElementById('tbl-ganancias-mes');
       tbody.innerHTML = filas.length ? filas.map(({ venta, costo, ganancia }) => `
         <tr>
@@ -3894,23 +4683,220 @@ function handleBarcodeCompra(e) {
       XLSX.writeFile(wb, `Ganancias_Ventas_${mes}.xlsx`);
     }
 
-    function renderReportes() {
-      const totVentas = (DB.ventas || []).reduce((acc, v) => acc + (Number(v.total) || 0), 0);
-      const totCompras = (DB.compras || []).reduce((acc, c) => acc + (Number(c.total) || 0), 0);
 
-      document.getElementById('rep-ventas').textContent = formatCOP(totVentas);
-      document.getElementById('rep-compras').textContent = formatCOP(totCompras);
-      document.getElementById('rep-utilidad').textContent = formatCOP(totVentas - totCompras);
+    function renderInversionCompras() {
+      const compras = Array.isArray(DB.compras) ? DB.compras : [];
+      const filas = [];
+      let unidades = 0;
+      compras.forEach(c => (c.items || []).forEach(i => {
+        const qty = Number(i.qty) || 0;
+        const costo = Number(i.costo) || 0;
+        unidades += qty;
+        filas.push({fecha:c.fecha || '', id:c.id || '', proveedor:c.proveedor || 'Sin proveedor', nombre:i.nombre || 'Producto', qty, costo, subtotal:qty*costo});
+      }));
+      const total = compras.reduce((sum,c) => {
+        const items = Array.isArray(c.items) ? c.items : [];
+        const detalle = items.reduce((a,i)=>a+(Number(i.qty ?? i.cantidad)||0)*(Number(i.costo ?? i.precioCosto ?? i.precio)||0),0);
+        const totalGuardado = Number(c.total);
+        return sum + (items.length ? detalle : (Number.isFinite(totalGuardado) ? totalGuardado : 0));
+      },0);
+      const setText = (id,value) => { const el=document.getElementById(id); if(el) el.textContent=value; };
+      setText('rep-compras-cantidad', compras.length);
+      setText('rep-compras-unidades', unidades);
+      setText('rep-compras-detalle-total', formatCOP(total));
+      const tbody=document.getElementById('tbl-reporte-compras');
+      if(tbody) tbody.innerHTML = filas.length ? filas.slice().reverse().map(f=>`<tr><td>${escapeHtml(f.fecha)}</td><td><b>${escapeHtml(f.id)}</b></td><td>${escapeHtml(f.proveedor)}</td><td>${escapeHtml(f.nombre)}</td><td>${f.qty}</td><td>${formatCOP(f.costo)}</td><td><b>${formatCOP(f.subtotal)}</b></td></tr>`).join('') : '<tr><td colspan="7" class="empty-report">No hay compras registradas.</td></tr>';
 
+      const productosTbody=document.getElementById('tbl-reporte-productos-proveedor');
+      const productos=(DB.productos||[]).filter(p=>p.proveedorId || p.proveedorNombre);
+      if(productosTbody) productosTbody.innerHTML=productos.length ? productos.map(p=>{
+        const prov=(DB.proveedores||[]).find(x=>String(x.id)===String(p.proveedorId));
+        const nombreProv=p.proveedorNombre || (prov ? (prov.empresa||prov.nombre) : '') || 'Proveedor no disponible';
+        const stock=Number(p.stock)||0, costo=Number(p.costo)||0;
+        return `<tr><td>${escapeHtml(nombreProv)}</td><td>${escapeHtml(p.codigo||'')}</td><td>${escapeHtml(p.nombre||'')}</td><td>${stock}</td><td>${formatCOP(costo)}</td><td><b>${formatCOP(stock*costo)}</b></td></tr>`;
+      }).join('') : '<tr><td colspan="6" class="empty-report">No hay productos con proveedor asignado.</td></tr>';
+    }
+
+
+    function renderCruceVentasInventario() {
+      const productos = Array.isArray(DB.productos) ? DB.productos : [];
+      const ventas = Array.isArray(DB.ventas) ? DB.ventas : [];
+      const proveedores = Array.isArray(DB.proveedores) ? DB.proveedores : [];
+      const mapa = new Map();
+      const norm = v => String(v ?? '').trim().toLowerCase();
+      const resolverProducto = item => productos.find(p =>
+        (item.id != null && String(p.id) === String(item.id)) ||
+        (item.productoId != null && String(p.id) === String(item.productoId)) ||
+        (item.codigo && norm(p.codigo) === norm(item.codigo)) ||
+        (item.nombre && norm(p.nombre) === norm(item.nombre))
+      );
+      ventas.forEach(v => (v.items || []).forEach(item => {
+        const p = resolverProducto(item);
+        const key = p ? String(p.id) : `sin-match:${norm(item.codigo || item.nombre || item.id || 'producto')}`;
+        const nombre = p?.nombre || item.nombre || 'Producto sin identificar';
+        const existente = mapa.get(key) || { producto:p, nombre, qty:0, ingresos:0, costo:0, sinCostoHistorico:false };
+        const qty = Number(item.qty ?? item.cantidad) || 0;
+        const precio = Number(item.precio ?? item.price) || 0;
+        const costoHistorico = item.costo !== undefined && item.costo !== null && item.costo !== '';
+        const costoUnitario = costoHistorico ? (Number(item.costo)||0) : (Number(p?.costo)||0);
+        existente.qty += qty;
+        existente.ingresos += qty * precio;
+        existente.costo += qty * costoUnitario;
+        if (!costoHistorico) existente.sinCostoHistorico = true;
+        mapa.set(key, existente);
+      }));
+      const filas = [...mapa.values()].sort((a,b)=>b.ingresos-a.ingresos);
+      const totalQty = filas.reduce((s,f)=>s+f.qty,0);
+      const totalIngresos = filas.reduce((s,f)=>s+f.ingresos,0);
+      const totalCostos = filas.reduce((s,f)=>s+f.costo,0);
+      const setText=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+      setText('rep-cruce-productos', filas.length);
+      setText('rep-cruce-unidades', totalQty);
+      setText('rep-cruce-ingresos', formatCOP(totalIngresos));
+      setText('rep-cruce-costos', formatCOP(totalCostos));
+      setText('rep-cruce-utilidad', formatCOP(totalIngresos-totalCostos));
+      const tbody=document.getElementById('tbl-reporte-cruce');
+      if (!tbody) return;
+      tbody.innerHTML = filas.length ? filas.map(f=>{
+        const p=f.producto;
+        const prov=p ? proveedores.find(x=>String(x.id)===String(p.proveedorId)) : null;
+        const proveedor=p ? (p.proveedorNombre || prov?.empresa || prov?.nombre || '') : '';
+        const stock=p ? (Number(p.stock)||0) : null;
+        const estado=!p ? 'Sin coincidencia en inventario' : (stock<=0 ? 'Agotado' : (stock <= (Number(p.minStock)||5) ? 'Stock bajo' : 'Disponible'));
+        return `<tr><td><b>${escapeHtml(f.nombre)}</b>${p?.codigo?`<br><small>${escapeHtml(p.codigo)}</small>`:''}</td><td>${escapeHtml(proveedor || 'Sin proveedor asignado')}</td><td>${f.qty}</td><td>${formatCOP(f.ingresos)}</td><td>${formatCOP(f.costo)}${f.sinCostoHistorico?'<br><small>Incluye costo actual estimado</small>':''}</td><td><b>${formatCOP(f.ingresos-f.costo)}</b></td><td>${stock===null?'—':stock}</td><td>${escapeHtml(estado)}</td></tr>`;
+      }).join('') : '<tr><td colspan="8" class="empty-report">No hay ventas con productos para cruzar.</td></tr>';
+    }
+
+    function exportComprasReportExcel() {
+      if (typeof XLSX === 'undefined') return alert('No se pudo cargar el módulo de Excel.');
+      const compras = Array.isArray(DB.compras) ? DB.compras : [];
+      const detalle=[];
+      compras.forEach(c=>(c.items||[]).forEach(i=>detalle.push({
+        'Fecha':c.fecha||'', 'Compra':c.id||'', 'Proveedor':c.proveedor||'Sin proveedor',
+        'Código producto':i.codigo||'', 'Producto':i.nombre||'Producto', 'Cantidad':Number(i.qty)||0,
+        'Costo unitario COP':Number(i.costo)||0, 'Subtotal COP':(Number(i.qty)||0)*(Number(i.costo)||0)
+      })));
+      const productos=(DB.productos||[]).filter(p=>p.proveedorId||p.proveedorNombre).map(p=>{
+        const prov=(DB.proveedores||[]).find(x=>String(x.id)===String(p.proveedorId));
+        return {'Proveedor':p.proveedorNombre||(prov?(prov.empresa||prov.nombre):'')||'Proveedor no disponible','Código':p.codigo||'','Producto':p.nombre||'','Stock actual':Number(p.stock)||0,'Costo unitario COP':Number(p.costo)||0,'Valor estimado stock COP':(Number(p.stock)||0)*(Number(p.costo)||0)};
+      });
+      const wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(detalle.length?detalle:[{'Información':'No hay compras registradas'}]),'Detalle de compras');
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(productos.length?productos:[{'Información':'No hay productos con proveedor'}]),'Productos por proveedor');
+      XLSX.writeFile(wb,'Reporte_Inversion_Compras.xlsx');
+    }
+
+    function fechaClaveReporte(valor) {
+      if (!valor) return '';
+      const texto = String(valor).trim();
+      const iso = texto.match(/^(\d{4}-\d{2}-\d{2})/);
+      if (iso) return iso[1];
+      const d = new Date(texto);
+      return Number.isNaN(d.getTime()) ? '' : `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+    function registroDentroDeFechas(registro, desde, hasta) {
+      const fecha = fechaClaveReporte(registro?.fecha || registro?.fechaCreacion || registro?.created_at);
+      if (!fecha) return !desde && !hasta; // no inventar una fecha para registros antiguos sin fecha válida
+      return (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
+    }
+    function obtenerVentasPorPeriodoReporte() {
+      const desde = document.getElementById('rep-fecha-desde')?.value || '';
+      const hasta = document.getElementById('rep-fecha-hasta')?.value || '';
+      if (desde && hasta && desde > hasta) return [];
+      return (Array.isArray(DB.ventas) ? DB.ventas : []).filter(v => registroDentroDeFechas(v, desde, hasta));
+    }
+    function obtenerVentasFiltradasReporte() {
       const busqueda = (document.getElementById('rep-search')?.value || '').trim().toLowerCase();
-      const ventasFiltradas = (DB.ventas || []).slice().reverse().filter(v => ventaCoincideBusqueda(v, busqueda));
-      renderTablaVentas(document.getElementById('tbl-reportes-ventas'), ventasFiltradas, true);
-      // Los reportes por mes se mantienen vacíos hasta que el usuario pulse Consultar.
+      return obtenerVentasPorPeriodoReporte().filter(v => ventaCoincideBusqueda(v, busqueda));
+    }
+    function limpiarFiltroFechasReporte() {
+      const desde = document.getElementById('rep-fecha-desde');
+      const hasta = document.getElementById('rep-fecha-hasta');
+      if (desde) desde.value = '';
+      if (hasta) hasta.value = '';
+      renderReportes();
+    }
+    function calcularResumenFinancieroReporte(ventas) {
+      const productos = Array.isArray(DB.productos) ? DB.productos : [];
+      const norm = value => String(value ?? '').trim().toLowerCase();
+      let costoVendido = 0, itemsSinCostoHistorico = 0, unidadesSinCostoHistorico = 0;
+      (Array.isArray(ventas) ? ventas : []).forEach(venta => {
+        (Array.isArray(venta.items) ? venta.items : []).forEach(item => {
+          const producto = productos.find(p =>
+            (item.id != null && String(p.id) === String(item.id)) ||
+            (item.productoId != null && String(p.id) === String(item.productoId)) ||
+            (item.codigo && norm(p.codigo) === norm(item.codigo)) ||
+            (item.nombre && norm(p.nombre) === norm(item.nombre))
+          );
+          const cantidad = Number(item.qty ?? item.cantidad) || 0;
+          const tieneCostoHistorico = item.costo !== undefined && item.costo !== null && item.costo !== '' && Number.isFinite(Number(item.costo));
+          const costoUnitario = tieneCostoHistorico ? Number(item.costo) : (Number(producto?.costo) || 0);
+          costoVendido += cantidad * costoUnitario;
+          if (!tieneCostoHistorico) { itemsSinCostoHistorico++; unidadesSinCostoHistorico += cantidad; }
+        });
+      });
+      const listaVentas = Array.isArray(ventas) ? ventas : [];
+      const ventasTotal = listaVentas.reduce((sum, venta) => sum + (Number(venta.total) || 0), 0);
+      const ventasAntesIVA = listaVentas.reduce((sum, venta) => {
+        const subtotalGuardado = Number(venta.subtotal);
+        if (venta.subtotal !== undefined && venta.subtotal !== null && venta.subtotal !== '' && Number.isFinite(subtotalGuardado)) return sum + subtotalGuardado;
+        const total = Number(venta.total) || 0;
+        const iva = Number(venta.iva) || 0;
+        return sum + Math.max(0, total - iva);
+      }, 0);
+      return { ventasTotal, ventasAntesIVA, costoVendido, resultadoEstimado: ventasAntesIVA - costoVendido, itemsSinCostoHistorico, unidadesSinCostoHistorico };
+    }
+
+
+    function renderReportes() {
+      const desde = document.getElementById('rep-fecha-desde')?.value || '';
+      const hasta = document.getElementById('rep-fecha-hasta')?.value || '';
+      const info = document.getElementById('rep-periodo-info');
+      if (info) {
+        if (desde && hasta && desde > hasta) info.textContent = 'Revisa el período: la fecha “Desde” no puede ser posterior a “Hasta”.';
+        else if (!desde && !hasta) info.textContent = 'Mostrando todo el historial disponible.';
+        else info.textContent = `Período: ${desde || 'inicio del historial'} — ${hasta || 'fecha actual'}.`;
+      }
+      const ventasPeriodo = obtenerVentasPorPeriodoReporte();
+      const ventasFiltradas = obtenerVentasFiltradasReporte();
+      const comprasPeriodo = (Array.isArray(DB.compras) ? DB.compras : []).filter(c => registroDentroDeFechas(c, desde, hasta));
+      const resumen = calcularResumenFinancieroReporte(ventasPeriodo);
+      const totCompras = comprasPeriodo.reduce((acc, c) => {
+        const items = Array.isArray(c.items) ? c.items : [];
+        const totalDetalle = items.reduce((sum, item) => {
+          const cantidad = Number(item.qty ?? item.cantidad) || 0;
+          const costo = Number(item.costo ?? item.precioCosto ?? item.precioCostoUnitario ?? item.precio) || 0;
+          return sum + cantidad * costo;
+        }, 0);
+        const totalGuardado = Number(c.total);
+        return acc + (items.length ? totalDetalle : (Number.isFinite(totalGuardado) ? totalGuardado : 0));
+      }, 0);
+      const ventasEl = document.getElementById('rep-ventas');
+      const comprasEl = document.getElementById('rep-compras');
+      const costoVendidoEl = document.getElementById('rep-costo-vendido');
+      const utilidadEl = document.getElementById('rep-utilidad');
+      const costoNotaEl = document.getElementById('rep-costo-nota');
+      if (ventasEl) ventasEl.textContent = formatCOP(resumen.ventasTotal);
+      if (comprasEl) comprasEl.textContent = formatCOP(totCompras);
+      if (costoVendidoEl) costoVendidoEl.textContent = formatCOP(resumen.costoVendido);
+      if (utilidadEl) utilidadEl.textContent = formatCOP(resumen.resultadoEstimado);
+      if (costoNotaEl) costoNotaEl.textContent = resumen.itemsSinCostoHistorico
+        ? `Estimación: ${resumen.itemsSinCostoHistorico} líneas sin costo histórico (${resumen.unidadesSinCostoHistorico} unidades)`
+        : 'Calculado con costos guardados en las ventas';
+      const ventasOrdenadas = ventasFiltradas.slice().reverse();
+      renderTablaVentas(document.getElementById('tbl-reportes-ventas'), ventasOrdenadas, true);
+      if (desde && hasta && desde > hasta) {
+        const tbody = document.getElementById('tbl-reportes-ventas');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="empty-report">Período inválido. Corrige las fechas para ver los resultados.</td></tr>';
+      }
+      renderInversionCompras();
+      renderCruceVentasInventario();
       renderProductosVencidos();
       renderProductosPorVencer();
       renderVentasDelDia();
       renderFacturasEliminadas();
     }
+
 
     function renderVentasDelDia() {
       const dateEl = document.getElementById('rep-dia');
@@ -3949,6 +4935,7 @@ function handleBarcodeCompra(e) {
         </tr>
       `).join('') : `<tr><td colspan="8" class="empty-report">No hay ventas para ${escapeHtml(fecha)}.</td></tr>`;
     }
+
 
     function renderProductosVencidos() {
       const tbody = document.getElementById('tbl-productos-vencidos');
@@ -3991,6 +4978,7 @@ function handleBarcodeCompra(e) {
       select.dataset.cargado = '';
       renderProductosIngresadosPorMes();
     }
+
 
     function renderProductosIngresadosPorMes() {
       const select = document.getElementById('prod-mes-select');
@@ -4123,9 +5111,8 @@ function handleBarcodeCompra(e) {
     }
 
     function eliminarFactura(id) {
-      if (!currentUser || currentUser.rol !== 'Administrador') {
-        return alert('Acceso Denegado. Solo el Administrador puede eliminar facturas.');
-      }
+      if (!requireAdmin()) return;
+      securityLog('Solicitud de eliminación de factura', `Factura: ${id}`);
 
       const venta = (DB.ventas || []).find(v => String(v.id) === String(id));
       if (!venta) return alert('La factura no existe o ya fue eliminada.');
@@ -4157,7 +5144,6 @@ function handleBarcodeCompra(e) {
         if (cliente) cliente.deuda = Math.max(0, (Number(cliente.deuda) || 0) - (Number(venta.total) || 0));
       }
 
-      // Guardar una copia completa en el historial antes de quitarla del listado activo.
       DB.ventasEliminadas = Array.isArray(DB.ventasEliminadas) ? DB.ventasEliminadas : [];
       DB.ventasEliminadas.push({
         ...venta,
@@ -4170,6 +5156,7 @@ function handleBarcodeCompra(e) {
       saveDB();
       alert(`La factura ${venta.id} fue eliminada y quedó disponible en “Facturas eliminadas”. El inventario/deuda se actualizaron.`);
     }
+
 
     function renderFacturasEliminadas() {
       const tbody = document.getElementById('tbl-facturas-eliminadas');
@@ -4235,6 +5222,7 @@ function handleBarcodeCompra(e) {
     function getVentasDeFechaCierre(fecha) {
       return (DB.ventas || []).filter(v => String(v.fecha || '') === String(fecha));
     }
+
 
     function getResumenMetodosCierre(ventas) {
       const base = {
@@ -4303,6 +5291,7 @@ function handleBarcodeCompra(e) {
       document.getElementById('modal-cierre-detalle')?.classList.add('active');
     }
 
+
     function renderCierreVentas() {
       const fechaEl = document.getElementById('cierre-fecha');
       if (!fechaEl) return;
@@ -4314,6 +5303,18 @@ function handleBarcodeCompra(e) {
       const unidades = ventas.reduce((a, v) => a + (v.items || []).reduce((s, i) => s + (Number(i.qty) || 0), 0), 0);
       const resumen = getResumenMetodosCierre(ventas);
       const cierre = getCierreRegistrado(fecha);
+      const efectivoEsperado = Number(resumen.Efectivo?.total) || 0;
+      const efectivoRecibido = ventas.filter(v => v.metodo === 'Efectivo').reduce((a, v) => a + (Number(v.recibido) || (Number(v.total) + (Number(v.cambio) || 0))), 0);
+      const cambioEntregado = ventas.filter(v => v.metodo === 'Efectivo').reduce((a, v) => a + (Number(v.cambio) || 0), 0);
+      const contadoInput = document.getElementById('cierre-efectivo-contado');
+      const esperadoEl = document.getElementById('cierre-efectivo-esperado');
+      const recibidoEl = document.getElementById('cierre-efectivo-recibido');
+      const cambioEl = document.getElementById('cierre-cambio-entregado');
+      if (esperadoEl) esperadoEl.textContent = formatCOP(efectivoEsperado);
+      if (recibidoEl) recibidoEl.textContent = formatCOP(efectivoRecibido);
+      if (cambioEl) cambioEl.textContent = formatCOP(cambioEntregado);
+      if (contadoInput && document.activeElement !== contadoInput) contadoInput.value = cierre && cierre.efectivoContado != null ? cierre.efectivoContado : '';
+      actualizarDiferenciaCaja();
 
       const f = document.getElementById('cierre-facturas');
       const u = document.getElementById('cierre-unidades');
@@ -4389,6 +5390,33 @@ function handleBarcodeCompra(e) {
       });
     }
 
+
+    function actualizarDiferenciaCaja() {
+      const fecha = document.getElementById('cierre-fecha')?.value || getLocalDateISO();
+      const ventas = getVentasDeFechaCierre(fecha);
+      const esperado = ventas.filter(v => v.metodo === 'Efectivo').reduce((a, v) => a + (Number(v.total) || 0), 0);
+      const input = document.getElementById('cierre-efectivo-contado');
+      if (!input || !ayuda) return;
+      if (input.value.trim() === '') {
+        ayuda.textContent = 'Ingresa el efectivo contado para calcular faltante o sobrante.';
+        ayuda.style.color = 'var(--text-muted)';
+        return;
+      }
+      const contado = Number(input.value);
+      if (!Number.isFinite(contado) || contado < 0) {
+        ayuda.textContent = 'Ingresa un valor válido, igual o superior a cero.';
+        ayuda.style.color = 'var(--danger)';
+        return;
+      }
+      const diferencia = contado - esperado;
+      ayuda.textContent = diferencia === 0
+        ? `Caja cuadrada: ${formatCOP(0)} de diferencia.`
+        : diferencia < 0
+          ? `Faltante de ${formatCOP(Math.abs(diferencia))}.`
+          : `Sobrante de ${formatCOP(diferencia)}.`;
+      ayuda.style.color = diferencia === 0 ? 'var(--success)' : 'var(--warning)';
+    }
+
     function revisarCierreVentas() {
       renderCierreVentas();
       const fecha = document.getElementById('cierre-fecha')?.value || getLocalDateISO();
@@ -4415,7 +5443,7 @@ function handleBarcodeCompra(e) {
       const unidades = ventas.reduce((a, v) => a + (v.items || []).reduce((s, i) => s + (Number(i.qty) || 0), 0), 0);
       const total = Number(cierre.total) || 0;
       if (subtitulo) {
-        subtitulo.textContent = `Fecha: ${cierre.fecha || '--'} · Cierre: ${cierre.id || '--'} · Cerrado por: ${cierre.cerradoPor || '--'}`;
+        subtitulo.textContent = `Fecha: ${cierre.fecha || '--'} · Cierre: ${cierre.id || '--'} · Cerrado por: ${cierre.cerradoPor || '--'}${cierre.diferenciaCaja == null ? '' : ` · Diferencia de caja: ${formatCOP(cierre.diferenciaCaja)}`}`;
       }
       if (facturasEl) facturasEl.textContent = Number(cierre.facturas) || ventas.length;
       if (unidadesEl) unidadesEl.textContent = Number(cierre.unidades) || unidades;
@@ -4444,6 +5472,7 @@ function handleBarcodeCompra(e) {
       document.getElementById('modal-cierre-detalle')?.classList.remove('active');
     }
 
+
     function registrarCierreVentas() {
       if (!currentUser || currentUser.rol !== 'Administrador') {
         return alert('Acceso Denegado. Solo el Administrador puede registrar cierres de ventas.');
@@ -4467,7 +5496,8 @@ function handleBarcodeCompra(e) {
         `Efectivo: ${formatCOP(metodos.Efectivo?.total || 0)}`,
         `Nequi/Daviplata: ${formatCOP(metodos['Nequi/Daviplata']?.total || 0)}`,
         `Tarjeta: ${formatCOP(metodos.Tarjeta?.total || 0)}`,
-        `Crédito: ${formatCOP(metodos.Crédito?.total || 0)}`
+        `Crédito: ${formatCOP(metodos.Crédito?.total || 0)}`,
+        `Efectivo contado: ${document.getElementById('cierre-efectivo-contado')?.value === '' ? 'No registrado' : formatCOP(Number(document.getElementById('cierre-efectivo-contado')?.value) || 0)}`
       ].join('\n');
 
       if (!confirm(`¿Registrar el cierre de ventas?\n\n${mensaje}\n\nEl cierre será guardado como resumen histórico.`)) return;
@@ -4481,6 +5511,9 @@ function handleBarcodeCompra(e) {
         unidades,
         total,
         metodos,
+        efectivoEsperado: Number(metodos.Efectivo?.total) || 0,
+        efectivoContado: document.getElementById('cierre-efectivo-contado')?.value === '' ? null : Number(document.getElementById('cierre-efectivo-contado')?.value),
+        diferenciaCaja: document.getElementById('cierre-efectivo-contado')?.value === '' ? null : Number(document.getElementById('cierre-efectivo-contado')?.value) - (Number(metodos.Efectivo?.total) || 0),
         ventaIds: ventas.map(v => v.id).filter(Boolean),
         cerradoPor: currentUser.nombre,
         fechaHora: new Date().toISOString()
@@ -4504,6 +5537,9 @@ function handleBarcodeCompra(e) {
         'Facturas': Number(c.facturas) || 0,
         'Unidades': Number(c.unidades) || 0,
         'Total Ventas COP': Number(c.total) || 0,
+        'Efectivo esperado COP': Number(c.efectivoEsperado ?? c.metodos?.Efectivo?.total) || 0,
+        'Efectivo contado COP': c.efectivoContado == null ? '' : Number(c.efectivoContado),
+        'Diferencia caja COP': c.diferenciaCaja == null ? '' : Number(c.diferenciaCaja),
         'Efectivo COP': Number(c.metodos?.Efectivo?.total) || 0,
         'Nequi/Daviplata COP': Number(c.metodos?.['Nequi/Daviplata']?.total) || 0,
         'Tarjeta COP': Number(c.metodos?.Tarjeta?.total) || 0,
@@ -4516,6 +5552,7 @@ function handleBarcodeCompra(e) {
       XLSX.utils.book_append_sheet(wb, ws, 'Cierres de Ventas');
       XLSX.writeFile(wb, 'Cierres_de_Ventas.xlsx');
     }
+
 
     function saveConfig() {
       DB.config.nombre = document.getElementById('cfg-nombre').value.trim();
@@ -4572,6 +5609,7 @@ function handleBarcodeCompra(e) {
         : (!tieneCredenciales ? 'Guarda el correo y token de Alegra en Configuración.' : 'La emisión se puede activar o desactivar para esta venta.');
     }
 
+
     function saveAlegraConfig() {
       const tokenInput = document.getElementById('cfg-alegra-token');
       const tokenIngresado = tokenInput.value.trim();
@@ -4600,7 +5638,6 @@ function handleBarcodeCompra(e) {
         : 'Facturación electrónica DESACTIVADA. Las nuevas ventas se registrarán solo de forma local.');
     }
 
-    // CARGA DE CONFIGURACIÓN
     const repDia = document.getElementById('rep-dia');
     if (repDia) repDia.value = getLocalDateISO();
     const gananciasMesSelect = document.getElementById('ganancias-mes-select');
@@ -4622,7 +5659,6 @@ function handleBarcodeCompra(e) {
     previewAlegraState();
     syncAlegraPOSControl();
 
-    // MENÚ RESPONSIVE PARA CELULAR Y TABLET
     function toggleMobileMenu() {
       const sidebar = document.querySelector('.sidebar');
       const backdrop = document.getElementById('sidebar-backdrop');
@@ -4641,6 +5677,7 @@ function handleBarcodeCompra(e) {
       }
     }
 
+
     function closeMobileMenu() {
       const sidebar = document.querySelector('.sidebar');
       const backdrop = document.getElementById('sidebar-backdrop');
@@ -4655,7 +5692,6 @@ function handleBarcodeCompra(e) {
       }
     }
 
-    // Al cambiar de sección en móvil se cierra el menú, pero se conserva la sección elegida.
     const showSectionBase = showSection;
     showSection = function(secId, element) {
       showSectionBase(secId, element);
@@ -4666,7 +5702,6 @@ function handleBarcodeCompra(e) {
       if (window.innerWidth > 900) closeMobileMenu();
     });
 
-    // Refuerzo de permisos para llamadas directas a funciones críticas.
     (function instalarProteccionesCriticas(){
       const nombres = ['saveProduct','deleteProduct','saveCategory','saveCompra','eliminarCompra','saveProveedor','deleteProveedor','saveCliente','deleteCliente','saveAbono','saveConfig','openCategoryModal','openCompraModal','openProveedorModal','openClienteModal','eliminarFactura','registrarCierreVentas','saveAlegraConfig'];
       nombres.forEach(nombre => {
@@ -4680,23 +5715,298 @@ function handleBarcodeCompra(e) {
       });
     })();
 
-    // Cargar datos desde Supabase al abrir el sistema.
+    (function protegerDobleRegistroCompra(){
+      const guardarCompraProtegido = window.saveCompra;
+      if (typeof guardarCompraProtegido !== 'function') return;
+      let ultimoIntentoCompra = 0;
+      window.saveCompra = function(...args) {
+        const ahora = Date.now();
+        if (ahora - ultimoIntentoCompra < 900) {
+          alert('Espera un momento: la compra ya fue enviada para registro.');
+          return;
+        }
+        ultimoIntentoCompra = ahora;
+        return guardarCompraProtegido.apply(this, args);
+      };
+    })();
+
     cargarDBSupabase();
 
-    // Sincronización automática: no es necesario cerrar sesión.
-    // Se consulta Supabase cada 5 segundos mientras la pestaña está visible.
-    setInterval(sincronizarMovimientosSupabase, 5000);
+    setInterval(sincronizarMovimientosSupabase, 15000);
 
-    // Al volver a la pestaña, actualizar inmediatamente.
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) sincronizarMovimientosSupabase();
     });
-    // Carga las categorías en los selectores al abrir la página
     renderCategoryDropdowns();
 
-    // Comprobación visible de conexión al terminar de cargar la página.
-    setTimeout(probarConexionSupabase, 1200);
+    setTimeout(() => { if (navigator.onLine) probarConexionSupabase(); else actualizarEstadoConexion(); }, 1200);
 
   </script>
+
+
+<style id="super-mix-fondo-oscuro">
+
+:root { --bg-main: #d5e2f5; --text-main: #1e2f49; --text-muted: #5e708a; --border: #c3d3eb; }
+body:not(:has(#login-screen[style*="display: flex"])) { background-color: #d5e2f5; color: #1e2f49; }
+.main-content {
+  background-color: #d5e2f5 !important;
+  background-image: radial-gradient(ellipse at 78% 0%, rgba(72,145,255,.18), transparent 40%),
+    radial-gradient(ellipse at 15% 25%, rgba(111,164,255,.16), transparent 45%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 900 600'%3E%3Cg fill='none' stroke='%233b82f6' stroke-opacity='.10' stroke-width='1.1'%3E%3Cpath d='M-100 80 C150 -120 280 330 520 120 S760 -60 1000 90'/%3E%3Cpath d='M-100 104 C150 -96 280 354 520 144 S760 -36 1000 114'/%3E%3Cpath d='M-100 128 C150 -72 280 378 520 168 S760 -12 1000 138'/%3E%3Cpath d='M-100 420 C120 250 260 700 510 460 S780 300 1000 450'/%3E%3Cpath d='M-100 444 C120 274 260 724 510 484 S780 324 1000 474'/%3E%3C/g%3E%3C/svg%3E") !important;
+  background-size: auto, auto, cover !important; background-position: center !important;
+}
+.card, .table-container, .cart-summary {
+  background: rgba(245,248,255,.97) !important; color: #1e2f49 !important;
+  border-color: #c5d5ec !important; box-shadow: 0 8px 22px rgba(38,75,130,.08) !important;
+}
+.card h1, .card h2, .card h3, .card h4, .card label, .table-container h3, .cart-summary h3 { color: #1e2f49; }
+table { color: #243650; }
+th { background: #d1e0f7 !important; color: #203d68 !important; }
+td { border-color: #d4dfef !important; }
+.form-control, input, select, textarea { background-color: #fff; color: #1e2f49; border-color: #c8d7ec; }
+.form-control::placeholder, input::placeholder, textarea::placeholder { color: #7b8da7; }
+.modal-card { background: #fff; color: #1e2f49; border-color: #c5d5ec; }
+.modal-card h3, .modal-card label { color: #1e2f49; }
+@media (max-width: 900px) { .main-content { background-attachment: scroll !important; } }
+</style>
+
+
+
+<style id="super-mix-sidebar-azul-mas-oscuro">
+
+.sidebar { background: linear-gradient(180deg, #102858 0%, #153b7b 55%, #194b96 100%) !important; }
+.sidebar::before { background: radial-gradient(circle, rgba(86,153,255,.18), rgba(86,153,255,0) 70%) !important; }
+.sidebar::after { background: radial-gradient(circle, rgba(44,116,255,.14), rgba(44,116,255,0) 72%) !important; }
+@media (max-width: 900px) { .sidebar { background: linear-gradient(180deg, #102858 0%, #153b7b 55%, #194b96 100%) !important; } }
+</style>
+
+
+<style id="super-mix-reportes-responsive-refuerzo">
+
+#sec-reportes { min-width: 0; }
+#sec-reportes .card { min-width: 0; }
+#sec-reportes .report-section-title { align-items: flex-start; }
+#sec-reportes .report-section-title > div { min-width: 0; }
+#sec-reportes .report-section-title .btn { white-space: normal; }
+#sec-reportes .table-container { width: 100%; max-width: 100%; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+#sec-reportes .table-container table { min-width: 680px; }
+#sec-reportes #tbl-reporte-compras td, #sec-reportes #tbl-reporte-productos-proveedor td { overflow-wrap: anywhere; }
+#sec-reportes #rep-dia-search { min-width: 0; }
+@media (max-width: 600px) {
+  #sec-reportes.content-section { padding: .8rem !important; }
+  #sec-reportes .card { padding: 1rem !important; margin-bottom: 1rem !important; }
+  #sec-reportes .report-section-title { display: flex; flex-direction: column; gap: .75rem; }
+  #sec-reportes .report-section-title > div, #sec-reportes .report-section-title .btn { width: 100%; }
+  #sec-reportes .report-section-title .btn { justify-content: center; }
+  #sec-reportes .card > div[style*="gap:2rem"] { gap: .75rem 1rem !important; }
+  #sec-reportes .card > div[style*="gap:1.5rem"] { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem !important; }
+  #sec-reportes .report-filters { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
+  #sec-reportes .report-filters .form-control, #sec-reportes .report-filters .btn { width: 100%; min-width: 0; }
+  #sec-reportes h3 { font-size: 1.05rem; line-height: 1.35; }
+  #sec-reportes .table-container { border-radius: 10px; }
+}
+@media (max-width: 380px) {
+  #sec-reportes.content-section { padding: .6rem !important; }
+  #sec-reportes .card { padding: .8rem !important; }
+  #sec-reportes .card > div[style*="gap:1.5rem"] { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+
+
+
+
+<style id="super-mix-mejoras-fase-1">
+
+:root { scroll-behavior: smooth; }
+button, .btn, .nav-item { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(37,99,235,.38) !important; outline-offset: 2px;
+}
+.card, .metric-card, .table-container, .cart-summary {
+  border-radius: 16px !important;
+  transition: box-shadow .18s ease, border-color .18s ease;
+}
+.card:hover, .metric-card:hover { box-shadow: 0 10px 28px rgba(30,64,120,.10); }
+.btn { border-radius: 10px; transition: transform .15s ease, filter .15s ease, box-shadow .15s ease; }
+.btn:hover { filter: brightness(1.04); }
+.btn:active { transform: translateY(1px); }
+.btn-primary { box-shadow: 0 4px 10px rgba(37,99,235,.16); }
+.report-section-title { gap: 1rem; flex-wrap: wrap; }
+.report-section-title > div { min-width: 0; }
+#sec-reportes .table-container { border-radius: 12px; }
+#sec-reportes table th { white-space: nowrap; }
+#sec-reportes table td { vertical-align: middle; }
+#sec-reportes .empty-report { text-align: center; padding: 1.5rem; color: var(--text-muted); }
+#sec-reportes [id="rep-ventas"], #sec-reportes [id="rep-compras"], #sec-reportes [id="rep-utilidad"], #sec-reportes [id="rep-costo-vendido"] {
+  font-variant-numeric: tabular-nums; white-space: normal; overflow-wrap: anywhere; word-break: break-word;
+}
+
+#sec-reportes .metrics-grid { align-items: stretch; }
+#sec-reportes .metrics-grid .metric-card {
+  min-width: 0; max-width: 100%; box-sizing: border-box; overflow: hidden;
+  padding: .9rem; border: 1px solid #d5e1f2; border-radius: 12px;
+  background: rgba(224,235,251,.48); line-height: 1.45;
+}
+#sec-reportes .metrics-grid .metric-label {
+  min-width: 0; white-space: normal; overflow-wrap: anywhere; line-height: 1.35;
+}
+#sec-reportes .metrics-grid .metric-val {
+  display: block; min-width: 0; max-width: 100%; margin-top: .45rem;
+  white-space: normal !important; overflow-wrap: anywhere; word-break: break-word;
+  font-size: clamp(.95rem, 2vw, 1.45rem); line-height: 1.25;
+}
+#sec-reportes .metrics-grid .metric-card small {
+  display: block; min-width: 0; white-space: normal; overflow-wrap: anywhere;
+  margin-top: .45rem; line-height: 1.4;
+}
+@media (max-width: 900px) {
+  .report-section-title { align-items: flex-start !important; }
+  .report-section-title > div, .report-section-title > button { max-width: 100%; min-width: 0; }
+}
+@media (max-width: 600px) {
+  header { gap: .5rem; }
+  .content-section { padding: .7rem !important; }
+  .card { padding: .9rem !important; }
+  .report-filters { display: flex; flex-direction: column; width: 100%; gap: .5rem; }
+  .report-filters > * { width: 100% !important; max-width: 100%; }
+  #sec-reportes .report-section-title .btn { width: 100%; }
+  #sec-reportes h3 { font-size: 1rem; line-height: 1.35; }
+  #sec-reportes p { line-height: 1.5; }
+  .modal-overlay { overflow-y: auto; }
+  .modal-card { margin: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+
+
+<style id="super-mix-inventory-phase3">
+.inventory-kpi { padding:1rem; display:flex; flex-direction:column; gap:.4rem; }
+.inventory-kpi small { color:var(--text-muted); font-size:.82rem; }
+.inventory-kpi strong { font-size:1.65rem; line-height:1.2; }
+#sec-inventario #inv-status-filter { width:auto; }
+@media(max-width:600px) {
+  #sec-inventario .inventory-kpis { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+  #sec-inventario .inventory-kpi { padding:.8rem; }
+  #sec-inventario .inventory-kpi strong { font-size:1.35rem; }
+  #sec-inventario #inv-status-filter { max-width:none !important; width:100%; }
+  #sec-inventario #inv-search { min-width:0 !important; width:100%; }
+}
+</style>
+
+
+
+<style id="super-mix-phase4-security">
+#sec-configuracion .security-tools{margin-top:1.25rem;border:1px solid #c8d8ee;border-radius:16px;padding:1.1rem;background:linear-gradient(135deg,rgba(230,240,255,.9),rgba(248,251,255,.98));}
+#sec-configuracion .security-tools h3{margin-bottom:.45rem;color:#203d68}
+#sec-configuracion .security-actions{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:1rem}
+#sec-configuracion .security-status{font-size:.9rem;padding:.75rem;border-radius:10px;background:#fff;border:1px solid #d5e1f1;margin-top:.8rem;overflow-wrap:anywhere}
+@media(max-width:600px){#sec-configuracion .security-actions{flex-direction:column}#sec-configuracion .security-actions .btn{width:100%;justify-content:center}}
+</style>
+<script id="super-mix-phase4-security-js">
+(function(){
+  function addSecurityPanel(){
+    const section=document.getElementById('sec-configuracion');
+    if(!section || document.getElementById('super-mix-security-tools')) return;
+    const panel=document.createElement('div'); panel.className='security-tools card'; panel.id='super-mix-security-tools';
+    panel.innerHTML=`<h3><i class="fa-solid fa-shield-halved"></i> Seguridad y copias de respaldo</h3>
+      
+      <div class="security-actions"><button type="button" class="btn btn-primary" id="smx-backup-export"><i class="fa-solid fa-download"></i> Descargar respaldo</button>
+      <button type="button" class="btn btn-secondary" id="smx-backup-import"><i class="fa-solid fa-upload"></i> Restaurar respaldo JSON</button>
+      <button type="button" class="btn btn-secondary" id="smx-data-check"><i class="fa-solid fa-stethoscope"></i> Revisar datos cargados</button></div>
+      <input type="file" id="smx-backup-file" accept=".json,application/json" hidden>
+      <div class="security-status" id="smx-security-status" role="status">El respaldo incluye los datos disponibles en memoria en este momento. Verifica la fecha y conserva más de una copia.</div>`;
+    section.appendChild(panel);
+    const status=panel.querySelector('#smx-security-status');
+    panel.querySelector('#smx-backup-export').addEventListener('click',()=>{
+      try{
+        if(typeof DB==='undefined'||!DB||typeof DB!=='object') throw new Error('Los datos aún no están cargados. Inicia sesión e inténtalo de nuevo.');
+        const payload={app:'Super MIX',formatVersion:1,createdAt:new Date().toISOString(),data:DB};
+        const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+        const url=URL.createObjectURL(blob); const a=document.createElement('a');
+        a.href=url;a.download='Super_MIX_respaldo_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+        status.textContent='Respaldo descargado. Comprueba que el archivo esté en la carpeta de descargas.';
+      }catch(e){status.textContent='No se pudo crear el respaldo: '+e.message;}
+    });
+    panel.querySelector('#smx-backup-import').addEventListener('click',()=>panel.querySelector('#smx-backup-file').click());
+    panel.querySelector('#smx-backup-file').addEventListener('change',async ev=>{
+      const file=ev.target.files&&ev.target.files[0]; if(!file)return;
+      try{
+        const parsed=JSON.parse(await file.text()); const restored=parsed&&parsed.data&&typeof parsed.data==='object'?parsed.data:parsed;
+        if(!restored||!Array.isArray(restored.productos)||!Array.isArray(restored.ventas)) throw new Error('El archivo no parece ser un respaldo válido de Super MIX.');
+        const ok=confirm('Se reemplazarán los datos actualmente cargados por los del respaldo. Descarga primero una copia actual. ¿Deseas continuar?');
+        if(!ok)return;
+        DB=restored;
+        if(typeof saveDB==='function') await saveDB(); else localStorage.setItem('super_db_zero_v3',JSON.stringify(DB));
+        status.textContent='Respaldo restaurado. Verifica productos, ventas y compras antes de continuar.';
+        alert('Respaldo restaurado. Revisa los datos y la sincronización con Supabase.');
+      }catch(e){status.textContent='No se pudo restaurar el respaldo: '+e.message;}
+      finally{ev.target.value='';}
+    });
+    panel.querySelector('#smx-data-check').addEventListener('click',()=>{
+      try{
+        const names=['productos','ventas','compras','proveedores','clientes','usuarios'];
+        const lines=names.map(k=>k+': '+(Array.isArray(DB&&DB[k])?DB[k].length:'sin lista'));
+        const empty=names.filter(k=>Array.isArray(DB&&DB[k])&&DB[k].some(x=>x==null||typeof x!=='object'));
+        status.textContent='Revisión local ('+new Date().toLocaleString()+'): '+lines.join(' · ')+(empty.length?' · Aviso: registros vacíos en '+empty.join(', '):' · No se detectaron registros nulos en estas listas')+'. Esta revisión no comprueba Supabase ni la consistencia contable.';
+      }catch(e){status.textContent='No fue posible revisar los datos: '+e.message;}
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addSecurityPanel); else addSecurityPanel();
+})();
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const section = document.getElementById('sec-configuracion');
+  if (!section || document.getElementById('sm-audit-panel')) return;
+  const panel = document.createElement('div'); panel.id = 'sm-audit-panel'; panel.className = 'card';
+  panel.style.cssText = 'margin-top:22px;padding:20px;border:1px solid var(--border-color, #dbeafe);border-radius:16px;';
+  panel.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h3 style="margin:0 0 6px"><i class="fa-solid fa-clipboard-list"></i> Auditoría de operaciones</h3><small id="sm-audit-count"></small></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-excel" onclick="exportarAuditoriaCSV()"><i class="fa-solid fa-file-csv"></i> Exportar CSV</button><button type="button" class="btn btn-secondary" onclick="renderAuditoria()"><i class="fa-solid fa-rotate"></i> Actualizar</button><button type="button" class="btn btn-danger" onclick="limpiarAuditoriaVisible()">Limpiar historial</button></div></div><div style="margin:14px 0"><input id="sm-audit-filter" class="form-control" placeholder="Buscar usuario, acción, entidad o registro…" oninput="renderAuditoria()" style="width:100%;max-width:480px"></div><div style="overflow:auto;max-height:430px"><table class="table" style="width:100%;min-width:780px"><thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Acción</th><th>Entidad</th><th>Registro</th><th>Detalle</th></tr></thead><tbody id="sm-audit-tbody"><tr><td colspan="6">Cargando…</td></tr></tbody></table></div>`;
+  section.appendChild(panel);
+  if (typeof renderAuditoria === 'function') renderAuditoria();
+});
+</script>
+
+
+
+<style id="super-mix-tipografia-sincronizada-resumen-financiero">
+
+#sec-reportes .metrics-grid .metric-card { box-sizing:border-box; min-width:0; }
+#sec-reportes .metrics-grid .metric-card > .metric-label {
+  font-size: .78rem !important; font-weight: 650 !important; line-height: 1.3 !important;
+  letter-spacing: 0 !important; margin: 0 !important;
+}
+#sec-reportes .metrics-grid .metric-card > .metric-val {
+  font-size: clamp(.82rem, 1.15vw, 1rem) !important; font-weight: 700 !important;
+  line-height: 1.25 !important; letter-spacing: -.01em !important; margin-top: .3rem !important;
+  display:block !important; max-width:100% !important; white-space:normal !important;
+  overflow-wrap:anywhere !important; word-break:normal !important; font-variant-numeric:tabular-nums;
+}
+#sec-reportes .metrics-grid .metric-card > small {
+  font-size: .7rem !important; line-height: 1.35 !important; margin-top:.3rem !important;
+  display:block !important; min-width:0; overflow-wrap:anywhere;
+}
+@media (max-width:520px) {
+  #sec-reportes .metrics-grid .metric-card > .metric-label { font-size:.72rem !important; }
+  #sec-reportes .metrics-grid .metric-card > .metric-val { font-size:.82rem !important; }
+  #sec-reportes .metrics-grid .metric-card > small { font-size:.66rem !important; }
+}
+</style>
+
+
+<script id="super-mix-total-init-fix">
+(function () {
+  function refrescarTotalInicial() {
+    try {
+      if (typeof window.updateCartUI === 'function') window.updateCartUI();
+    } catch (error) { console.error('No se pudo actualizar el total del carrito:', error); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refrescarTotalInicial, { once: true });
+  else refrescarTotalInicial();
+})();
+</script>
+
 </body>
 </html>
