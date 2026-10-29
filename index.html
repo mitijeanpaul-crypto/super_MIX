@@ -379,7 +379,15 @@
       .card, .table-container, .cart-summary, .form-control { transition: none; }
     }
 
-  </style>
+  
+    /* Formulario de producto más compacto */
+    #modal-producto .modal-card { max-width:360px !important; padding:.75rem .9rem !important; }
+    #modal-producto h3 { font-size:1.05rem; margin-bottom:.45rem !important; }
+    #modal-producto .form-group { margin-bottom:.55rem !important; }
+    #modal-producto .form-group label { font-size:.78rem !important; margin-bottom:.22rem !important; }
+    #modal-producto .form-control { min-height:34px !important; height:36px; padding:.4rem .55rem !important; font-size:.88rem !important; border-radius:8px !important; }
+    #modal-producto .btn { padding:.42rem .7rem; font-size:.82rem; }
+</style>
     <link rel="icon" type="image/png" href="super_mix_favicon.png">
 <style>
     
@@ -1456,14 +1464,12 @@ button:hover, .btn:hover { filter: brightness(1.035); }
   <div style="position: sticky; top: 0; z-index: 10; background-color: #ffffff; padding: 10px 0; display:flex; justify-content:space-between; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
     <div style="display:flex; gap:10px; flex:1;">
       <input type="text" id="prod-search" class="form-control" style="width: 250px;" placeholder="🔍 Buscar por nombre o código..." oninput="renderProducts()">
-      <select id="prod-cat-filter" class="form-control" style="width: 200px;" onchange="renderProducts()"></select>
       <button type="button" class="btn btn-secondary" onclick="limpiarBusquedaProductos()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
     </div>
     <div style="display:flex; gap:8px;">
       <button class="btn btn-excel" onclick="exportProductsExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
       <button class="btn btn-excel" onclick="document.getElementById('productos-excel-input').click()"><i class="fa-solid fa-file-import"></i> Importar Excel</button>
       <input type="file" id="productos-excel-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="importProductsExcel(event)">
-      <button class="btn btn-secondary" onclick="openCategoryModal()"><i class="fa-solid fa-tags"></i> Nueva Categoría</button>
       <button class="btn btn-primary" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Registrar Producto</button>
       <button class="btn btn-success" onclick="abrirCompraDesdeProductos()"><i class="fa-solid fa-cart-plus"></i> Registrar Compra</button>
       <button class="btn btn-secondary" onclick="abrirProveedorDesdeProductos()"><i class="fa-solid fa-truck-fast"></i> Nuevo Proveedor</button>
@@ -1474,7 +1480,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     <table>
       <thead>
         <tr>
-          <th>Código</th><th>Nombre</th><th>Categoría</th><th>Vencimiento (Alerta 20d)</th><th>Precio COP</th><th>Costo COP</th><th>Stock</th><th>Acciones</th>
+          <th>Código</th><th>Nombre</th><th>Vencimiento (Alerta 20d)</th><th>Precio COP</th><th>Costo COP</th><th>Stock</th><th>Acciones</th>
         </tr>
       </thead>
       <tbody id="tbl-productos"></tbody>
@@ -2130,34 +2136,22 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     </section>
   </main>
 
-  
-  <div id="modal-categoria" class="modal-overlay">
-    <div class="modal-card">
-      <h3>Nueva Categoría</h3>
-      <div class="form-group" style="margin-top:1rem;">
-        <label>Nombre de la Categoría:</label>
-        <input type="text" id="mcat-nombre" class="form-control">
-      </div>
-      <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveCategory()">Guardar Categoría</button>
-      </div>
-    </div>
-  </div>
-
   <div id="modal-producto" class="modal-overlay">
-    <div class="modal-card">
-      <h3 id="modal-prod-title">Registrar Producto</h3>
+    <div class="modal-card" style="max-width:360px;width:calc(100% - 2rem);padding:.75rem .9rem;max-height:82vh;">
+      <h3 id="modal-prod-title" style="margin-bottom:.55rem;">Registrar Producto</h3>
       <input type="hidden" id="mp-id">
       <div class="form-group"><label>Código de Barras</label><input type="text" id="mp-codigo" class="form-control"></div>
       <div class="form-group"><label>Nombre del Producto</label><input type="text" id="mp-nombre" class="form-control"></div>
-      <div class="form-group"><label>Categoría</label><select id="mp-categoria" class="form-control"></select></div>
-      <div class="form-group"><label>Proveedor del producto</label><div style="display:flex;gap:8px;align-items:center;"><select id="mp-proveedor" class="form-control" style="flex:1;"><option value="">Sin proveedor asignado</option></select><button type="button" class="btn btn-secondary" onclick="abrirProveedorDesdeProducto()" title="Registrar proveedor"><i class="fa-solid fa-plus"></i> Nuevo</button></div></div>
+      <div class="form-group"><label>Proveedor del producto</label><input type="text" id="mp-proveedor-search" class="form-control" placeholder="Buscar proveedor por nombre..." oninput="filtrarProveedoresProducto()" style="margin-bottom:6px;"><div style="display:flex;gap:8px;align-items:center;"><select id="mp-proveedor" class="form-control" style="flex:1;"><option value="">Sin proveedor asignado</option></select><button type="button" class="btn btn-secondary" onclick="abrirProveedorDesdeProducto()" title="Registrar proveedor"><i class="fa-solid fa-plus"></i> Nuevo</button></div></div>
       <div class="form-group"><label>Fecha de Vencimiento (Alerta 20 Días)</label><input type="date" id="mp-vencimiento" class="form-control"></div>
-      <div class="form-group"><label>Precio de Venta COP</label><input type="number" id="mp-precio" class="form-control"></div>
-      <div class="form-group"><label>Costo de Compra COP</label><input type="number" id="mp-costo" class="form-control"></div>
-      <div class="form-group"><label>Stock Inicial</label><input type="number" id="mp-stock" class="form-control"></div>
-      <div class="form-group"><label>Stock Mínimo Alerta</label><input type="number" id="mp-min" class="form-control" value="5"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;">
+        <div class="form-group" style="min-width:0;"><label>Precio de Venta COP</label><input type="number" id="mp-precio" class="form-control" style="width:100%;min-width:0;"></div>
+        <div class="form-group" style="min-width:0;"><label>Costo de Compra COP</label><input type="number" id="mp-costo" class="form-control" style="width:100%;min-width:0;"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;">
+        <div class="form-group" style="min-width:0;"><label>Stock Inicial</label><input type="number" id="mp-stock" class="form-control" style="width:100%;min-width:0;"></div>
+        <div class="form-group" style="min-width:0;"><label>Stock Mínimo Alerta</label><input type="number" id="mp-min" class="form-control" value="5" style="width:100%;min-width:0;"></div>
+      </div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
         <button class="btn btn-primary" onclick="saveProduct()">Guardar Producto</button>
@@ -2405,11 +2399,8 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     let currentUser = null;
     const SESSION_KEY = 'super_mix_session_secure';
     const SECURITY_LOG_KEY = 'super_mix_security_log_v1';
-    const SESSION_TIMEOUT_MS = 20 * 60 * 1000;
     const MAX_SECURITY_LOGS = 300;
     let securityTimer = null;
-    let securityListenersStarted = false;
-    let lastActivityAt = Date.now();
     let cart = [];
     let salesChart = null;
     let supabaseReady = false;
@@ -2766,29 +2757,10 @@ button:hover, .btn:hover { filter: brightness(1.035); }
 
     function touchSecurityActivity() {
       if (!currentUser) return;
-      lastActivityAt = Date.now();
-      const session = { userId: currentUser.id, issuedAt: Date.now(), expiresAt: Date.now() + SESSION_TIMEOUT_MS };
+      const session = { userId: currentUser.id, issuedAt: Date.now() };
       try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch (_) {}
     }
 
-
-    function startSecurityMonitor() {
-      clearInterval(securityTimer);
-      lastActivityAt = Date.now();
-      if (!securityListenersStarted) {
-        ['click','keydown','mousemove','touchstart','scroll'].forEach(evt => {
-          document.addEventListener(evt, touchSecurityActivity, {passive:true});
-        });
-        securityListenersStarted = true;
-      }
-      securityTimer = setInterval(() => {
-        if (currentUser && Date.now() - lastActivityAt >= SESSION_TIMEOUT_MS) {
-          securityLog('Sesión vencida', 'Cierre automático por inactividad');
-          alert('La sesión se cerró por 20 minutos de inactividad.');
-          logout(true);
-        }
-      }, 30000);
-    }
 
 
     function clearSecuritySession() {
@@ -2856,8 +2828,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     function limpiarBusquedaProductos() {
       const el = document.getElementById('prod-search');
       if (el) el.value = '';
-      const cat = document.getElementById('prod-cat-filter');
-      if (cat) cat.value = '';
       renderProducts();
       if (el) el.focus();
     }
@@ -2920,10 +2890,9 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     async function iniciarSesionUI(user, guardarSesion = true) {
       currentUser = user;
       if (guardarSesion) {
-        try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ userId: user.id, issuedAt: Date.now(), expiresAt: Date.now() + SESSION_TIMEOUT_MS })); } catch (_) {}
+        try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ userId: user.id, issuedAt: Date.now() })); } catch (_) {}
       }
       touchSecurityActivity();
-      startSecurityMonitor();
       securityLog('Inicio de sesión', `Usuario ${user.user} (${user.rol})`);
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('active-user-name').textContent = currentUser.nombre;
@@ -2974,8 +2943,8 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     }
 
 
-    function logout(auto=false) {
-      if (currentUser) securityLog(auto ? 'Cierre automático' : 'Cierre de sesión', auto ? 'Inactividad' : 'Usuario solicitó salir');
+    function logout() {
+      if (currentUser) securityLog('Cierre de sesión', 'Usuario solicitó salir');
       currentUser = null;
       clearSecuritySession();
       document.getElementById('login-user').value = '';
@@ -3140,10 +3109,8 @@ button:hover, .btn:hover { filter: brightness(1.035); }
           rows.forEach(row => {
             const codigo = String(row['Código'] ?? row['Codigo'] ?? row['código'] ?? row['codigo'] ?? '').trim();
             const nombre = String(row['Nombre'] ?? row['nombre'] ?? '').trim();
-            const categoria = String(row['Categoría'] ?? row['Categoria'] ?? row['categoría'] ?? row['categoria'] ?? '').trim();
-            if (!codigo || !nombre || !categoria) { omitidos++; return; }
-
-            if (!DB.categorias.includes(categoria)) DB.categorias.push(categoria);
+            if (!codigo || !nombre) { omitidos++; return; }
+            const categoria = '';
             const existente = DB.productos.find(p => String(p.codigo).trim() === codigo);
             const producto = {
               id: existente?.id || Date.now().toString() + Math.random().toString(36).slice(2,8),
@@ -3163,8 +3130,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
               agregados++;
             }
           });
-          renderCategoryDropdowns();
-          saveDB();
+                saveDB();
           event.target.value = '';
           alert(`Importación terminada. Agregados: ${agregados}. Actualizados: ${actualizados}. Omitidos: ${omitidos}.`);
         } catch (err) {
@@ -3236,8 +3202,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
     }
 
     function renderAll() {
-      renderCategoryDropdowns();
-      if (currentUser) {
+        if (currentUser) {
         if (tienePermiso('dashboard')) renderDashboard();
         if (tienePermiso('productos')) renderProducts();
         if (tienePermiso('inventario')) renderInventario();
@@ -3255,51 +3220,10 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       }
     }
 
-    function renderCategoryDropdowns(selectedCategory = null) {
-      const catFilter = document.getElementById('prod-cat-filter');
-      const catModal = document.getElementById('mp-categoria');
-      const categorias = Array.isArray(DB.categorias) ? DB.categorias : [];
-
-      if (catFilter) {
-        const actual = catFilter.value;
-        catFilter.innerHTML = `<option value="">Todas las Categorías</option>` +
-          categorias.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-        if (actual && categorias.includes(actual)) catFilter.value = actual;
-      }
-
-      if (catModal) {
-        const valor = selectedCategory !== null ? String(selectedCategory) : catModal.value;
-        catModal.innerHTML = categorias.map(c =>
-          `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`
-        ).join('');
-        if (valor && categorias.includes(valor)) catModal.value = valor;
-        else if (catModal.options.length) catModal.selectedIndex = 0;
-      }
-    }
-
     function escapeHtml(value) {
       return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
     }
 
-    function openCategoryModal() {
-      document.getElementById('mcat-nombre').value = '';
-      document.getElementById('modal-categoria').classList.add('active');
-    }
-
-    function saveCategory() {
-      const catName = document.getElementById('mcat-nombre').value.trim();
-      if (catName && !DB.categorias.includes(catName)) {
-        DB.categorias.push(catName);
-        closeModals(); saveDB();
-        renderCategoryDropdowns();
-
-
-      }else if (DB.categorias.includes(catName)) {
-        alert('La categoría ya existe.');
-      } else {
-        alert('Ingrese un nombre válido para la categoría.');
-      }
-    }
 
 
     function renderDashboard() {
@@ -3345,17 +3269,15 @@ button:hover, .btn:hover { filter: brightness(1.035); }
 
     function renderProducts() {
       const search = document.getElementById('prod-search')?.value.toLowerCase() || '';
-      const catFilter = document.getElementById('prod-cat-filter')?.value || '';
       const tbody = document.getElementById('tbl-productos');
       
-      const filtered = DB.productos.filter(p => (String(p.nombre || '').toLowerCase().includes(search) || String(p.codigo || '').toLowerCase().includes(search)) && (catFilter === '' || p.categoria === catFilter));
+      const filtered = DB.productos.filter(p => String(p.nombre || '').toLowerCase().includes(search) || String(p.codigo || '').toLowerCase().includes(search));
       
       tbody.innerHTML = filtered.map(p => {
         const vencStatus = getVencimientoStatus(p.vencimiento);
         return `
         <tr>
           <td>${p.codigo}</td><td><b>${p.nombre}</b></td>
-          <td><span class="badge badge-success">${p.categoria}</span></td>
           <td><span class="badge ${vencStatus.class}">${p.vencimiento ? p.vencimiento + ' (' + vencStatus.label + ')' : 'N/A'}</span></td>
           <td>${formatCOP(p.precio)}</td><td>${formatCOP(p.costo)}</td><td>${p.stock}</td>
           <td>
@@ -3385,14 +3307,47 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       openProveedorModal();
     }
 
+    function normalizarBusquedaProveedor(valor) {
+      return String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim();
+    }
+
     function cargarProveedoresProducto(proveedorActual = '') {
+      const search = document.getElementById('mp-proveedor-search');
       const select = document.getElementById('mp-proveedor');
       if (!select) return;
-      const proveedores = DB.proveedores || [];
-      select.innerHTML = '<option value="">Sin proveedor asignado</option>' + proveedores.map(p =>
-        `<option value="${String(p.id)}">${(p.empresa || p.nombre || 'Proveedor')} - ${p.nit || 'Sin NIT'}</option>`
-      ).join('');
+      if (search) search.value = '';
+      const proveedores = Array.isArray(DB.proveedores) ? DB.proveedores : [];
+      select.innerHTML = '<option value="">Sin proveedor asignado</option>' + proveedores.map(p => {
+        const nombre = p.nombre || p.empresa || 'Proveedor';
+        const empresa = p.empresa && p.empresa !== nombre ? ` - ${p.empresa}` : '';
+        return `<option value="${escapeHtml(String(p.id))}">${escapeHtml(nombre + empresa)} - ${escapeHtml(p.nit || 'Sin NIT')}</option>`;
+      }).join('');
       select.value = proveedores.some(p => String(p.id) === String(proveedorActual)) ? String(proveedorActual) : '';
+    }
+
+    function filtrarProveedoresProducto() {
+      const searchInput = document.getElementById('mp-proveedor-search');
+      const select = document.getElementById('mp-proveedor');
+      if (!select) return;
+      const termino = normalizarBusquedaProveedor(searchInput ? searchInput.value : '');
+      const seleccionado = select.value;
+      const proveedores = (Array.isArray(DB.proveedores) ? DB.proveedores : []).filter(p => {
+        const texto = normalizarBusquedaProveedor([p.nombre, p.empresa, p.nit].filter(Boolean).join(' '));
+        return texto.includes(termino);
+      });
+      select.innerHTML = '<option value="">Sin proveedor asignado</option>' + proveedores.map(p => {
+        const nombre = p.nombre || p.empresa || 'Proveedor';
+        const empresa = p.empresa && p.empresa !== nombre ? ` - ${p.empresa}` : '';
+        return `<option value="${escapeHtml(String(p.id))}">${escapeHtml(nombre + empresa)} - ${escapeHtml(p.nit || 'Sin NIT')}</option>`;
+      }).join('');
+      if (proveedores.some(p => String(p.id) === String(seleccionado))) {
+        select.value = seleccionado;
+      } else if (proveedores.length === 1) {
+        select.value = String(proveedores[0].id);
+      }
+      if (termino && proveedores.length === 0) {
+        select.insertAdjacentHTML('beforeend', '<option value="" disabled> No se encontraron proveedores </option>');
+      }
     }
 
     function abrirProveedorDesdeProducto() {
@@ -3409,7 +3364,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('mp-costo').value = '';
       document.getElementById('mp-stock').value = '';
       document.getElementById('mp-min').value = '5';
-      renderCategoryDropdowns('');
       cargarProveedoresProducto('');
       document.getElementById('modal-producto').classList.add('active');
     }
@@ -3419,12 +3373,11 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       const id = document.getElementById('mp-id').value.trim();
       const codigo = document.getElementById('mp-codigo').value.trim();
       const nombre = document.getElementById('mp-nombre').value.trim();
-      const categoria = document.getElementById('mp-categoria').value.trim();
       const proveedorId = document.getElementById('mp-proveedor')?.value || '';
       const proveedorSeleccionado = (DB.proveedores || []).find(p => String(p.id) === String(proveedorId));
 
-      if (!codigo || !nombre || !categoria) {
-        return alert('Código, nombre y categoría son obligatorios.');
+      if (!codigo || !nombre) {
+        return alert('Código y nombre son obligatorios.');
       }
 
       const existenteProducto = id ? DB.productos.find(p => String(p.id) === String(id)) : null;
@@ -3465,8 +3418,6 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       document.getElementById('mp-id').value = p.id;
       document.getElementById('mp-codigo').value = p.codigo || '';
       document.getElementById('mp-nombre').value = p.nombre || '';
-      if (p.categoria && !DB.categorias.includes(p.categoria)) DB.categorias.push(p.categoria);
-      renderCategoryDropdowns(p.categoria || '');
       cargarProveedoresProducto(p.proveedorId || '');
       document.getElementById('mp-vencimiento').value = p.vencimiento || '';
       document.getElementById('mp-precio').value = p.precio ?? 0;
@@ -4140,7 +4091,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
 
       const productoModal = document.getElementById('modal-producto');
       const productoAbierto = productoModal && productoModal.classList.contains('active');
-      const camposProducto = ['mp-id','mp-codigo','mp-nombre','mp-categoria','mp-vencimiento','mp-precio','mp-costo','mp-stock','mp-min'];
+      const camposProducto = ['mp-id','mp-codigo','mp-nombre','mp-vencimiento','mp-precio','mp-costo','mp-stock','mp-min'];
       const valoresProducto = {};
       if (productoAbierto) {
         camposProducto.forEach(campo => {
@@ -4153,10 +4104,8 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       saveDB();
       if (productoAbierto) {
         document.getElementById('modal-prod-title').textContent = valoresProducto['mp-id'] ? 'Editar Producto' : 'Registrar Producto';
-        if (valoresProducto['mp-categoria'] && !DB.categorias.includes(valoresProducto['mp-categoria'])) DB.categorias.push(valoresProducto['mp-categoria']);
-        renderCategoryDropdowns(valoresProducto['mp-categoria'] || '');
-        camposProducto.forEach(campo => {
-          if (campo !== 'mp-categoria' && valoresProducto[campo] !== undefined) {
+          camposProducto.forEach(campo => {
+          if (valoresProducto[campo] !== undefined) {
             const elemento = document.getElementById(campo);
             if (elemento) elemento.value = valoresProducto[campo];
           }
@@ -5785,7 +5734,7 @@ function handleBarcodeCompra(e) {
     });
 
     (function instalarProteccionesCriticas(){
-      const nombres = ['saveProduct','deleteProduct','saveCategory','saveCompra','eliminarCompra','saveProveedor','deleteProveedor','saveCliente','deleteCliente','saveAbono','saveConfig','openCategoryModal','openCompraModal','openProveedorModal','openClienteModal','eliminarFactura','registrarCierreVentas','saveAlegraConfig'];
+      const nombres = ['saveProduct','deleteProduct','saveCompra','eliminarCompra','saveProveedor','deleteProveedor','saveCliente','deleteCliente','saveAbono','saveConfig','openCompraModal','openProveedorModal','openClienteModal','eliminarFactura','registrarCierreVentas','saveAlegraConfig'];
       nombres.forEach(nombre => {
         const original = window[nombre];
         if (typeof original !== 'function') return;
@@ -5819,7 +5768,6 @@ function handleBarcodeCompra(e) {
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) sincronizarMovimientosSupabase();
     });
-    renderCategoryDropdowns();
 
     setTimeout(() => { if (navigator.onLine) probarConexionSupabase(); else actualizarEstadoConexion(); }, 1200);
 
