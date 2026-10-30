@@ -1859,7 +1859,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         </div>
         <div class="table-container">
           <table>
-            <thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Vencimiento</th><th>Estado</th><th>Días restantes</th><th>Stock</th></tr></thead>
+            <thead><tr><th>Código</th><th>Producto</th><th>Proveedor</th><th>Categoría</th><th>Vencimiento</th><th>Estado</th><th>Días restantes</th><th>Stock</th></tr></thead>
             <tbody id="tbl-productos-por-vencer"></tbody>
           </table>
         </div>
@@ -1915,7 +1915,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         </div>
         <div class="table-container">
           <table>
-            <thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Vencimiento</th><th>Días vencido</th><th>Stock</th></tr></thead>
+            <thead><tr><th>Código</th><th>Producto</th><th style="min-width:170px;">Proveedor</th><th>Categoría</th><th>Vencimiento</th><th>Días vencido</th><th>Stock</th></tr></thead>
             <tbody id="tbl-productos-vencidos"></tbody>
           </table>
         </div>
@@ -2145,8 +2145,8 @@ button:hover, .btn:hover { filter: brightness(1.035); }
       <div class="form-group"><label>Proveedor del producto</label><input type="text" id="mp-proveedor-search" class="form-control" placeholder="Buscar proveedor por nombre..." oninput="filtrarProveedoresProducto()" style="margin-bottom:6px;"><div style="display:flex;gap:8px;align-items:center;"><select id="mp-proveedor" class="form-control" style="flex:1;"><option value="">Sin proveedor asignado</option></select><button type="button" class="btn btn-secondary" onclick="abrirProveedorDesdeProducto()" title="Registrar proveedor"><i class="fa-solid fa-plus"></i> Nuevo</button></div></div>
       <div class="form-group"><label>Fecha de Vencimiento (Alerta 20 Días)</label><input type="date" id="mp-vencimiento" class="form-control"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;">
-        <div class="form-group" style="min-width:0;"><label>Precio de Venta</label><input type="number" id="mp-precio" class="form-control" style="width:100%;min-width:0;"></div>
-        <div class="form-group" style="min-width:0;"><label>Precio de Compra</label><input type="number" id="mp-costo" class="form-control" style="width:100%;min-width:0;"></div>
+        <div class="form-group" style="min-width:0;"><label>Precio de Venta COP</label><input type="number" id="mp-precio" class="form-control" style="width:100%;min-width:0;"></div>
+        <div class="form-group" style="min-width:0;"><label>Costo de Compra COP</label><input type="number" id="mp-costo" class="form-control" style="width:100%;min-width:0;"></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;">
         <div class="form-group" style="min-width:0;"><label>Stock Inicial</label><input type="number" id="mp-stock" class="form-control" style="width:100%;min-width:0;"></div>
@@ -3385,7 +3385,7 @@ button:hover, .btn:hover { filter: brightness(1.035); }
         id: id || Date.now().toString(),
         codigo,
         nombre,
-        categoria,
+        categoria: '', // Se conserva el campo por compatibilidad con datos anteriores; ya no se usan categorías.
         proveedorId: proveedorSeleccionado ? String(proveedorSeleccionado.id) : '',
         proveedorNombre: proveedorSeleccionado ? (proveedorSeleccionado.empresa || proveedorSeleccionado.nombre || '') : '',
         fechaIngreso: existenteProducto?.fechaIngreso || getLocalDateISO(),
@@ -4604,30 +4604,41 @@ function handleBarcodeCompra(e) {
     }
 
 
+    function obtenerNombreProveedorProducto(producto) {
+      const proveedores = Array.isArray(DB.proveedores) ? DB.proveedores : [];
+      const idProveedor = producto.proveedorId ?? producto.idProveedor ?? producto.proveedor_id ?? '';
+      const proveedor = proveedores.find(pr => String(pr.id) === String(idProveedor));
+      const nombre = proveedor
+        ? (proveedor.empresa || proveedor.nombre || proveedor.razonSocial || '')
+        : (producto.proveedorNombre || producto.nombreProveedor || (typeof producto.proveedor === 'string' ? producto.proveedor : ''));
+      return String(nombre || 'Sin proveedor asignado');
+    }
+
     function renderProductosPorVencer() {
       const tbody = document.getElementById('tbl-productos-por-vencer');
       if (!tbody) return [];
       const lista = (DB.productos || [])
-        .map(p => ({ ...p, estadoVenc: getVencimientoStatus(p.vencimiento) }))
+        .map(p => ({ ...p, proveedorMostrar: obtenerNombreProveedorProducto(p), estadoVenc: getVencimientoStatus(p.vencimiento) }))
         .filter(p => p.vencimiento && p.estadoVenc.diffDays <= 20)
         .sort((a, b) => a.estadoVenc.diffDays - b.estadoVenc.diffDays);
       tbody.innerHTML = lista.length ? lista.map(p => `
         <tr>
           <td>${escapeHtml(p.codigo || '')}</td>
           <td><b>${escapeHtml(p.nombre || '')}</b></td>
+          <td>${escapeHtml(p.proveedorMostrar)}</td>
           <td>${escapeHtml(p.categoria || '')}</td>
           <td>${escapeHtml(p.vencimiento || '')}</td>
           <td><span class="badge ${p.estadoVenc.class}">${escapeHtml(p.estadoVenc.label)}</span></td>
           <td>${p.estadoVenc.diffDays < 0 ? `Vencido hace ${Math.abs(p.estadoVenc.diffDays)} días` : p.estadoVenc.diffDays === 0 ? 'Vence hoy' : `${p.estadoVenc.diffDays} días`}</td>
           <td>${Number(p.stock) || 0}</td>
-        </tr>`).join('') : '<tr><td colspan="7" class="empty-report">No hay productos vencidos ni próximos a vencer en los siguientes 20 días.</td></tr>';
+        </tr>`).join('') : '<tr><td colspan="8" class="empty-report">No hay productos vencidos ni próximos a vencer en los siguientes 20 días.</td></tr>';
       return lista;
     }
 
     function exportProductosPorVencerExcel() {
       const lista = renderProductosPorVencer();
       const data = lista.map(p => ({
-        'Código': p.codigo, 'Producto': p.nombre, 'Categoría': p.categoria,
+        'Código': p.codigo, 'Producto': p.nombre, 'Proveedor': p.proveedorMostrar, 'Categoría': p.categoria,
         'Fecha Vencimiento': p.vencimiento, 'Estado': p.estadoVenc.label,
         'Días restantes': p.estadoVenc.diffDays, 'Stock': Number(p.stock) || 0
       }));
@@ -4976,16 +4987,22 @@ function handleBarcodeCompra(e) {
         .filter(p => p.vencimiento && p.estado.diffDays < 0)
         .sort((a,b) => a.estado.diffDays - b.estado.diffDays);
 
-      tbody.innerHTML = vencidos.length ? vencidos.map(p => `
+      tbody.innerHTML = vencidos.length ? vencidos.map(p => {
+        const idProveedor = p.proveedorId ?? p.proveedor_id ?? p.idProveedor ?? '';
+        const proveedor = (DB.proveedores || []).find(pr => String(pr.id) === String(idProveedor));
+        const proveedorDirecto = (typeof p.proveedor === 'string') ? p.proveedor : (p.proveedor && typeof p.proveedor === 'object' ? (p.proveedor.empresa || p.proveedor.nombre || '') : '');
+        const nombreProveedor = p.proveedorNombre || p.nombreProveedor || proveedorDirecto || (proveedor ? (proveedor.empresa || proveedor.nombre || proveedor.razonSocial || proveedor.razon_social) : '') || 'Sin proveedor';
+        return `
         <tr>
           <td><b>${escapeHtml(p.codigo || '')}</b></td>
           <td><b>${escapeHtml(p.nombre || '')}</b></td>
+          <td class="col-proveedor-vencido" title="${escapeHtml(nombreProveedor)}">${escapeHtml(nombreProveedor)}</td>
           <td>${escapeHtml(p.categoria || '')}</td>
           <td>${escapeHtml(p.vencimiento || '')}</td>
           <td><span class="badge badge-danger">${Math.abs(p.estado.diffDays)} día(s)</span></td>
           <td><b>${Number(p.stock) || 0}</b></td>
-        </tr>
-      `).join('') : `<tr><td colspan="6" class="empty-report"><i class="fa-solid fa-circle-check" style="font-size:2rem;"></i><br><br>No hay productos vencidos.</td></tr>`;
+        </tr>`;
+      }).join('') : `<tr><td colspan="7" class="empty-report"><i class="fa-solid fa-circle-check" style="font-size:2rem;"></i><br><br>No hay productos vencidos.</td></tr>`;
     }
 
     function getUltimosMesesProductos() {
@@ -5096,10 +5113,15 @@ function handleBarcodeCompra(e) {
       const data = (DB.productos || [])
         .map(p => ({...p, estado:getVencimientoStatus(p.vencimiento)}))
         .filter(p => p.vencimiento && p.estado.diffDays < 0)
-        .map(p => ({
-          'Código':p.codigo || '', 'Producto':p.nombre || '', 'Categoría':p.categoria || '',
-          'Fecha Vencimiento':p.vencimiento, 'Días Vencido':Math.abs(p.estado.diffDays), 'Stock':Number(p.stock)||0
-        }));
+        .map(p => {
+          const proveedor = (DB.proveedores || []).find(pr => String(pr.id) === String(p.proveedorId));
+          return {
+            'Código':p.codigo || '', 'Producto':p.nombre || '',
+            'Proveedor':p.proveedorNombre || (proveedor ? (proveedor.empresa || proveedor.nombre) : '') || 'Sin proveedor',
+            'Categoría':p.categoria || '', 'Fecha Vencimiento':p.vencimiento,
+            'Días Vencido':Math.abs(p.estado.diffDays), 'Stock':Number(p.stock)||0
+          };
+        });
       const ws = XLSX.utils.json_to_sheet(data.length ? data : [{'Producto':'No hay productos vencidos'}]);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Productos Vencidos');
@@ -6074,6 +6096,23 @@ document.addEventListener('DOMContentLoaded', () => {
     #login-screen .login-card button[type="submit"] {
       width: 100%; min-height: 48px; touch-action: manipulation;
     }
+  }
+</style>
+
+
+<style id="super-mix-mobile-compatibility-fix">
+  /* Compatibilidad con navegadores móviles que no manejan bien 100dvh o :has() */
+  html { width:100%; min-width:0; min-height:100%; }
+  @media screen and (max-width: 900px), (pointer: coarse) {
+    html, body { width:100% !important; min-width:0 !important; }
+    body { display:block !important; height:100vh !important; min-height:100vh !important; overflow:hidden !important; }
+    .main-content { display:flex !important; flex-direction:column !important; width:100% !important; height:100vh !important; min-height:0 !important; overflow-x:hidden !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch; }
+    .sidebar { max-width: min(300px, 82vw); }
+    #login-screen { position:fixed !important; inset:0 !important; z-index:2147483000 !important; display:flex; width:100% !important; min-height:100vh !important; min-height:100dvh !important; padding: max(16px, env(safe-area-inset-top)) 14px max(16px, env(safe-area-inset-bottom)); overflow-y:auto !important; box-sizing:border-box !important; }
+    #login-screen .login-card { display:block !important; width:100% !important; max-width:400px !important; flex:0 1 400px !important; margin:auto !important; box-sizing:border-box !important; }
+    #login-screen input, #login-screen button { font-size:16px !important; }
+    .modal-overlay { padding:12px !important; overflow-y:auto !important; }
+    .modal-card { width:100% !important; max-width: min(500px, 100%) !important; max-height: calc(100vh - 24px) !important; overflow-y:auto !important; }
   }
 </style>
 
